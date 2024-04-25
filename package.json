@@ -10,7 +10,9 @@
   "author": "GillGate | Romahaforever",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/firestore": "^7.6.0",
     "@grammyjs/hydrate": "^1.4.1",
+    "@grammyjs/storage-firestore": "^2.4.2",
     "dotenv": "^16.4.5",
     "firebase": "^10.11.0",
     "grammy": "^1.21.1",
