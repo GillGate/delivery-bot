@@ -11,22 +11,50 @@ const db = new Firestore({
     keyFilename: "./serviceAccount.firestore.json",
 });
 
+// TODO: получение сохранённых данных про пользователя из Firebase, подстановка в initSessionData.user
+const initSessionData = { 
+    user: {
+        name: '',
+        address: '',
+    },
+    routeHistory: [],
+    order: {
+        type: '',
+        subType: '',
+        link: '',
+        size: '',
+        price: '',
+    }
+};
+
 const bot = new Bot(process.env.BOT_API_TOKEN);
 bot.use(
     session({
-        initial: () => ({ 
-            routeHistory: [] 
-        }),
+        initial: () => (structuredClone(initSessionData)),
         // storage: adapter(db.collection("sessions")),
     }),
 );
 bot.use(hydrate());
 bot.use(order);
 
+bot.api.setMyCommands([
+    {
+        command: 'start', description: 'Запуск бота',
+    },
+]);
+
 const mainMenu = new InlineKeyboard().text('📦  Сделать заказ', 'order_make').text('🔎  Проверить заказ', 'order_check');
 
 bot.command('start', async ctx => {
-    ctx.session.routeHistory = [];
+    ctx.session = structuredClone(initSessionData);
+
+    await ctx.reply('Приветствие с какой-то информацией про этого бота, возможно ссылками на дргуие ресурсы', {
+        reply_markup: mainMenu
+    });
+});
+
+bot.callbackQuery('main_menu', async ctx => {
+    ctx.session = structuredClone(initSessionData);
 
     await ctx.reply('Приветствие с какой-то информацией про этого бота, возможно ссылками на дргуие ресурсы', {
         reply_markup: mainMenu
@@ -36,8 +64,6 @@ bot.command('start', async ctx => {
 bot.callbackQuery('back', async ctx => {
     await ctx.session.routeHistory.pop(); // фальшивка ёбанная
     const routeParams = await ctx.session.routeHistory.pop();
-
-    console.log("back", routeParams);
 
     await ctx.callbackQuery.message.editText(routeParams.text, {
         reply_markup: routeParams.reply_markup

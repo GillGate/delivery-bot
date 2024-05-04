@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@google-cloud/firestore": "^7.6.0",
+    "@grammyjs/conversations": "^1.2.0",
     "@grammyjs/hydrate": "^1.4.1",
     "@grammyjs/storage-firestore": "^2.4.2",
     "dotenv": "^16.4.5",
