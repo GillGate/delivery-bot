@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD npm start:remote
+CMD npm run start:remote
