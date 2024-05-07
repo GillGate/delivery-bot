@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "start:remote": "node index.js",
+    "d": "docker build -t delivery-bot:0.1 ."
   },
   "keywords": [],
   "author": "GillGate | Romahaforever",

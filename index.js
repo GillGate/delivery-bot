@@ -5,7 +5,7 @@ import { hydrate } from '@grammyjs/hydrate';
 import { order } from "./actions/order.js";
 import { mainMenu } from './keyboards/general.js';
 
-// TODO: получение сохранённых данных про пользователя из Firebase, подстановка в initSessionData.user
+// TODO: Подстановка сохранённых данных про пользователя из Firebase в initSessionData.user
 const initSessionData = { 
     user: {
         name: '',
@@ -51,6 +51,7 @@ bot.callbackQuery('main_menu', async ctx => {
     await ctx.reply('Приветствие с какой-то информацией про этого бота, возможно ссылками на дргуие ресурсы', {
         reply_markup: mainMenu
     });
+    await ctx.answerCallbackQuery();
 });
 
 bot.callbackQuery('back', async ctx => {
