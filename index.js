@@ -1,15 +1,11 @@
 import 'dotenv/config';
 import { Bot, GrammyError, HttpError, InlineKeyboard, session } from "grammy";
 import { adapter } from "@grammyjs/storage-firestore";
-import { Firestore } from "@google-cloud/firestore";
 import { hydrate } from '@grammyjs/hydrate';
 import { order } from "./actions/order.js";
 import { traceRoutes } from './middleware/route.js';
+import { db } from './plugins/firebase.plugin.js';
 
-const db = new Firestore({
-    projectId: "gill-demo",
-    keyFilename: "./serviceAccount.firestore.json",
-});
 
 // TODO: получение сохранённых данных про пользователя из Firebase, подстановка в initSessionData.user
 const initSessionData = { 

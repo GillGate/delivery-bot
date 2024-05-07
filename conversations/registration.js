@@ -1,4 +1,5 @@
 import { InlineKeyboard } from "grammy";
+import { addUserOrder, addUserInfo } from "../plugins/firebase.plugin.js";
 
 export async function registration(conversation, ctx) {
     let currentOrder = ctx.session.order;
@@ -169,9 +170,17 @@ export async function registration(conversation, ctx) {
     });
 
     if(regResponse.match === "reg_confirm") {
-        //TODO: Сохранять данные в Firebase
+        let { from } = ctx;
 
         console.log(totalText, ctx.session.user);
+
+        await addUserInfo(from.id, {
+            fio: currentUser.name,
+            address: currentUser.address,
+            username: from?.username ?? ""
+        });
+
+        await addUserOrder(from.id, currentOrder);
 
         ctx.reply('Когда-нибудь ваш заказ будет действительно обработан', {
             reply_markup: backMainMenu
