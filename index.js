@@ -2,13 +2,13 @@ import 'dotenv/config';
 import { Bot, GrammyError, HttpError, InlineKeyboard, session } from "grammy";
 import { adapter } from "@grammyjs/storage-firestore";
 import { hydrate } from '@grammyjs/hydrate';
-import { order } from "./actions/order.js";
-import { mainMenu } from './keyboards/general.js';
+import { order } from "#bot/actions/order.js";
+import { mainMenu } from '#bot/keyboards/general.js';
+import { db, getUserInfo } from '#bot/plugins/firebase.plugin.js';
 
-// TODO: Подстановка сохранённых данных про пользователя из Firebase в initSessionData.user
 const initSessionData = { 
     user: {
-        name: '',
+        fio: '',
         address: '',
     },
     routeHistory: [],
@@ -37,22 +37,31 @@ bot.api.setMyCommands([
     },
 ]);
 
-bot.command('start', async ctx => {
-    ctx.session = structuredClone(initSessionData);
+async function sendStartMessage(ctx, errorMode = false) {
+    ctx.session.routeHistory = [];
+    ctx.session.order = {};
+    ctx.session.conversation = {};
 
     await ctx.reply('Приветствие с какой-то информацией про этого бота, возможно ссылками на дргуие ресурсы', {
         reply_markup: mainMenu
     });
-});
 
-bot.callbackQuery('main_menu', async ctx => {
-    ctx.session = structuredClone(initSessionData);
+    let { user } = ctx.session;
+    if(user.fio === "" || user.address === "") {
+        let userInfo = await getUserInfo(ctx.from.id);
 
-    await ctx.reply('Приветствие с какой-то информацией про этого бота, возможно ссылками на дргуие ресурсы', {
-        reply_markup: mainMenu
-    });
-    await ctx.answerCallbackQuery();
-});
+        if (userInfo.exists) {
+            ctx.session.user = userInfo.data();
+        }
+    }
+
+    if(ctx?.callbackQuery && !errorMode) {
+        await ctx.answerCallbackQuery();
+    }
+}
+
+bot.command('start', sendStartMessage);
+bot.callbackQuery('main_menu', sendStartMessage);
 
 bot.callbackQuery('back', async ctx => {
     await ctx.session.routeHistory.pop(); // фальшивка ёбанная
@@ -64,17 +73,19 @@ bot.callbackQuery('back', async ctx => {
     await ctx.answerCallbackQuery();
 });
 
-bot.catch((err) => {
+bot.catch(async (err) => {
     const ctx = err.ctx;
     console.error(`Error while handling update ${ctx.update.update_id}`);
 
     const e = err.error;
     if(e instanceof GrammyError) {
         console.error("Error in request:", e.description);
+        await sendStartMessage(ctx, true);
     } else if(e instanceof HttpError) {
         console.log("Could not contact Telegram:", e);
     } else {
         console.error("Unknown error:", e);
+        await sendStartMessage(ctx, true);
     }
 })
 

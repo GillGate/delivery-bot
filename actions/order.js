@@ -1,10 +1,10 @@
-import { Composer, InlineKeyboard } from "grammy";
+import { Composer } from "grammy";
 import { conversations, createConversation } from "@grammyjs/conversations";
 import { hydrate } from '@grammyjs/hydrate';
-import { traceRoutes } from '../middleware/route.js';
-import { registration } from "../conversations/registration.js";
-import { backKeyboard, backMainMenu } from "../keyboards/general.js";
-import { checkMenu, getSubTypeKeyboard, orderMenu, selectCategoryKeyboard } from "../keyboards/order.js";
+import { traceRoutes } from '#bot/middleware/route.js';
+import { registration } from "#bot/conversations/registration.js";
+import { backKeyboard, backMainMenu } from "#bot/keyboards/general.js";
+import { checkMenu, getSubTypeKeyboard, orderMenu, selectCategoryKeyboard } from "#bot/keyboards/order.js";
 
 export const order = new Composer();
 order.use(conversations());
@@ -42,12 +42,9 @@ order.callbackQuery('order_create', async ctx => {
 
 order.callbackQuery(/order__select_/, async ctx => {
     let currentType = ctx.callbackQuery.data.split('__select_')[1];
-
     ctx.session.order.type = currentType;
-    console.log("session orderType:", ctx.session.order.type);
 
     let subTypeKeyboard = getSubTypeKeyboard(currentType);
-
     await ctx.callbackQuery.message.editText('Выберите подкатегорию:', {
         reply_markup: subTypeKeyboard
     });
@@ -55,10 +52,8 @@ order.callbackQuery(/order__select_/, async ctx => {
 });
 
 order.callbackQuery(/order__pick_/, async ctx => {
-    let currentSubCategory = ctx.callbackQuery.data.split('__pick_')[1];
-
-    ctx.session.order.subType = currentSubCategory;
-    console.log("session orderSubType:", ctx.session.order.subType);
+    let currentSubType = ctx.callbackQuery.data.split('__pick_')[1];
+    ctx.session.order.subType = currentSubType;
 
     await ctx.callbackQuery.message.editText('Введите ссылку на товар', {
         reply_markup: backMainMenu

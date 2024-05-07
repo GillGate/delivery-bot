@@ -1,161 +1,51 @@
-import { InlineKeyboard } from "grammy";
-import { addUserOrder, addUserInfo } from "../plugins/firebase.plugin.js";
-import { backMainMenu } from "../keyboards/general.js";
-import { regTotalMenu } from "../keyboards/order.js";
+import { addUserOrder, setUserInfo } from "#bot/plugins/firebase.plugin.js";
+import { backMainMenu } from "#bot/keyboards/general.js";
+import { regTotalMenu } from "#bot/keyboards/order.js";
+import { getOrderLink } from "#bot/conversations/helpers/getOrderLink.js";
+import { getOrderSize } from "#bot/conversations/helpers/getOrderSize.js";
+import { getOrderPrice } from "#bot/conversations/helpers/getOrderPrice.js";
+import { getOrderFio } from "#bot/conversations/helpers/getOrderFio.js";
+import { getOrderAddress } from "#bot/conversations/helpers/getOrderAddress.js";
 
 export async function registration(conversation, ctx) {
-    let currentOrder = ctx.session.order;
-    let currentUser = ctx.session.user;
-
-    await conversation.waitUntil(
-        async (ctx) => {
-            let link = ctx.message?.text;
-
-            if(link?.includes('https://dw4.co/t/')) {
-                currentOrder.link = link;
-                return true;
-            }
-        }, {
-        otherwise: (ctx) => {
-            if(ctx?.callbackQuery?.data !== "main_menu") {
-                    ctx.reply('Введите корректную ссылку на товар, пример: https://dw4.co/t/A/285EP4jh', {
-                    reply_markup: backMainMenu
-                });
-            }
-        }}
-    );
+    await getOrderLink(conversation, ctx);
 
     ctx.reply('Укажите выбранный размер товара на сайте: [Вложение с конкретным пояснением что указать]', {
         reply_markup: backMainMenu
     });
 
-    await conversation.waitUntil(
-        async (ctx) => {
-            let size = ctx.message?.text;
-            // TODO: Валидация размеров в соответствии с выбранным товаром
-            if(size?.length <= 6) { // условная логика
-                currentOrder.size = size;
-                return true;
-            }
-        }, {
-        otherwise: (ctx) => {
-            if(ctx?.callbackQuery?.data !== "main_menu") {
-                ctx.reply('Укажите корректный размер товара, например: 47', {
-                    reply_markup: backMainMenu
-                });
-            }
-        }}
-    );
+    await getOrderSize(conversation, ctx);
 
     ctx.reply('Укажите стоимость товара в юань, с учётом размера:', {
         reply_markup: backMainMenu
     });
 
-    await conversation.waitUntil(
-        async (ctx) => {
-            let price = parseInt(ctx.message?.text);
-
-            if(!isNaN(price)) {
-                currentOrder.price = price;
-                return true;
-            }
-        }, {
-        otherwise: (ctx) => {
-            if(ctx?.callbackQuery?.data !== "main_menu") {
-                ctx.reply('Укажите корректную сумму в юань, например: 3600', {
-                    reply_markup: backMainMenu
-                });
-            }
-        }}
-    );
+    await getOrderPrice(conversation, ctx);
 
     ctx.reply('Напишите своё ФИО, которое мы укажем при оформлении заказа:', {
         reply_markup: backMainMenu
     });
 
-    const nameLimits = {
-        min: 4,
-        max: 100
-    }
-
-    await conversation.waitUntil(
-        async (ctx) => {
-            let name = ctx.message?.text;
-            if(name?.length >= nameLimits.min && name?.length <= nameLimits.max) {
-                currentUser.name = name;
-                return true;
-            }
-        }, {
-        otherwise: (ctx) => {
-            let name = ctx.message?.text;
-
-            if(ctx?.callbackQuery?.data !== "main_menu") {
-                if(name?.length < nameLimits.min) {
-                    ctx.reply('Слишком короткое ФИО:', {
-                        reply_markup: backMainMenu
-                    });
-                }
-                else if(name?.length > nameLimits.max) {
-                    ctx.reply('Слишком длинное ФИО:', {
-                        reply_markup: backMainMenu
-                    });
-                }
-                else {
-                    ctx.reply('Укажите корректное ФИО:', {
-                        reply_markup: backMainMenu
-                    });
-                }
-            }
-        }}
-    );
+    await getOrderFio(conversation, ctx);
 
     ctx.reply('Укажите адрес где планируете забирать товар:', {
         reply_markup: backMainMenu
     });
 
-    const addressLimits = {
-        min: 10,
-        max: 180
-    }
+    await getOrderAddress(conversation, ctx);
 
-    await conversation.waitUntil(
-        async (ctx) => {
-            let address = ctx.message?.text;
-            if(address?.length >= addressLimits.min && address?.length <= addressLimits.max) {
-                currentUser.address = address;
-                return true;
-            }
-        }, {
-        otherwise: (ctx) => {
-            let address = ctx.message?.text;
+    let currentOrder = conversation.ctx.session.order;
+    let currentUser = conversation.ctx.session.user;
 
-            if(ctx?.callbackQuery?.data !== "main_menu") {
-                if(address?.length < addressLimits.min) {
-                    ctx.reply('Слишком короткий адрес:', {
-                        reply_markup: backMainMenu
-                    });
-                }
-                else if(address?.length > addressLimits.max) {
-                    ctx.reply('Слишком длинный адрес:', {
-                        reply_markup: backMainMenu
-                    });
-                }
-                else {
-                    ctx.reply('Укажите корректный адрес:', {
-                        reply_markup: backMainMenu
-                    });
-                }
-            }
-        }}
-    );
+    currentOrder.status = "processing";
 
-    let totalText = `Итоговая цена: ${currentOrder.price} + наш жирный процент \n\n`;
-    totalText += `Детали заказа:\n`;
-    totalText += `- Тип товара: ${currentOrder.subType}\n`;
-    totalText += `- Ссылка на товар: ${currentOrder.link}\n`;
-    totalText += `- Размер: ${currentOrder.size}\n`;
-    totalText += `- ФИО получателя: ${currentUser.name}\n`;
-    totalText += `- Адрес доставки: ${currentUser.address}\n`;
+    let totalText =  `Итоговая цена: ${currentOrder.price} + наш жирный процент \n\n`;
+        totalText += `Детали заказа:\n`;
+        totalText += `- Тип товара: ${currentOrder.subType}\n`;
+        totalText += `- Ссылка на товар: ${currentOrder.link}\n`;
+        totalText += `- Размер: ${currentOrder.size}\n`;
+        totalText += `- ФИО получателя: ${currentUser.fio}\n`;
+        totalText += `- Адрес доставки: ${currentUser.address}\n`;
 
     ctx.reply(totalText, {
         reply_markup: regTotalMenu
@@ -170,10 +60,10 @@ export async function registration(conversation, ctx) {
     if(regResponse.match === "reg_confirm") {
         let { from } = ctx;
 
-        console.log(totalText, ctx.session.user);
+        console.log(totalText, currentUser);
 
-        await addUserInfo(from.id, {
-            fio: currentUser.name,
+        await setUserInfo(from.id, {
+            fio: currentUser.fio,
             address: currentUser.address,
             username: from?.username ?? ""
         });

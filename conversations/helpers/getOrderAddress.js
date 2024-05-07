@@ -1,0 +1,40 @@
+import { backMainMenu } from "#bot/keyboards/general.js";
+
+export async function getOrderAddress(conversation, ctx) {
+    const addressLimits = {
+        min: 10,
+        max: 180
+    }
+
+    return await conversation.waitUntil(
+        async (ctx) => {
+            let address = ctx.message?.text;
+
+            if(address?.length >= addressLimits.min && address?.length <= addressLimits.max) {
+                ctx.session.user.address = address;
+                return true;
+            }
+        }, {
+        otherwise: (ctx) => {
+            let address = ctx.message?.text;
+
+            if(ctx?.callbackQuery?.data !== "main_menu") {
+                if(address?.length < addressLimits.min) {
+                    ctx.reply('Слишком короткий адрес:', {
+                        reply_markup: backMainMenu
+                    });
+                }
+                else if(address?.length > addressLimits.max) {
+                    ctx.reply('Слишком длинный адрес:', {
+                        reply_markup: backMainMenu
+                    });
+                }
+                else {
+                    ctx.reply('Укажите корректный адрес:', {
+                        reply_markup: backMainMenu
+                    });
+                }
+            }
+        }}
+    );
+}

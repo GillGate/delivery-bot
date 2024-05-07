@@ -20,5 +20,10 @@
     "grammy": "^1.21.1",
     "nodemon": "^3.1.0"
   },
-  "type": "module"
+  "type": "module",
+  "imports": {
+    "#bot/*": {
+      "default": "./*"
+    }
+  }
 }
