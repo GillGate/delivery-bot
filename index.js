@@ -3,9 +3,7 @@ import { Bot, GrammyError, HttpError, InlineKeyboard, session } from "grammy";
 import { adapter } from "@grammyjs/storage-firestore";
 import { hydrate } from '@grammyjs/hydrate';
 import { order } from "./actions/order.js";
-import { traceRoutes } from './middleware/route.js';
-import { db } from './plugins/firebase.plugin.js';
-
+import { mainMenu } from './keyboards/general.js';
 
 // TODO: получение сохранённых данных про пользователя из Firebase, подстановка в initSessionData.user
 const initSessionData = { 
@@ -38,8 +36,6 @@ bot.api.setMyCommands([
         command: 'start', description: 'Запуск бота',
     },
 ]);
-
-const mainMenu = new InlineKeyboard().text('📦  Сделать заказ', 'order_make').text('🔎  Проверить заказ', 'order_check');
 
 bot.command('start', async ctx => {
     ctx.session = structuredClone(initSessionData);

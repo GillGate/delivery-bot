@@ -1,11 +1,11 @@
 import { InlineKeyboard } from "grammy";
 import { addUserOrder, addUserInfo } from "../plugins/firebase.plugin.js";
+import { backMainMenu } from "../keyboards/general.js";
+import { regTotalMenu } from "../keyboards/order.js";
 
 export async function registration(conversation, ctx) {
     let currentOrder = ctx.session.order;
     let currentUser = ctx.session.user;
-
-    const backMainMenu = new InlineKeyboard().text('‹ Вернуться в главное меню', 'main_menu');
 
     await conversation.waitUntil(
         async (ctx) => {
@@ -156,8 +156,6 @@ export async function registration(conversation, ctx) {
     totalText += `- Размер: ${currentOrder.size}\n`;
     totalText += `- ФИО получателя: ${currentUser.name}\n`;
     totalText += `- Адрес доставки: ${currentUser.address}\n`;
-
-    const regTotalMenu = new InlineKeyboard().text('✅  Подтвердить заказ', 'reg_confirm').row().text('‹ Вернуться в главное меню', 'main_menu');
 
     ctx.reply(totalText, {
         reply_markup: regTotalMenu
