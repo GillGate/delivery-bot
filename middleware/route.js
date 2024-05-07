@@ -1,14 +1,14 @@
 export async function traceRoutes(ctx, next) {
-    if(ctx?.callbackQuery) {
-        let cbQMessage = await ctx.callbackQuery.message;
+  if (ctx?.callbackQuery) {
+    let cbQMessage = await ctx.callbackQuery.message;
 
-        ctx.session.routeHistory.push({
-            text: cbQMessage.text,
-            reply_markup: cbQMessage.reply_markup
-        });
+    ctx.session.routeHistory.push({
+      text: cbQMessage.text,
+      reply_markup: cbQMessage.reply_markup,
+    });
 
-        // console.log("routeHistory", ctx.session.routeHistory);
-    }
+    // console.log("routeHistory", ctx.session.routeHistory);
+  }
 
-    await next();
+  // await next();
 }
