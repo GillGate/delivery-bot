@@ -1,4 +1,5 @@
 import { backMainMenu } from "#bot/keyboards/general.js";
+import { unlessActions } from "#bot/conversations/helpers/unlessActions.js";
 
 export async function getOrderSize(conversation, ctx) {
     return await conversation.waitUntil(
@@ -10,12 +11,12 @@ export async function getOrderSize(conversation, ctx) {
                 return true;
             }
         }, {
-        otherwise: (ctx) => {
-            if(ctx?.callbackQuery?.data !== "main_menu") {
+        otherwise: (ctx) => unlessActions(ctx, 
+            () => {
                 ctx.reply('Укажите корректный размер товара, например: 47', {
                     reply_markup: backMainMenu
                 });
             }
-        }}
+        )}
     );
 }

@@ -1,4 +1,5 @@
 import { backMainMenu } from "#bot/keyboards/general.js";
+import { unlessActions } from "#bot/conversations/helpers/unlessActions.js";
 
 export async function getOrderAddress(conversation, ctx) {
     const addressLimits = {
@@ -15,26 +16,28 @@ export async function getOrderAddress(conversation, ctx) {
                 return true;
             }
         }, {
-        otherwise: (ctx) => {
-            let address = ctx.message?.text;
+        otherwise: (ctx) => unlessActions(ctx, 
+            () => {
+                let address = ctx.message?.text;
 
-            if(ctx?.callbackQuery?.data !== "main_menu") {
-                if(address?.length < addressLimits.min) {
-                    ctx.reply('Слишком короткий адрес:', {
-                        reply_markup: backMainMenu
-                    });
-                }
-                else if(address?.length > addressLimits.max) {
-                    ctx.reply('Слишком длинный адрес:', {
-                        reply_markup: backMainMenu
-                    });
-                }
-                else {
-                    ctx.reply('Укажите корректный адрес:', {
-                        reply_markup: backMainMenu
-                    });
+                if(ctx?.callbackQuery?.data !== "main_menu") {
+                    if(address?.length < addressLimits.min) {
+                        ctx.reply('Слишком короткий адрес:', {
+                            reply_markup: backMainMenu
+                        });
+                    }
+                    else if(address?.length > addressLimits.max) {
+                        ctx.reply('Слишком длинный адрес:', {
+                            reply_markup: backMainMenu
+                        });
+                    }
+                    else {
+                        ctx.reply('Укажите корректный адрес:', {
+                            reply_markup: backMainMenu
+                        });
+                    }
                 }
             }
-        }}
+        )}
     );
 }

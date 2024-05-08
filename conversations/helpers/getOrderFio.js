@@ -1,4 +1,5 @@
 import { backMainMenu } from "#bot/keyboards/general.js";
+import { unlessActions } from "#bot/conversations/helpers/unlessActions.js";
 
 export async function getOrderFio(conversation, ctx) {
     const fioLimits = {
@@ -15,27 +16,29 @@ export async function getOrderFio(conversation, ctx) {
                 return true;
             }
         }, {
-        otherwise: (ctx) => {
-            let fio = ctx.message?.text;
+        otherwise: (ctx) => unlessActions(ctx, 
+            () => {
+                let fio = ctx.message?.text;
 
-            //TODO: emoji validation
-            if(ctx?.callbackQuery?.data !== "main_menu") {
-                if(fio?.length < fioLimits.min) {
-                    ctx.reply('Слишком короткое ФИО:', {
-                        reply_markup: backMainMenu
-                    });
-                }
-                else if(fio?.length > fioLimits.max) {
-                    ctx.reply('Слишком длинное ФИО:', {
-                        reply_markup: backMainMenu
-                    });
-                }
-                else {
-                    ctx.reply('Укажите корректное ФИО:', {
-                        reply_markup: backMainMenu
-                    });
+                //TODO: emoji validation
+                if(ctx?.callbackQuery?.data !== "main_menu") {
+                    if(fio?.length < fioLimits.min) {
+                        ctx.reply('Слишком короткое ФИО:', {
+                            reply_markup: backMainMenu
+                        });
+                    }
+                    else if(fio?.length > fioLimits.max) {
+                        ctx.reply('Слишком длинное ФИО:', {
+                            reply_markup: backMainMenu
+                        });
+                    }
+                    else {
+                        ctx.reply('Укажите корректное ФИО:', {
+                            reply_markup: backMainMenu
+                        });
+                    }
                 }
             }
-        }}
+        )}
     );
 }

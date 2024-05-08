@@ -62,13 +62,18 @@ export async function registration(conversation, ctx) {
 
         console.log(totalText, currentUser);
 
-        await setUserInfo(from.id, {
-            fio: currentUser.fio,
-            address: currentUser.address,
-            username: from?.username ?? ""
-        });
+        try {
+            await setUserInfo(from.id, {
+                fio: currentUser.fio,
+                address: currentUser.address,
+                username: from?.username ?? ""
+            });
 
-        await addUserOrder(from.id, currentOrder);
+            await addUserOrder(from.id, currentOrder);
+        }
+        catch(e) {
+            console.error(e);
+        }
 
         ctx.reply('Когда-нибудь ваш заказ будет действительно обработан', {
             reply_markup: backMainMenu

@@ -47,11 +47,17 @@ async function sendStartMessage(ctx, errorMode = false) {
     });
 
     let { user } = ctx.session;
+    console.log("user", user);
     if(user.fio === "" || user.address === "") {
-        let userInfo = await getUserInfo(ctx.from.id);
+        try {
+            let userInfo = await getUserInfo(ctx.from.id);
 
-        if (userInfo.exists) {
-            ctx.session.user = userInfo.data();
+            if (userInfo.exists) {
+                ctx.session.user = userInfo.data();
+            }
+        }
+        catch(e) {
+            console.error(e);
         }
     }
 
@@ -60,8 +66,8 @@ async function sendStartMessage(ctx, errorMode = false) {
     }
 }
 
-bot.command('start', sendStartMessage);
-bot.callbackQuery('main_menu', sendStartMessage);
+bot.command('start', async (ctx) => await sendStartMessage(ctx));
+bot.callbackQuery('main_menu', async (ctx) => await sendStartMessage(ctx));
 
 bot.callbackQuery('back', async ctx => {
     await ctx.session.routeHistory.pop(); // фальшивка ёбанная
@@ -80,12 +86,12 @@ bot.catch(async (err) => {
     const e = err.error;
     if(e instanceof GrammyError) {
         console.error("Error in request:", e.description);
-        await sendStartMessage(ctx, true);
+        // await sendStartMessage(ctx, true);
     } else if(e instanceof HttpError) {
         console.log("Could not contact Telegram:", e);
     } else {
         console.error("Unknown error:", e);
-        await sendStartMessage(ctx, true);
+        // await sendStartMessage(ctx, true);
     }
 })
 

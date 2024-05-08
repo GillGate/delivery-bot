@@ -1,4 +1,5 @@
 import { backMainMenu } from "#bot/keyboards/general.js";
+import { unlessActions } from "#bot/conversations/helpers/unlessActions.js";
 
 export async function getOrderPrice(conversation, ctx) {
     return await conversation.waitUntil(
@@ -10,12 +11,12 @@ export async function getOrderPrice(conversation, ctx) {
                 return true;
             }
         }, {
-        otherwise: (ctx) => {
-            if(ctx?.callbackQuery?.data !== "main_menu") {
+        otherwise: (ctx) => unlessActions(ctx, 
+            () => {
                 ctx.reply('Укажите корректную сумму в юань, например: 3600', {
                     reply_markup: backMainMenu
                 });
             }
-        }}
+        )}
     );
 }
