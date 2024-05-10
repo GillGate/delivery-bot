@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { Bot, GrammyError, HttpError, InlineKeyboard, session } from "grammy";
+import { Bot, GrammyError, HttpError, session } from "grammy";
 import { adapter } from "@grammyjs/storage-firestore";
 import { hydrate } from '@grammyjs/hydrate';
 import { order } from "#bot/actions/order.js";
@@ -24,7 +24,7 @@ const initSessionData = {
 const bot = new Bot(process.env.BOT_API_TOKEN);
 bot.use(
     session({
-        initial: () => (structuredClone(initSessionData)),
+        initial: () => structuredClone(initSessionData)
         // storage: adapter(db.collection("sessions")),
     }),
 );
@@ -39,15 +39,14 @@ bot.api.setMyCommands([
 
 async function sendStartMessage(ctx, errorMode = false) {
     ctx.session.routeHistory = [];
-    ctx.session.order = {};
+    ctx.session.order = structuredClone(initSessionData.order);
     ctx.session.conversation = {};
 
     await ctx.reply('Приветствие с какой-то информацией про этого бота, возможно ссылками на дргуие ресурсы', {
         reply_markup: mainMenu
     });
 
-    let { user } = ctx.session;
-    console.log("user", user);
+    let user = ctx.session.user;
     if(user.fio === "" || user.address === "") {
         try {
             let userInfo = await getUserInfo(ctx.from.id);
@@ -61,6 +60,8 @@ async function sendStartMessage(ctx, errorMode = false) {
         }
     }
 
+    console.log("session", ctx.session);
+
     if(ctx?.callbackQuery && !errorMode) {
         await ctx.answerCallbackQuery();
     }
@@ -73,7 +74,7 @@ bot.callbackQuery('back', async ctx => {
     await ctx.session.routeHistory.pop(); // фальшивка ёбанная
     const routeParams = await ctx.session.routeHistory.pop();
 
-    await ctx.callbackQuery.message.editText(routeParams.text, {
+    await ctx.editMessageText(routeParams.text, {
         reply_markup: routeParams.reply_markup
     });
     await ctx.answerCallbackQuery();
@@ -91,7 +92,7 @@ bot.catch(async (err) => {
         console.log("Could not contact Telegram:", e);
     } else {
         console.error("Unknown error:", e);
-        // await sendStartMessage(ctx, true);
+        await sendStartMessage(ctx, true);
     }
 })
 

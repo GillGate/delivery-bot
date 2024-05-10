@@ -9,6 +9,11 @@ export async function getOrderAddress(conversation, ctx) {
 
     return await conversation.waitUntil(
         async (ctx) => {
+            if(ctx?.callbackQuery?.data === "reg__keep_address") {
+                ctx.answerCallbackQuery();
+                return true;
+            }
+
             let address = ctx.message?.text;
 
             if(address?.length >= addressLimits.min && address?.length <= addressLimits.max) {

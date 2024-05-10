@@ -1,8 +1,8 @@
 export async function unlessActions(ctx, otherwise) {
     if(ctx?.callbackQuery?.data !== "main_menu") {
-        // if(ctx.message?.text === "/start") {
-        //     return await ctx.api.deleteMessage(ctx.chat.id, message.message_id);
-        // }
+        if(ctx.message?.text === "/start") {
+            return;
+        }
         return await otherwise();
     }
 }

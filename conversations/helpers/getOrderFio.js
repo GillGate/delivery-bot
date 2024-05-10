@@ -9,8 +9,12 @@ export async function getOrderFio(conversation, ctx) {
 
     return await conversation.waitUntil(
         async (ctx) => {
-            let fio = ctx.message?.text;
+            if(ctx?.callbackQuery?.data === "reg__keep_fio") {
+                ctx.answerCallbackQuery();
+                return true;
+            }
 
+            let fio = ctx.message?.text;
             if(fio?.length >= fioLimits.min && fio?.length <= fioLimits.max) {
                 ctx.session.user.fio = fio;
                 return true;
