@@ -1,5 +1,6 @@
 import { translate } from "#bot/helpers/translate.js";
 import { InlineKeyboard } from "grammy";
+import limitsConfig from "#bot/config/limits.config.js";
 
 export const orderMenu = new InlineKeyboard()
                                 .text('ℹ️  Узнать стоимость и срок доставки', 'order__info').row()
@@ -38,7 +39,7 @@ export function getSubTypeKeyboard(type) {
     return subTypeKeyboard;
 }
 
-export function generateOrdersMenu(orders, currentPage, maxPerMessage = 5) {
+export function generateOrdersMenu(orders, currentPage, maxPerMessage = limitsConfig.maxOrdersPerMessage) {
     let ordersMenu = new InlineKeyboard();
     console.log("currentPage", currentPage);
 
@@ -48,30 +49,30 @@ export function generateOrdersMenu(orders, currentPage, maxPerMessage = 5) {
             range = orders.length;
         }
         else {
-            range = (orders.legth - 1) < maxPerMessage ? (orders.legth - 1) : maxPerMessage
+            range = orders.legth - 1 < maxPerMessage ? orders.legth - 1 : maxPerMessage
         }
 
         for(let i = 0; i < range; i++) {
-            ordersMenu.text(`#${i}: ${translate(orders[i].subType)}`, `order__check_${orders[i].dbId}`).row();
+            ordersMenu.text(`${translate(orders[i].subType)}`, `order__check_${orders[i].dbId}`).row();
         }
+
         ordersMenu.text('‹ Назад', 'main_menu');
+
         if(orders.length > maxPerMessage) {
             ordersMenu.text('Дальше ›', 'order__nav_next');
         }
     }
     else {
-        let isOrdersEnd = false;
         /* 
-            if maxOrdersPerMessage = 4
-            5 8  | cuurentPage 2 | 2 * 4 = 8  |  8 - 4 = 4 + 1 = 5 
-            9 12 | currentPage 3 | 3 * 4 = 12 | 12 - 4 = 8 + 1 = 9
+            if maxPerMessage = 5
+            6-10  | cuurentPage 2 | 2 * 5 = 10 | 10 - 5 = 5 + 1  = 6 
+            11-15 | currentPage 3 | 3 * 5 = 15 | 15 - 5 = 10 + 1 = 11
         */
-        const range = maxPerMessage * currentPage;
-        console.log(range - maxPerMessage, range);
-
+        let isOrdersEnd = false;
+        const range = currentPage * maxPerMessage;
         for(let i = range - maxPerMessage; i <= range; i++) {
             if(orders[i]?.dbId && !isOrdersEnd) {   
-                ordersMenu.text(`#${i}: ${translate(orders[i].subType)}`, `order__check_${orders[i].dbId}`).row();
+                ordersMenu.text(`${translate(orders[i].subType)}`, `order__check_${orders[i].dbId}`).row();
             }
             else {
                 isOrdersEnd = true;

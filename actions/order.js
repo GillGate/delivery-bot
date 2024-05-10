@@ -7,6 +7,7 @@ import { backKeyboard, backMainMenu } from "#bot/keyboards/general.js";
 import { checkMenu, generateOrdersMenu, getSubTypeKeyboard, orderMenu, selectCategoryKeyboard } from "#bot/keyboards/order.js";
 import { getUserOrders } from "#bot/plugins/firebase.plugin.js";
 import { translate } from "#bot/helpers/translate.js";
+import limitsConfig from "#bot/config/limits.config.js";
 
 export const order = new Composer();
 order.use(conversations());
@@ -26,16 +27,20 @@ order.callbackQuery('order__check', async ctx => {
     let orders = await getUserOrders(ctx.from.id);
     ctx.session.orders = orders;
 
-    maxPages = Math.ceil(orders.length / 5);
+    maxPages = Math.ceil(orders.length / limitsConfig.maxOrdersPerMessage);
     ctx.session.currentPage = 1;
 
     if(orders.length > 0) {
-        let orderMenu = generateOrdersMenu(orders,  ctx.session.currentPage);
-        let msgText  = `Ваш список заказов:\n\n`;
+        let ordersMenu = generateOrdersMenu(orders,  ctx.session.currentPage);
+        let msgText  = `Ваш список заказов:`;
+
+        if(maxPages > 1) {  
+            msgText += `\n\n`;
             msgText += `Страница: ${ctx.session.currentPage} из ${maxPages}`;
+        }
 
         await ctx.editMessageText(msgText, {
-            reply_markup: orderMenu
+            reply_markup: ordersMenu
         });
     } 
     else {
@@ -46,7 +51,7 @@ order.callbackQuery('order__check', async ctx => {
     await ctx.answerCallbackQuery();
 });
 
-order.callbackQuery(/order__nav/, async ctx => {
+order.callbackQuery(/order__nav_/, async ctx => {
     let direction = ctx.callbackQuery.data.split('__nav_')[1];
 
     if(direction === "next") {
@@ -57,12 +62,12 @@ order.callbackQuery(/order__nav/, async ctx => {
     }
 
     let orders = ctx.session.orders;
-    let orderMenu = generateOrdersMenu(orders, ctx.session.currentPage);
+    let ordersMenu = generateOrdersMenu(orders, ctx.session.currentPage);
     let msgText  = `Ваш список заказов:\n\n`;
         msgText += `Страница: ${ctx.session.currentPage} из ${maxPages}`;
 
     await ctx.editMessageText(msgText, {
-        reply_markup: orderMenu
+        reply_markup: ordersMenu
     });
     await ctx.answerCallbackQuery();
 });
@@ -87,7 +92,7 @@ order.callbackQuery(/order__check_/, async ctx => {
 
 order.callbackQuery('order__info', async ctx => {
     await ctx.editMessageText('Какая-то информация', {
-        reply_markup: backMainMenu
+        reply_markup: backKeyboard
     });
     await ctx.answerCallbackQuery();
 });

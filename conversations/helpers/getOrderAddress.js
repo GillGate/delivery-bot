@@ -1,11 +1,9 @@
 import { backMainMenu } from "#bot/keyboards/general.js";
 import { unlessActions } from "#bot/conversations/helpers/unlessActions.js";
+import limitsConfig from "#bot/config/limits.config.js";
 
 export async function getOrderAddress(conversation, ctx) {
-    const addressLimits = {
-        min: 10,
-        max: 180
-    }
+    const { address: addressLimits } = limitsConfig;
 
     return await conversation.waitUntil(
         async (ctx) => {
