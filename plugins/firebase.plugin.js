@@ -16,3 +16,17 @@ export async function getUserInfo(userId) {
 export async function addUserOrder(userId, order) {
     return await db.collection("users").doc(`${userId}`).collection("orders").add(order);
 }
+
+export async function getUserOrders(userId) {
+    let orders = [];
+    let snapshotOrders = await db.collection("users").doc(`${userId}`).collection("orders").get();
+
+    snapshotOrders.forEach(doc => {
+        orders.push({
+            dbId: doc.id,
+            ...doc.data(),
+        });
+    });
+
+    return orders;
+}

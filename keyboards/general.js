@@ -1,7 +1,7 @@
 import { InlineKeyboard } from "grammy";
 
 export const mainMenu = new InlineKeyboard()
-                                .text('📦  Сделать заказ', 'order_make').text('🔎  Проверить заказ', 'order_check');
+                                .text('📦  Сделать заказ', 'order__make').text('🔎  Проверить заказы', 'order__check');
 
 export const backMainMenu = new InlineKeyboard().text('‹ В главное меню', 'main_menu');
 
