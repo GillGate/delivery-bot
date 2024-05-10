@@ -102,7 +102,7 @@ export async function registration(conversation, ctx) {
             console.error(e);
         }
 
-        ctx.reply('Когда-нибудь ваш заказ будет действительно обработан', {
+        conversation.ctx.editMessageText('Когда-нибудь ваш заказ будет действительно обработан', {
             reply_markup: backMainMenu
         });
     }

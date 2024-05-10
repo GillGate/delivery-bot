@@ -31,7 +31,7 @@ order.callbackQuery('order__check', async ctx => {
     ctx.session.currentPage = 1;
 
     if(orders.length > 0) {
-        let ordersMenu = generateOrdersMenu(orders,  ctx.session.currentPage);
+        let ordersMenu = generateOrdersMenu(orders, ctx.session.currentPage);
         let msgText  = `Ваш список заказов:`;
 
         if(maxPages > 1) {  
@@ -49,6 +49,24 @@ order.callbackQuery('order__check', async ctx => {
         });
     }
     await ctx.answerCallbackQuery();
+});
+
+order.callbackQuery(/order__check_/, async ctx => {
+    let currentOrderId = ctx.callbackQuery.data.split('__check_')[1];
+    const order = ctx.session.orders.filter(order => order.dbId === currentOrderId)[0];
+    console.log(order);
+
+    let orderText  = `Детали заказа:\n`;
+        orderText += `- Тип товара: ${translate(order.subType)}\n`;
+        orderText += `- Ссылка на товар: ${order.link}\n`;
+        orderText += `- Размер: ${order.size}\n`;
+        orderText += `- ФИО получателя: ${order.fio}\n`;
+        orderText += `- Адрес доставки: ${order.address}\n`;
+        orderText += `- Статус: ${translate(order?.status)}`;
+
+    await ctx.editMessageText(orderText, {
+        reply_markup: backKeyboard
+    })
 });
 
 order.callbackQuery(/order__nav_/, async ctx => {
@@ -70,24 +88,6 @@ order.callbackQuery(/order__nav_/, async ctx => {
         reply_markup: ordersMenu
     });
     await ctx.answerCallbackQuery();
-});
-
-order.callbackQuery(/order__check_/, async ctx => {
-    let currentOrderId = ctx.callbackQuery.data.split('__check_')[1];
-    const order = ctx.session.orders.filter(order => order.dbId === currentOrderId)[0];
-    console.log(order);
-
-    let orderText = `Детали заказа:\n`;
-        orderText += `- Тип товара: ${translate(order.subType)}\n`;
-        orderText += `- Ссылка на товар: ${order.link}\n`;
-        orderText += `- Размер: ${order.size}\n`;
-        orderText += `- ФИО получателя: ${order.fio}\n`;
-        orderText += `- Адрес доставки: ${order.address}\n`;
-        orderText += `- Статус: ${translate(order?.status)}`;
-
-    await ctx.editMessageText(orderText, {
-        reply_markup: backKeyboard
-    })
 });
 
 order.callbackQuery('order__info', async ctx => {

@@ -9,6 +9,7 @@ export async function getOrderAddress(conversation, ctx) {
         async (ctx) => {
             if(ctx?.callbackQuery?.data === "reg__keep_address") {
                 ctx.answerCallbackQuery();
+                ctx.api.deleteMessage(ctx.from.id, ctx.callbackQuery.message.message_id);
                 return true;
             }
 
