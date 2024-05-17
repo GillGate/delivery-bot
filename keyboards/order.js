@@ -50,10 +50,10 @@ export function generateOrdersMenu(orders, currentPage, maxPerMessage = limitsCo
             range = orders.length;
         }
         else {
-            range = orders.length - 1 < maxPerMessage ? orders.length - 1 : maxPerMessage
+            range = orders.length - 1 < maxPerMessage ? orders.length : maxPerMessage
         }
 
-        for(let i = 0; i <= range; i++) {
+        for(let i = 0; i < range; i++) {
             ordersMenu.text(`${translate(orders[i].subType)}`, `order__check_${orders[i].dbId}`).row();
         }
 

@@ -3,7 +3,12 @@ export async function traceRoutes(ctx, next) {
         let cbQMessage = await ctx.callbackQuery.message;
 
         if(ctx?.callbackQuery.data === "main_menu"){
-            // ctx.api.deleteMessage(ctx.from.id, cbQMessage.message_id);
+            try {
+                ctx.api.deleteMessage(ctx.from.id, cbQMessage.message_id);
+            }
+            catch(e) {
+                console.error(e);
+            }
         }
 
         ctx.session.routeHistory.push({

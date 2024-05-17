@@ -7,6 +7,7 @@ import { getOrderPrice } from "#bot/conversations/helpers/getOrderPrice.js";
 import { getOrderFio } from "#bot/conversations/helpers/getOrderFio.js";
 import { getOrderAddress } from "#bot/conversations/helpers/getOrderAddress.js";
 import { translate } from "#bot/helpers/translate.js";
+import { calculateDelivery } from "#bot/helpers/calculateDelivery.js";
 
 export async function registration(conversation, ctx) {
     let currentOrder = conversation.ctx.session.order;
@@ -62,7 +63,9 @@ export async function registration(conversation, ctx) {
     currentOrder.address = currentUser.address;
     currentOrder.status = "processing";
 
-    let totalText =  `Итоговая цена: ${currentOrder.price} + наш жирный процент \n\n`;
+    let currentDeliveryPrice = calculateDelivery(currentOrder.subType);
+
+    let totalText =  `Итоговая цена: ${currentOrder.price} + ${currentDeliveryPrice} + наш жирный процент \n\n`;
         totalText += `Детали заказа:\n`;
         totalText += `- Тип товара: ${translate(currentOrder.subType)}\n`;
         totalText += `- Ссылка на товар: ${currentOrder.link}\n`;

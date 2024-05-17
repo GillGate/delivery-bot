@@ -7,6 +7,8 @@ export async function getOrderPrice(conversation, ctx) {
             let price = parseInt(ctx.message?.text);
 
             if(!isNaN(price)) {
+                // TODO: convert cny to rub
+                
                 ctx.session.order.price = price;
                 return true;
             }
