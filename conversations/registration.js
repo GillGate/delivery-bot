@@ -66,14 +66,14 @@ export async function registration(conversation, ctx) {
     let currentDeliveryPrice = calculateDelivery(currentOrder.subType);
 
     let totalText =  `Итоговая цена: ${currentOrder.price} + ${currentDeliveryPrice} + наш жирный процент \n\n`;
-        totalText += `Детали заказа:\n`;
-        totalText += `- Тип товара: ${translate(currentOrder.subType)}\n`;
-        totalText += `- Ссылка на товар: ${currentOrder.link}\n`;
-        totalText += `- Размер: ${currentOrder.size}\n`;
-        totalText += `- ФИО получателя: ${currentOrder.fio}\n`;
-        totalText += `- Адрес доставки: ${currentOrder.address}\n`;
+    let detailsText = `Детали заказа:\n`;
+        totalText  += `- Тип товара: ${translate(currentOrder.subType)}\n`;
+        totalText  += `- Ссылка на товар: ${currentOrder.link}\n`;
+        totalText  += `- Размер: ${currentOrder.size}\n`;
+        totalText  += `- ФИО получателя: ${currentOrder.fio}\n`;
+        totalText  += `- Адрес доставки: ${currentOrder.address}\n`;
 
-    ctx.reply(totalText, {
+    ctx.reply(totalText + detailsText, {
         reply_markup: regTotalMenu
     });
 
@@ -87,6 +87,8 @@ export async function registration(conversation, ctx) {
         let { from } = ctx;
 
         console.log(totalText, currentUser);
+
+        await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, detailsText);
 
         try {
             if(JSON.stringify(ctx.session.user) !== JSON.stringify(currentUser)) { // check data differenses
