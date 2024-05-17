@@ -70,7 +70,7 @@ export function generateOrdersMenu(orders, currentPage, maxPerMessage = limitsCo
         */
         let isOrdersEnd = false;
         const range = currentPage * maxPerMessage;
-        for(let i = range - maxPerMessage; i <= range; i++) {
+        for(let i = range - maxPerMessage; i < range; i++) {
             if(orders[i]?.dbId && !isOrdersEnd) {   
                 ordersMenu.text(`${translate(orders[i].subType)}`, `order__check_${orders[i].dbId}`).row();
             }
