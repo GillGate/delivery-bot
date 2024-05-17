@@ -66,12 +66,12 @@ export async function registration(conversation, ctx) {
     let currentDeliveryPrice = calculateDelivery(currentOrder.subType);
 
     let totalText =  `Итоговая цена: ${currentOrder.price} + ${currentDeliveryPrice} + наш жирный процент \n\n`;
-    let detailsText = `Детали заказа:\n`;
-        totalText  += `- Тип товара: ${translate(currentOrder.subType)}\n`;
-        totalText  += `- Ссылка на товар: ${currentOrder.link}\n`;
-        totalText  += `- Размер: ${currentOrder.size}\n`;
-        totalText  += `- ФИО получателя: ${currentOrder.fio}\n`;
-        totalText  += `- Адрес доставки: ${currentOrder.address}\n`;
+    let detailsText  = `Детали заказа:\n`;
+        detailsText += `- Тип товара: ${translate(currentOrder.subType)}\n`;
+        detailsText += `- Ссылка на товар: ${currentOrder.link}\n`;
+        detailsText += `- Размер: ${currentOrder.size}\n`;
+        detailsText += `- ФИО получателя: ${currentOrder.fio}\n`;
+        detailsText += `- Адрес доставки: ${currentOrder.address}\n`;
 
     ctx.reply(totalText + detailsText, {
         reply_markup: regTotalMenu
