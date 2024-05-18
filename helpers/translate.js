@@ -12,7 +12,7 @@ const terms = {
   down_jacket: "Пуховик",
   light_jacket: "Лёгкая куртка",
 
-  t_shirts_sweatshirts_shirts: "Футболки-Толстовки-Рубашки",
+  t_shirts_hoodie_shirts: "Футболки-Худи-Рубашки",
   t_shirt: "Футболка",
   sweater: "Джемпер",
   hoodie: "Худи",
