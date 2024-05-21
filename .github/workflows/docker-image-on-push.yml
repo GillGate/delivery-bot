@@ -34,8 +34,9 @@ jobs:
     - name: Determine version number
       id: determine_version
       run: |
-        VERSIONS=$((1 + 1))
-        echo "VERSIONS=${VERSIONS}.0 >> $GITHUB_ENV
+        CURRENT_BRANCH=$(git branch --show-current)
+        VERSION=$(($(git rev-list --count $CURRENT_BRANCH) + 1))
+        echo "VERSION=${VERSION}.0" >> $GITHUB_ENV
         
 
     - name: Build and Push Image
