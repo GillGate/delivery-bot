@@ -2,9 +2,9 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches: [ "Daniel-CI" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "Daniel-CI" ]
+    branches: [ "main" ]
 
 jobs:
 
