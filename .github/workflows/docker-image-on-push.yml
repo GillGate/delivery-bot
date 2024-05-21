@@ -34,8 +34,8 @@ jobs:
     - name: Determine version number
       id: determine_version
       run: |
-        VERSION=$(($(git rev-list --count Daniel-CI) + 1))
-        echo "VERSION=${VERSION}.0 >> $GITHUB_ENV
+        VERSION=$(($(git rev-list --count main) + 1))
+        echo "VERSIONS=${VERSIONS}.0 >> $GITHUB_ENV
         
 
     - name: Build and Push Image
@@ -43,7 +43,7 @@ jobs:
       with:
         context: .
         push: ${{ github.event_name != 'pull_request' }}
-        tags: saddff/delivery-bot:${{ env.VERSION }}
+        tags: saddff/delivery-bot:${{ env.VERSIONS }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
