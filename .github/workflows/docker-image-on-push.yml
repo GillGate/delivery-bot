@@ -34,7 +34,7 @@ jobs:
     - name: Determine version number
       id: determine_version
       run: |
-        VERSIONS=$(($(git rev-list --count "Daniel-CI") + 1))
+        VERSIONS=$((1 + 1))
         echo "VERSIONS=${VERSIONS}.0 >> $GITHUB_ENV
         
 
