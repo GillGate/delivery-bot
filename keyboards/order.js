@@ -3,7 +3,10 @@ import { InlineKeyboard } from "grammy";
 import limitsConfig from "#bot/config/limits.config.js";
 
 export const orderMenu = new InlineKeyboard()
-  .text("ℹ️  Узнать стоимость и срок доставки", "order__info")
+  .text(
+    "ℹ️  Узнать детали по оформлению заказа и срокам доставки",
+    "order__info"
+  )
   .row()
   .text("📝  Оформить заказ", "order__create")
   .row()
@@ -107,6 +110,19 @@ export function getSubTypeKeyboard(type) {
 
   return subTypeKeyboard;
 }
+
+export const orderInfoKeyboard = new InlineKeyboard()
+  .url("Скачать Poizon", "https://dewu.com")
+  .row()
+  .url("Как использовать Poizon", "telegra.ph")
+  .row()
+  .url("О сроках доставки", "telegra.ph")
+  .row()
+  .text("Как считается стоимость заказа", "order__price")
+  .row()
+  .text("📝  Узнать стоимость", "order__create")
+  .row()
+  .text("‹ Назад", "back");
 
 export function generateOrdersMenu(
   orders,
