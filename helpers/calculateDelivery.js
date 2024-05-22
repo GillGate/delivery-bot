@@ -8,12 +8,17 @@ const rubDeliberySDEK = 200; // TODO: ? depends on factWeight
 
 function getVolumWeight(type) {
     let { sizes } = type;
-    return ( (sizes[0] * sizes[1] * sizes[2]) / m3ToSm3 ) * rubPerKg3;
+    return ((sizes[0] * sizes[1] * sizes[2]) / m3ToSm3) * rubPerKg3;
 }
 
-export function calculateDelivery(type) { // DB Express
+export function calculateDelivery(type) {
+    // DB Express
     const currentType = pricingConfig[type];
     let volumWeight = getVolumWeight(currentType);
 
-    return ( currentType.factWeight * rubDBEperKg ) + ( ( volumWeight - currentType.factWeight ) * koefVolumWeight ) + rubDeliberySDEK ?? 0;
+    return (
+        currentType.factWeight * rubDBEperKg +
+            (volumWeight - currentType.factWeight) * koefVolumWeight +
+            rubDeliberySDEK ?? 0
+    );
 }
