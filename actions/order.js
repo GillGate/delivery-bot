@@ -12,7 +12,7 @@ import {
     selectCategoryKeyboard,
     orderInfoKeyboard,
 } from "#bot/keyboards/order.js";
-import { getUserOrders } from "#bot/plugins/firebase.api.js";
+import { getUserOrders } from "#bot/api/firebase.api.js";
 import { translate } from "#bot/helpers/translate.js";
 import limitsConfig from "#bot/config/limits.config.js";
 
