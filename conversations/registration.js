@@ -74,7 +74,7 @@ export async function registration(conversation, ctx) {
     totalText += `- Имя товара: ${currentOrder.name}\n`;
     totalText += `- Тип товара: ${translate(currentOrder.subType)}\n`;
     totalText += `- Ссылка на товар: ${currentOrder.link}\n`;
-    totalText += `- Доп. параметры: ${currentOrder.params}\n`;
+    totalText += `- Доп. параметры: ${currentOrder.params}\n\n`;
     totalText += `- ФИО получателя: ${currentOrder.fio}\n`;
     totalText += `- Адрес доставки: ${currentOrder.address}\n`;
 
