@@ -33,8 +33,10 @@ jobs:
     - name: Determine version number
       id: determine_version
       run: |
-        BUILD_DATE=$(date +%Y-%m-%d)
+        BUILD_DATE=$(date +%d-%m-%Y)
         echo "BUILD_DATE=$BUILD_DATE" >> $GITHUB_ENV
+        BUILD_NUMBER=$(git rev-parse --short HEAD)
+        echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
         
 
     - name: Create .env file
@@ -57,7 +59,7 @@ jobs:
       with:
         context: .
         load: true
-        tags: saddff/delivery-bot:${{ env.BUILD_DATE }}
+        tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
@@ -68,7 +70,7 @@ jobs:
         docker run -d -e TELEGRAM_TOKEN=${{ secrets.BOT_API_TOKEN }} \
         -e BUILD_DATE=${{ env.BUILD_DATE }} \
         --name delivery-bot-test \
-        saddff/delivery-bot:${{ env.BUILD_DATE }}
+        saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}
 
 
     - name: Wait for Container to be Ready
@@ -95,7 +97,7 @@ jobs:
       with:
         context: .
         push: ${{ github.event_name != 'pull_request' }}
-        tags: saddff/delivery-bot:${{ env.BUILD_DATE }}
+        tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}
         labels: ${{ steps.meta.outputs.labels }}
         
     - name: Logout from Docker
