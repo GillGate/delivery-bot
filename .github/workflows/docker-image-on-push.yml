@@ -50,7 +50,7 @@ jobs:
 
     - name: Create service account json file
       run: |
-        echo "${{ secrets.BOT_FIREBASE_SERVICE_ACCOUNT }} > serviceAccount.firestore.json
+        echo "${{ secrets.BOT_FIREBASE_SERVICE_ACCOUNT }}" > serviceAccount.firestore.json
         
 
     - name: Run Container
