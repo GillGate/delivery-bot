@@ -57,7 +57,7 @@ jobs:
       with:
         context: .
         push: false
-        tags: saddff/delivery-bot:latest
+        tags: saddff/delivery-bot:${{ env.BUILD_DATE }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
@@ -65,7 +65,7 @@ jobs:
 
     - name: Run Container
       run: |
-        docker run -d --name delivery-bot-test -e TELEGRAM_TOKEN=${{ secrets.BOT_API_TOKEN }} saddff/delivery-bot:latest
+        docker run -d --name delivery-bot-test -e TELEGRAM_TOKEN=${{ secrets.BOT_API_TOKEN }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BUILD_DATE }}
 
 
     - name: Wait for Container to be Ready
