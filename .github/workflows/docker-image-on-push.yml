@@ -1,7 +1,9 @@
 name: Build and Push Docker Image
 
 on:
-  workflow_dispatch
+  push:
+    branches:
+      - main
 
 jobs:
 
@@ -44,19 +46,11 @@ jobs:
       run: |
         echo "${{ secrets.BOT_FIREBASE_SERVICE_ACCOUNT }} > serviceAccount.firestore.json
         
-    - name: Build and Push Image
-      uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 
-      with:
-        context: .
-        push: ${{ github.event_name != 'pull_request' }}
-        tags: saddff/delivery-bot:${{ env.VERSION }}
-        labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
 
     - name: Run Container
       run: |
         docker run -d --name delivery-bot-test -e TELEGRAM_TOKEN=${{ secrets.BOT_API_TOKEN }} saddff/delivery-bot:${{ env.VERSION }}
+
 
     - name: Wait for Container to be Ready
       run: |
@@ -64,6 +58,7 @@ jobs:
         sleep 20
 
     - name: Test Telegram Bot
+      id: test_bot
       env:
         TELEGRAM_TOKEN: ${{ secrets.BOT_API_TOKEN }}
         CHAT_ID: ${{ secrets.TEST_CHAT_ID }}
@@ -74,6 +69,17 @@ jobs:
           echo "Bot did not respond correctly: $RESPONSE"
           exit 1
         fi
+
+    - name: Build and Push Image
+      uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 
+      if: success() && steps.test_bot.outcome == 'success'
+      with:
+        context: .
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: saddff/delivery-bot:${{ env.VERSION }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
         
     - name: Logout from Docker
       run: docker logout
