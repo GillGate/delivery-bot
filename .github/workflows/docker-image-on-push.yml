@@ -33,20 +33,8 @@ jobs:
     - name: Determine version number
       id: determine_version
       run: |
-        CURRENT_BRANCH=$(git branch --show-current)
-        VERSION=$(($(git rev-list --count $CURRENT_BRANCH) + 1))
-
-        MAJOR_VERSION=2
-          if [ $VERSION -gt 9 ]; then
-            MAJOR_VERSION=$(($VERSION / 10))
-            MINOR_VERSION=$(($VERSION % 10))
-          else
-            MINOR_VERSION=$VERSION
-          fi
-
-        echo "VERSION=${MAJOR_VERSION}.${MINOR_VERSION}" >> $GITHUB_ENV
-        BUILD_NUMBER=$(git rev-parse --short HEAD)
-        echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
+        BUILD_DATE=$(date +%Y-%m-%d)
+        echo "BUILD_DATE=$BUILD_DATE" >> $GITHUB_ENV
         
 
     - name: Create .env file
@@ -69,7 +57,7 @@ jobs:
       with:
         context: .
         push: false
-        tags: saddff/delivery-bot:${{ env.VERSION }}.${{ env.BUILD_NUMBER }}
+        tags: saddff/delivery-bot:${{ env.BUILD_DATE }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
@@ -77,7 +65,7 @@ jobs:
 
     - name: Run Container
       run: |
-        docker run -d --name delivery-bot-test -e TELEGRAM_TOKEN=${{ secrets.BOT_API_TOKEN }} saddff/delivery-bot:${{ env.VERSION }}.${{ env.BUILD_NUMBER }}
+        docker run -d --name delivery-bot-test -e TELEGRAM_TOKEN=${{ secrets.BOT_API_TOKEN }} saddff/delivery-bot:${{ env.BUILD_DATE }}
 
 
     - name: Wait for Container to be Ready
@@ -104,7 +92,7 @@ jobs:
       with:
         context: .
         push: ${{ github.event_name != 'pull_request' }}
-        tags: saddff/delivery-bot:${{ env.VERSION }}.${{ env.BUILD_NUMBER }}
+        tags: saddff/delivery-bot:${{ env.BUILD_DATE }}
         labels: ${{ steps.meta.outputs.labels }}
         
     - name: Logout from Docker
