@@ -53,6 +53,27 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
+
+    - name: Run Container
+      run: |
+        docker run -d --name delivery-bot-test -e TELEGRAM_TOKEN=${{ secrets.BOT_API_TOKEN }} saddff/delivery-bot:${{ env.VERSION }}
+
+    - name: Wait for Container to be Ready
+      run: |
+        echo "Waiting for bot to be ready..."
+        sleep 20
+
+    - name: Test Telegram Bot
+      env:
+        TELEGRAM_TOKEN: ${{ secrets.BOT_API_TOKEN }}
+        CHAT_ID: ${{ secrets.TEST_CHAT_ID }}
+      run: |
+        MESSAGE="Test message from CI"
+        RESPONSE=$(curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" -d chat_id=${CHAT_ID} -d text="${MESSAGE}")
+        if [[ "$RESPONSE" != *"\"ok\":true"* ]]; then
+          echo "Bot did not respond correctly: $RESPONSE"
+          exit 1
+        fi
         
     - name: Logout from Docker
       run: docker logout
