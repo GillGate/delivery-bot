@@ -65,11 +65,10 @@ jobs:
 
     - name: Run Container
       run: |
-        run: |
-          docker run -d -e TELEGRAM_TOKEN=${{ secrets.BOT_API_TOKEN }} \
-          -e BUILD_DATE=${{ env.BUILD_DATE }} \
-          --name delivery-bot-test \
-          saddff/delivery-bot:${{ env.BUILD_DATE }}
+        docker run -d -e TELEGRAM_TOKEN=${{ secrets.BOT_API_TOKEN }} \
+        -e BUILD_DATE=${{ env.BUILD_DATE }} \
+        --name delivery-bot-test \
+        saddff/delivery-bot:${{ env.BUILD_DATE }}
 
 
     - name: Wait for Container to be Ready
