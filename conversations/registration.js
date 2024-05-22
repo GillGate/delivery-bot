@@ -70,7 +70,7 @@ export async function registration(conversation, ctx) {
     currentOrder.status = "processing";
 
     let totalText = `Итоговая цена: ${currentOrder.price} руб. \n`;
-    totalText = `Стоимость товара: ${currentOrder.priceCNY} CNY \n\n`
+    totalText += `Стоимость товара: ${currentOrder.priceCNY} CNY \n\n`
     totalText += `Детали заказа:\n`;
     totalText += `- Имя товара: ${currentOrder.name}\n`;
     totalText += `- Тип товара: ${translate(currentOrder.subType)}\n`;
