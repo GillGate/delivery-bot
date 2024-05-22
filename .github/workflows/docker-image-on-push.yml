@@ -34,6 +34,16 @@ jobs:
         CURRENT_BRANCH=$(git branch --show-current)
         VERSION=$(($(git rev-list --count $CURRENT_BRANCH) + 1))
         echo "VERSION=${VERSION}.0" >> $GITHUB_ENV
+
+    - name: Create .env file
+      run: |
+        echo "BOT_FIREBASE_PROJECT_ID=${{ env.BOT_FIREBASE_PROJECT_ID }}" >> .env
+        echo "BOT_ORDERS_CHAT_ID=${{ env.BOT_ORDERS_CHAT_ID }}" >> .env
+        echo "BOT_API_TOKEN=${{ secrets.BOT_API_TOKEN }}" >> .env
+
+    - name: Create service account json file
+      run: |
+        echo "${{ secrets.BOT_FIREBASE_SERVICE_ACCOUNT }} > serviceAccount.firestore.json
         
     - name: Build and Push Image
       uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 
