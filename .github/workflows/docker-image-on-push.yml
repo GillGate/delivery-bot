@@ -35,7 +35,17 @@ jobs:
       run: |
         CURRENT_BRANCH=$(git branch --show-current)
         VERSION=$(($(git rev-list --count $CURRENT_BRANCH) + 1))
-        echo "VERSION=${VERSION}.0" >> $GITHUB_ENV
+
+        MAJOR_VERSION=2
+          if [ $VERSION -gt 9 ]; then
+            MAJOR_VERSION=$(($VERSION / 10))
+            MINOR_VERSION=$(($VERSION % 10))
+          else
+            MINOR_VERSION=$VERSION
+          fi
+
+        echo "VERSION=${MAJOR_VERSION}.${MINOR_VERSION}" >> $GITHUB_ENV
+        
 
     - name: Create .env file
       run: |
