@@ -45,6 +45,8 @@ jobs:
           fi
 
         echo "VERSION=${MAJOR_VERSION}.${MINOR_VERSION}" >> $GITHUB_ENV
+        BUILD_NUMBER=$(git rev-parse --short HEAD)
+        echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
         
 
     - name: Create .env file
@@ -67,12 +69,10 @@ jobs:
       with:
         context: .
         push: false
-        tags: saddff/delivery-bot:${{ env.VERSION }}
+        tags: saddff/delivery-bot:${{ env.VERSION }}.${{ env.BUILD_NUMBER }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
-        buildx-instance: default
-        push-to: type=gha
 
 
     - name: Run Container
@@ -104,7 +104,7 @@ jobs:
       with:
         context: .
         push: ${{ github.event_name != 'pull_request' }}
-        tags: saddff/delivery-bot:${{ env.VERSION }}
+        tags: saddff/delivery-bot:${{ env.VERSION }}.${{ env.BUILD_NUMBER }}
         labels: ${{ steps.meta.outputs.labels }}
         
     - name: Logout from Docker
