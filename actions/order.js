@@ -10,8 +10,9 @@ import {
     getSubTypeKeyboard,
     orderMenu,
     selectCategoryKeyboard,
+    orderInfoKeyboard,
 } from "#bot/keyboards/order.js";
-import { getUserOrders } from "#bot/api/firebase.api.js";
+import { getUserOrders } from "#bot/plugins/firebase.api.js";
 import { translate } from "#bot/helpers/translate.js";
 import limitsConfig from "#bot/config/limits.config.js";
 
@@ -94,7 +95,17 @@ order.callbackQuery(/order__nav_/, async (ctx) => {
 });
 
 order.callbackQuery("order__info", async (ctx) => {
-    await ctx.editMessageText("Какая-то информация", {
+    await ctx.editMessageText(
+        "Для последовательного ознакомления с площадкой Poizon и основными принципами нашей работы рекомендуем последовательно ознакомиться с каждым из трёх пунктов, представленных ниже.",
+        {
+            reply_markup: orderInfoKeyboard,
+        }
+    );
+    await ctx.answerCallbackQuery();
+});
+
+order.callbackQuery("order__price", async (ctx) => {
+    await ctx.editMessageText("С чего начинается цена...", {
         reply_markup: backKeyboard,
     });
     await ctx.answerCallbackQuery();
