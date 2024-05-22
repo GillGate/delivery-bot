@@ -6,22 +6,21 @@ export async function getOrderLink(conversation, ctx) {
     return await conversation.waitUntil(
         async (ctx) => {
             let orderInfo = ctx.message?.text;
-            if(!orderInfo) {
+            if (!orderInfo) {
                 return false;
             }
-            
+
             let orderInfoArray = orderInfo.split(" ");
             let indexLink = orderInfoArray.findIndex((str) => str.includes("https://dw4.co"));
 
-            if(indexLink === 0 ) {
+            if (indexLink === 0) {
                 ctx.session.order.link = orderInfo;
                 ctx.session.order.name = translate(ctx.session.order.subType);
 
                 return true;
-            }
-            else if (indexLink > 0) {
+            } else if (indexLink > 0) {
                 let orderName = orderInfoArray.slice(indexLink + 1, indexLink + 5).join(" ");
-                ctx.session.order.name = orderName.replace(/\W/g, " ").trim();
+                ctx.session.order.name = orderName.replace(/\W/g, " ").trim().replace(/\s+/g, " ");
                 ctx.session.order.link = orderInfoArray[indexLink];
 
                 return true;

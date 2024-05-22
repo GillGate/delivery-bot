@@ -14,8 +14,6 @@ export async function traceRoutes(ctx, next) {
             text: cbQMessage.text,
             reply_markup: cbQMessage.reply_markup,
         });
-
-        console.log(ctx.session.routeHistory);
     }
 
     await next();

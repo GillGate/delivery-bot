@@ -4,7 +4,7 @@ const rubPerKg3 = 167;
 const rubDBEperKg = 719;
 const koefVolumWeight = 190;
 const m3ToSm3 = 1000000;
-const rubDeliberySDEK = 200; // TODO: ? depends on factWeight
+const rubDeliverySDEK = 200; // TODO: ? depends on factWeight
 
 function getVolumWeight(type) {
     let { sizes } = type;
@@ -18,7 +18,7 @@ export function calculateDelivery(type) {
 
     return (
         currentType.factWeight * rubDBEperKg +
-            (volumWeight - currentType.factWeight) * koefVolumWeight +
-            rubDeliberySDEK ?? 0
+        (volumWeight - currentType.factWeight) * koefVolumWeight +
+        rubDeliverySDEK
     );
 }

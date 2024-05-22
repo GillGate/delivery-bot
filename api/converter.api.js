@@ -1,7 +1,9 @@
 import "dotenv/config";
 //TODO динамический подсчёт цены
-const deliveryPriceCDEK = 500;
-const convertationFee = 0.07;
+// const deliveryPriceCDEK = 500;
+const convertationFee = +process.env.BOT_CONVERSION_FEE;
+const wmFee = +process.env.BOT_WM_FEE;
+
 //TODO Найти аналог freecurrencyapi - в месяц 5000 запросов или сделать так, чтобы запросы были редкими(напр. раз в час совершается запрос)
 async function convertThroughUSD(amount, fromCurr, toCurr) {
     try {
@@ -27,6 +29,9 @@ async function convertThroughUSD(amount, fromCurr, toCurr) {
 }
 
 export async function convertedCNYWithFee(cnyAmount) {
-    let convertionRes = await convertThroughUSD(cnyAmount, "CNY", "RUB");
-    return convertionRes + convertionRes * convertationFee;
+    let currentSum = await convertThroughUSD(cnyAmount, "CNY", "RUB");
+    let currentConversionFee = currentSum * convertationFee;
+    let currentWMFee = currentSum * wmFee;
+
+    return currentSum + currentConversionFee + currentWMFee;
 }

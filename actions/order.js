@@ -62,11 +62,13 @@ order.callbackQuery(/order__check_/, async (ctx) => {
     console.log(order);
 
     let orderText = `Детали заказа:\n`;
+    orderText += `- Имя товара: ${translate(order.name)}\n`;
     orderText += `- Тип товара: ${translate(order.subType)}\n`;
     orderText += `- Ссылка на товар: ${order.link}\n`;
-    orderText += `- Размер: ${order.size}\n`;
+    orderText += `- Цена товара: ${order.price}\n`;
+    orderText += `- Доп. параметры: ${order.params}\n\n`;
     orderText += `- ФИО получателя: ${order.fio}\n`;
-    orderText += `- Адрес доставки: ${order.address}\n`;
+    orderText += `- Адрес доставки: ${order.address}\n\n`;
     orderText += `- Статус: ${translate(order.status)}`;
 
     await ctx.editMessageText(orderText, {
