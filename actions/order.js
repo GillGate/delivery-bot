@@ -68,10 +68,10 @@ order.callbackQuery(/order__check_/, async (ctx) => {
     orderText += `- Ссылка на товар: ${order.link}\n`;
     orderText += `- Доп. параметры: ${order.params}\n\n`;
 
-    orderText += `- ФИО получателя: ${order.fio}\n`;
-    orderText += `- Адрес доставки: ${order.address}\n\n`;
+    orderText += `ФИО получателя: ${order.fio}\n`;
+    orderText += `Адрес доставки: ${order.address}\n\n`;
 
-    orderText += `- Статус: ${translate(order.status)}`;
+    orderText += `Статус: ${translate(order.status)}`;
 
     await ctx.editMessageText(orderText, {
         reply_markup: backKeyboard,

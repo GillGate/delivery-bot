@@ -33,7 +33,7 @@ export async function getOrderPrice(conversation, ctx) {
                 );
 
                 let totalPrice = rubPrice + currentProfit + currentDeliveryPrice; 
-
+                ctx.session.order.priceCNY = ctx.message?.text;
                 ctx.session.order.price = Math.ceil(totalPrice); // по божески
                 // TODO: better UX improvemnt 10000 -> 10 000  
                 return true;
