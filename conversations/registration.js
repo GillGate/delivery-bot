@@ -55,12 +55,11 @@ export async function registration(conversation, ctx) {
         let getAddressText = `Ваш текущий адрес: ${currentUser.address} \n\n`;
         getAddressText += `Вы можете оставить его по кнопке ниже или ввести новый:`;
 
-        if(conversation.ctx.session?.temp?.keepFio) {
+        if (conversation.ctx.session?.temp?.keepFio) {
             conversation.ctx.editMessageText(getAddressText, {
                 reply_markup: regAddressMenu,
             });
-        }
-        else {
+        } else {
             ctx.reply(getAddressText, {
                 reply_markup: regAddressMenu,
             });
@@ -89,12 +88,11 @@ export async function registration(conversation, ctx) {
     totalText += `${getEmoji("fio")}  ФИО получателя: ${currentOrder.fio}\n`;
     totalText += `${getEmoji("address")} Адрес доставки: ${currentOrder.address}\n`;
 
-    if(conversation.ctx.session.temp?.keepAddress) {
+    if (conversation.ctx.session.temp?.keepAddress) {
         conversation.ctx.editMessageText(totalText, {
             reply_markup: regTotalMenu,
         });
-    }
-    else {
+    } else {
         ctx.reply(totalText, {
             reply_markup: regTotalMenu,
         });
@@ -111,12 +109,26 @@ export async function registration(conversation, ctx) {
 
     if (regResponse.match === "reg__confirm") {
         let { from } = ctx;
-
+        //Добавить в условие обращение к базе и если там тоже нет выполнять услвоие
+        if (from.username === (null || undefined)) {
+            conversation.ctx.editMessageText(
+                "Пожалуйста, напишите ваш username или номер телефона чтобы наш менеджер мог с вами связаться"
+            );
+            const altUsername = await conversation.waitFor("message:text", {
+                otherwise: async (ctx) => {
+                    await ctx.reply(
+                        "Вы уверены, что хотите уйти, не оставив контакт для связи с вами? Ваш заказ будет утерян\nЕсли вы передумали, напишите контакты для связи",
+                        { reply_markup: backMainMenu }
+                    );
+                    const altUsername = await conversation.waitFor("message:text", {
+                        otherwise: () => {
+                            return;
+                        },
+                    });
+                },
+            });
+        }
         console.log(totalText, currentUser);
-
-        await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, totalText, {
-            message_thread_id: process.env.BOT_CHAT_TOPIC_ORDERS,
-        });
 
         try {
             if (JSON.stringify(ctx.session.user) !== JSON.stringify(currentUser)) {
@@ -125,7 +137,7 @@ export async function registration(conversation, ctx) {
                     fio: currentUser.fio,
                     address: currentUser.address,
                     isNewbie: currentUser.isNewbie,
-                    username: from?.username ?? "",
+                    username: from?.username ?? altUsername,
                 });
 
                 console.log("userData changed", currentUser);
@@ -135,6 +147,13 @@ export async function registration(conversation, ctx) {
         } catch (e) {
             console.error(e);
         }
+
+        let textForManager = `${totalText}\n\n`;
+        textForManager += `Contact: ${from?.username ?? altUsername}`;
+
+        await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, textForManager, {
+            message_thread_id: process.env.BOT_CHAT_TOPIC_ORDERS,
+        });
 
         conversation.ctx.editMessageText("Когда-нибудь ваш заказ будет действительно обработан", {
             reply_markup: backMainMenu,
