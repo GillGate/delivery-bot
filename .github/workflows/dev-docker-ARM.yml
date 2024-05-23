@@ -1,6 +1,7 @@
 name: Build Test and Push ARM/64 Docker Image
 
-on: workflow_dispatch:
+on: 
+  workflow_dispatch:
     inputs:
       logLevel:
         description: 'Log level'
