@@ -13,6 +13,10 @@ export async function getUserInfo(userId) {
     return await db.collection("users").doc(`${userId}`).get();
 }
 
+export async function updateUserInfo(userId, info) {
+    return await db.collection("users").doc(`${userId}`).update(info);
+}
+
 export async function addUserOrder(userId, order) {
     return await db.collection("users").doc(`${userId}`).collection("orders").add(order);
 }

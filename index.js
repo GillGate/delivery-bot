@@ -3,13 +3,14 @@ import { Bot, GrammyError, HttpError, session } from "grammy";
 import { adapter } from "@grammyjs/storage-firestore";
 import { hydrate } from "@grammyjs/hydrate";
 import { order } from "#bot/actions/order.js";
-import { mainMenu } from "#bot/keyboards/general.js";
+import { getMainMenu, helpKeyboard } from "#bot/keyboards/general.js";
 import { db, getUserInfo } from "#bot/api/firebase.api.js";
 
 const initSessionData = {
     user: {
         fio: "",
         address: "",
+        isNewbie: true
     },
     routeHistory: [],
     order: {
@@ -48,22 +49,23 @@ async function sendStartMessage(ctx, errorMode = false) {
     helloText += `Я Kul2Bot и я могу помочь тебе сделать заказ оригинальных вещей с Poizon, а также подсказать, что именно заказать, исходя из модных тенденций о которых пишет наш журнал.\n\n`;
     helloText += `Что тебя интересует? 🫡`;
 
-    await ctx.reply(helloText, {
-        reply_markup: mainMenu,
-    });
-
     let user = ctx.session.user;
     if (user.fio === "" || user.address === "") {
         try {
             let userInfo = await getUserInfo(ctx.from.id);
 
             if (userInfo.exists) {
-                ctx.session.user = userInfo.data();
+                user = userInfo.data();
+                ctx.session.user = user;
             }
         } catch (e) {
             console.error(e);
         }
     }
+
+    await ctx.reply(helloText, {
+        reply_markup: getMainMenu(user.isNewbie),
+    });
 
     console.log("session", ctx.session);
 
@@ -79,9 +81,22 @@ bot.callbackQuery("back", async (ctx) => {
     await ctx.session.routeHistory.pop(); // фальшивка ёбанная
     const routeParams = await ctx.session.routeHistory.pop();
 
+    // Bug: when back in main menu user data don't updates
+
     await ctx.editMessageText(routeParams.text, {
         reply_markup: routeParams.reply_markup,
+        parse_mode: "HTML",
     });
+    await ctx.answerCallbackQuery();
+});
+
+bot.callbackQuery("help", async (ctx) => {
+    await ctx.editMessageText(
+        "Для последовательного ознакомления с площадкой Poizon и основными принципами нашей работы рекомендуем последовательно ознакомиться с каждым из трёх пунктов, представленных ниже.",
+        {
+            reply_markup: helpKeyboard,
+        }
+    );
     await ctx.answerCallbackQuery();
 });
 

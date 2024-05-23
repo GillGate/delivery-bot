@@ -8,13 +8,13 @@ import {
     checkMenu,
     generateOrdersMenu,
     getSubTypeKeyboard,
-    orderMenu,
+    orderMenuBeforeCreate,
     selectCategoryKeyboard,
-    orderInfoKeyboard,
 } from "#bot/keyboards/order.js";
-import { getUserOrders } from "#bot/api/firebase.api.js";
+import { getUserOrders, updateUserInfo } from "#bot/api/firebase.api.js";
 import { translate } from "#bot/helpers/translate.js";
 import limitsConfig from "#bot/config/limits.config.js";
+import linksConfig from "#bot/config/links.config.js";
 
 export const order = new Composer();
 order.use(hydrate()); // edit message works in conversation?
@@ -23,10 +23,55 @@ order.use(conversations());
 order.use(createConversation(registration));
 
 order.callbackQuery("order__make", async (ctx) => {
-    await ctx.editMessageText("Информация о приобритении и доставке товара", {
-        reply_markup: orderMenu,
+    let orderText = `Перед оформлением заказа настоятельно рекомендуем ознакомиться с <a href="${linksConfig.guide}">гайдом</a> пользования площадки POIZON, а также с правилом нашей доставки! 🚸`;
+
+    await ctx.editMessageText(orderText, {
+        reply_markup: orderMenuBeforeCreate,
+        parse_mode: "HTML",
+        link_preview_options: {
+            is_disabled: true,
+            prefer_small_media: true,
+        }
     });
     await ctx.answerCallbackQuery();
+});
+
+order.callbackQuery(/order__create/, async (ctx) => {
+    let mode = ctx.callbackQuery.data.split("__create_")[1] ?? "keep";
+
+    if(mode === "skip") {
+        ctx.session.user.isNewbie = false;
+        updateUserInfo(ctx.from.id, {
+            isNewbie: false
+        });
+    }
+
+    await ctx.editMessageText("Выберите категорию товара:", {
+        reply_markup: selectCategoryKeyboard,
+    });
+    await ctx.answerCallbackQuery();
+});
+
+order.callbackQuery(/order__select_/, async (ctx) => {
+    let currentType = ctx.callbackQuery.data.split("__select_")[1];
+    ctx.session.order.type = currentType;
+
+    await ctx.editMessageText("Выберите подкатегорию:", {
+        reply_markup: getSubTypeKeyboard(currentType),
+    });
+    await ctx.answerCallbackQuery();
+});
+
+order.callbackQuery(/order__pick_/, async (ctx) => {
+    let currentSubType = ctx.callbackQuery.data.split("__pick_")[1];
+    ctx.session.order.subType = currentSubType;
+
+    await ctx.editMessageText("Введите ссылку на товар", {
+        reply_markup: backMainMenu,
+    });
+    await ctx.answerCallbackQuery();
+
+    await ctx.conversation.enter("registration");
 });
 
 let maxPages;
@@ -66,7 +111,7 @@ order.callbackQuery(/order__check_/, async (ctx) => {
     orderText += `- Тип товара: ${translate(order.subType)}\n`;
     orderText += `- Цена товара: ${order.price} руб.\n`;
     orderText += `- Ссылка на товар: ${order.link}\n`;
-    orderText += `- Доп. параметры: ${order.params}\n\n`;
+    orderText += `- Доп\. параметры: ${order.params}\n\n`;
 
     orderText += `ФИО получателя: ${order.fio}\n`;
     orderText += `Адрес доставки: ${order.address}\n\n`;
@@ -98,48 +143,9 @@ order.callbackQuery(/order__nav_/, async (ctx) => {
     await ctx.answerCallbackQuery();
 });
 
-order.callbackQuery("order__info", async (ctx) => {
-    await ctx.editMessageText(
-        "Для последовательного ознакомления с площадкой Poizon и основными принципами нашей работы рекомендуем последовательно ознакомиться с каждым из трёх пунктов, представленных ниже.",
-        {
-            reply_markup: orderInfoKeyboard,
-        }
-    );
-    await ctx.answerCallbackQuery();
-});
-
 order.callbackQuery("order__price", async (ctx) => {
     await ctx.editMessageText("С чего начинается цена...", {
         reply_markup: backKeyboard,
     });
     await ctx.answerCallbackQuery();
-});
-
-order.callbackQuery("order__create", async (ctx) => {
-    await ctx.editMessageText("Выберите категорию товара:", {
-        reply_markup: selectCategoryKeyboard,
-    });
-    await ctx.answerCallbackQuery();
-});
-
-order.callbackQuery(/order__select_/, async (ctx) => {
-    let currentType = ctx.callbackQuery.data.split("__select_")[1];
-    ctx.session.order.type = currentType;
-
-    await ctx.editMessageText("Выберите подкатегорию:", {
-        reply_markup: getSubTypeKeyboard(currentType),
-    });
-    await ctx.answerCallbackQuery();
-});
-
-order.callbackQuery(/order__pick_/, async (ctx) => {
-    let currentSubType = ctx.callbackQuery.data.split("__pick_")[1];
-    ctx.session.order.subType = currentSubType;
-
-    await ctx.editMessageText("Введите ссылку на товар", {
-        reply_markup: backMainMenu,
-    });
-    await ctx.answerCallbackQuery();
-
-    await ctx.conversation.enter("registration");
 });

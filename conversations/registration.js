@@ -12,6 +12,7 @@ import { getOrderPrice } from "#bot/conversations/helpers/getOrderPrice.js";
 import { getOrderFio } from "#bot/conversations/helpers/getOrderFio.js";
 import { getOrderAddress } from "#bot/conversations/helpers/getOrderAddress.js";
 import { translate } from "#bot/helpers/translate.js";
+import { getEmoji } from "#bot/helpers/getEmoji.js";
 
 export async function registration(conversation, ctx) {
     let currentOrder = conversation.ctx.session.order;
@@ -73,7 +74,7 @@ export async function registration(conversation, ctx) {
     totalText += `Стоимость товара: ${currentOrder.priceCNY} CNY \n\n`
     totalText += `Детали заказа:\n`;
     totalText += `- Имя товара: ${currentOrder.name}\n`;
-    totalText += `- Тип товара: ${translate(currentOrder.subType)}\n`;
+    totalText += `- Тип товара: ${getEmoji(currentOrder.subType)}  ${translate(currentOrder.subType)}\n`;
     totalText += `- Ссылка на товар: ${currentOrder.link}\n`;
     totalText += `- Доп. параметры: ${currentOrder.params}\n\n`;
     totalText += `ФИО получателя: ${currentOrder.fio}\n`;
