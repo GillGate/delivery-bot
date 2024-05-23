@@ -1,22 +1,22 @@
 import { addUserOrder, setUserInfo } from "#bot/api/firebase.api.js";
 import { backMainMenu } from "#bot/keyboards/general.js";
-import {
-    regFioMenu,
-    regAddressMenu,
-    regTotalMenu,
-    regParamsMenu,
-} from "#bot/keyboards/registration.js";
+import { regFioMenu, regAddressMenu, regTotalMenu, regParamsMenu } from "#bot/keyboards/registration.js";
 import { getOrderLink } from "#bot/conversations/helpers/getOrderLink.js";
 import { getOrderParams } from "#bot/conversations/helpers/getOrderParams.js";
 import { getOrderPrice } from "#bot/conversations/helpers/getOrderPrice.js";
 import { getOrderFio } from "#bot/conversations/helpers/getOrderFio.js";
 import { getOrderAddress } from "#bot/conversations/helpers/getOrderAddress.js";
+import { unlessActions } from "#bot/conversations/helpers/unlessActions.js";
 import { translate } from "#bot/helpers/translate.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 
 export async function registration(conversation, ctx) {
     let currentOrder = conversation.ctx.session.order;
     let currentUser = conversation.ctx.session.user;
+
+    await conversation.ctx.editMessageText("Введите ссылку на товар", {
+        reply_markup: backMainMenu,
+    });
 
     await getOrderLink(conversation, ctx);
 
@@ -55,9 +55,16 @@ export async function registration(conversation, ctx) {
         let getAddressText = `Ваш текущий адрес: ${currentUser.address} \n\n`;
         getAddressText += `Вы можете оставить его по кнопке ниже или ввести новый:`;
 
-        ctx.reply(getAddressText, {
-            reply_markup: regAddressMenu,
-        });
+        if(conversation.ctx.session?.temp?.keepFio) {
+            conversation.ctx.editMessageText(getAddressText, {
+                reply_markup: regAddressMenu,
+            });
+        }
+        else {
+            ctx.reply(getAddressText, {
+                reply_markup: regAddressMenu,
+            });
+        }
     } else {
         ctx.reply("Укажите адрес где планируете забирать товар:", {
             reply_markup: backMainMenu,
@@ -71,7 +78,7 @@ export async function registration(conversation, ctx) {
     currentOrder.status = "processing";
 
     let totalText = `Итоговая цена: ${currentOrder.price} ₽ \n`;
-    totalText += `Стоимость товара: ${currentOrder.priceCNY} ￥ \n\n`
+    totalText += `Стоимость товара: ${currentOrder.priceCNY} ￥ \n\n`;
 
     totalText += `Детали заказа:\n`;
     totalText += `- Имя товара: ${currentOrder.name}\n`;
@@ -82,14 +89,23 @@ export async function registration(conversation, ctx) {
     totalText += `${getEmoji("fio")}  ФИО получателя: ${currentOrder.fio}\n`;
     totalText += `${getEmoji("address")} Адрес доставки: ${currentOrder.address}\n`;
 
-    ctx.reply(totalText, {
-        reply_markup: regTotalMenu,
-    });
+    if(conversation.ctx.session.temp?.keepAddress) {
+        conversation.ctx.editMessageText(totalText, {
+            reply_markup: regTotalMenu,
+        });
+    }
+    else {
+        ctx.reply(totalText, {
+            reply_markup: regTotalMenu,
+        });
+    }
 
     const regResponse = await conversation.waitForCallbackQuery("reg__confirm", {
         otherwise: (ctx) =>
-            ctx.reply("Вам следует подтвердить заказ или вернуться в главное меню", {
-                reply_markup: regTotalMenu,
+            unlessActions(ctx, () => {
+                ctx.reply("Вам следует подтвердить заказ или вернуться в главное меню", {
+                    reply_markup: regTotalMenu,
+                });
             }),
     });
 
@@ -98,9 +114,9 @@ export async function registration(conversation, ctx) {
 
         console.log(totalText, currentUser);
 
-        // let forManagerText = totalText + 'tg id tg username' TODO: add info for manager
-
-        await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, totalText);
+        await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, totalText, {
+            message_thread_id: process.env.BOT_CHAT_TOPIC_ORDERS,
+        });
 
         try {
             if (JSON.stringify(ctx.session.user) !== JSON.stringify(currentUser)) {

@@ -13,6 +13,8 @@ export function getMainMenu(isNewbie = true) {
     mainMenu
         .text("🔎  Проверить заказы", "order__check")
         .row()
+        .text("🧮  Расчитать стоимость", "order__create_calc")
+        .row()
         .text("ℹ️  Помощь", "help");
 
     return mainMenu;

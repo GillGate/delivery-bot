@@ -36,7 +36,7 @@ export const selectCategoryKeyboard = new InlineKeyboard()
     .row()
     .text(`${getEmoji("accessories")}  ${translate("accessories")}`, "order__select_accessories")
     .row()
-    .text("‹ Назад", "back");
+    .text("‹ Назад", "main_menu");
 
 export function getSubTypeKeyboard(type) {
     let subTypeKeyboard = new InlineKeyboard();

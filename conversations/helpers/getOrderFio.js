@@ -9,7 +9,8 @@ export async function getOrderFio(conversation, ctx) {
         async (ctx) => {
             if (ctx?.callbackQuery?.data === "reg__keep_fio") {
                 ctx.answerCallbackQuery();
-                ctx.api.deleteMessage(ctx.from.id, ctx.callbackQuery.message.message_id);
+                // ctx.api.deleteMessage(ctx.from.id, ctx.callbackQuery.message.message_id);
+                ctx.session.temp.keepFio = true;
                 return true;
             }
 

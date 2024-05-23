@@ -3,7 +3,8 @@ import { conversations, createConversation } from "@grammyjs/conversations";
 import { hydrate } from "@grammyjs/hydrate";
 import { traceRoutes } from "#bot/middleware/route.js";
 import { registration } from "#bot/conversations/registration.js";
-import { backKeyboard, backMainMenu } from "#bot/keyboards/general.js";
+import { calculate } from "#bot/conversations/calculate.js";
+import { backKeyboard } from "#bot/keyboards/general.js";
 import {
     checkMenu,
     generateOrdersMenu,
@@ -18,10 +19,11 @@ import linksConfig from "#bot/config/links.config.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 
 export const order = new Composer();
-order.use(hydrate()); // edit message works in conversation?
+order.use(hydrate());
 order.use(traceRoutes);
 order.use(conversations());
 order.use(createConversation(registration));
+order.use(createConversation(calculate));
 
 order.callbackQuery("order__make", async (ctx) => {
     let orderText = `Перед оформлением заказа настоятельно рекомендуем ознакомиться с <a href="${linksConfig.guide}">гайдом</a> пользования площадки POIZON, а также с правилом нашей доставки! 🚸`;
@@ -46,6 +48,9 @@ order.callbackQuery(/order__create/, async (ctx) => {
             isNewbie: false
         });
     }
+    if(mode === "calc") {
+        ctx.session.temp.calcMode = true;
+    }
 
     await ctx.editMessageText("Выберите категорию товара:", {
         reply_markup: selectCategoryKeyboard,
@@ -67,12 +72,14 @@ order.callbackQuery(/order__pick_/, async (ctx) => {
     let currentSubType = ctx.callbackQuery.data.split("__pick_")[1];
     ctx.session.order.subType = currentSubType;
 
-    await ctx.editMessageText("Введите ссылку на товар", {
-        reply_markup: backMainMenu,
-    });
     await ctx.answerCallbackQuery();
 
-    await ctx.conversation.enter("registration");
+    if(ctx.session.temp?.calcMode) {
+        await ctx.conversation.enter("calculate");
+    }
+    else {
+        await ctx.conversation.enter("registration");
+    }
 });
 
 let maxPages;
@@ -149,3 +156,9 @@ order.callbackQuery("order__price", async (ctx) => {
     });
     await ctx.answerCallbackQuery();
 });
+
+// order.callbackQuery("order__calc", async (ctx) => {
+//     await ctx.answerCallbackQuery();
+
+//     await ctx.conversation.enter("calculate");
+// })

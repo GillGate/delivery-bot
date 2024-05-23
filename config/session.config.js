@@ -13,4 +13,5 @@ export default {
         params: "",
         price: "",
     },
+    temp: {}
 }
