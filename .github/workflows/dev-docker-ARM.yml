@@ -1,8 +1,9 @@
 name: Build Test and Push ARM/64 Docker Image
 
 on:
-  repository_dispatch:
-    types: [trigger-workflow]
+  push:
+    branches:
+      - dev
   
 
 jobs:
@@ -105,7 +106,7 @@ jobs:
         context: .
         platforms: linux/arm64
         push: ${{ github.event_name != 'pull_request' }}
-        tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev
+        tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev.arm
         labels: ${{ steps.meta.outputs.labels }}
         
     - name: Logout from Docker
