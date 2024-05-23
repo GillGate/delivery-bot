@@ -3,30 +3,15 @@ import { Bot, GrammyError, HttpError, session } from "grammy";
 import { adapter } from "@grammyjs/storage-firestore";
 import { hydrate } from "@grammyjs/hydrate";
 import { order } from "#bot/actions/order.js";
-import { getMainMenu, helpKeyboard } from "#bot/keyboards/general.js";
-import { db, getUserInfo } from "#bot/api/firebase.api.js";
-
-const initSessionData = {
-    user: {
-        fio: "",
-        address: "",
-        isNewbie: true
-    },
-    routeHistory: [],
-    order: {
-        type: "",
-        subType: "",
-        name: "",
-        link: "",
-        params: "",
-        price: "",
-    },
-};
+import { helpKeyboard } from "#bot/keyboards/general.js";
+import { db } from "#bot/api/firebase.api.js";
+import sessionConfig from "#bot/config/session.config.js";
+import sendStartMessage from "#bot/helpers/sendStartMessage.js";
 
 const bot = new Bot(process.env.BOT_API_TOKEN);
 bot.use(
     session({
-        initial: () => structuredClone(initSessionData),
+        initial: () => structuredClone(sessionConfig),
         // storage: adapter(db.collection("sessions")),
     })
 );
@@ -40,48 +25,12 @@ bot.api.setMyCommands([
     },
 ]);
 
-async function sendStartMessage(ctx, errorMode = false) {
-    ctx.session.routeHistory = [];
-    ctx.session.order = structuredClone(initSessionData.order);
-    ctx.session.conversation = {};
-
-    let helloText = `Привет 🚸\n\n`;
-    helloText += `Я Kul2Bot и я могу помочь тебе сделать заказ оригинальных вещей с Poizon, а также подсказать, что именно заказать, исходя из модных тенденций о которых пишет наш журнал.\n\n`;
-    helloText += `Что тебя интересует? 🫡`;
-
-    let user = ctx.session.user;
-    if (user.fio === "" || user.address === "") {
-        try {
-            let userInfo = await getUserInfo(ctx.from.id);
-
-            if (userInfo.exists) {
-                user = userInfo.data();
-                ctx.session.user = user;
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    }
-
-    await ctx.reply(helloText, {
-        reply_markup: getMainMenu(user.isNewbie),
-    });
-
-    console.log("session", ctx.session);
-
-    if (ctx?.callbackQuery && !errorMode) {
-        await ctx.answerCallbackQuery();
-    }
-}
-
-bot.command("start", async (ctx) => await sendStartMessage(ctx));
+bot.command("start", async (ctx) => await sendStartMessage(ctx, true));
 bot.callbackQuery("main_menu", async (ctx) => await sendStartMessage(ctx));
 
 bot.callbackQuery("back", async (ctx) => {
     await ctx.session.routeHistory.pop(); // фальшивка ёбанная
     const routeParams = await ctx.session.routeHistory.pop();
-
-    // Bug: when back in main menu user data don't updates
 
     await ctx.editMessageText(routeParams.text, {
         reply_markup: routeParams.reply_markup,

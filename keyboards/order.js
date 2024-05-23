@@ -53,13 +53,22 @@ export function getSubTypeKeyboard(type) {
             break;
         case "outerwear":
             subTypeKeyboard
-                .text(`${getEmoji("windbreaker")}  ${translate("windbreaker")}`, "order__pick_windbreaker")
+                .text(
+                    `${getEmoji("windbreaker")}  ${translate("windbreaker")}`,
+                    "order__pick_windbreaker"
+                )
                 .text(`${getEmoji("overcoat")}  ${translate("overcoat")}`, "order__pick_overcoat")
                 .row()
                 .text(`${getEmoji("coat")}  ${translate("coat")}`, "order__pick_coat")
                 .row()
-                .text(`${getEmoji("down_jacket")}  ${translate("down_jacket")}`, "order__pick_down_jacket")
-                .text(`${getEmoji("light_jacket")}  ${translate("light_jacket")}`, "order__pick_light_jacket")
+                .text(
+                    `${getEmoji("down_jacket")}  ${translate("down_jacket")}`,
+                    "order__pick_down_jacket"
+                )
+                .text(
+                    `${getEmoji("light_jacket")}  ${translate("light_jacket")}`,
+                    "order__pick_light_jacket"
+                )
                 .row()
                 .text("‹ Назад", "back");
             break;
@@ -69,7 +78,10 @@ export function getSubTypeKeyboard(type) {
                 .text(`${getEmoji("sweater")}  ${translate("sweater")}`, "order__pick_sweater")
                 .row()
                 .text(`${getEmoji("hoodie")}  ${translate("hoodie")}`, "order__pick_hoodie")
-                .text(`${getEmoji("turtleneck")}  ${translate("turtleneck")}`, "order__pick_turtleneck")
+                .text(
+                    `${getEmoji("turtleneck")}  ${translate("turtleneck")}`,
+                    "order__pick_turtleneck"
+                )
                 .row()
                 .text(`${getEmoji("shirt")}  ${translate("shirt")}`, "order__pick_shirt")
                 .row()
@@ -87,8 +99,14 @@ export function getSubTypeKeyboard(type) {
             break;
         case "bags_backpacks":
             subTypeKeyboard
-                .text(`${getEmoji("fanny_pack")}  ${translate("fanny_pack")}`, "order__pick_fanny_pack")
-                .text(`${getEmoji("travel_bag")}  ${translate("travel_bag")}`, "order__pick_travel_bag")
+                .text(
+                    `${getEmoji("fanny_pack")}  ${translate("fanny_pack")}`,
+                    "order__pick_fanny_pack"
+                )
+                .text(
+                    `${getEmoji("travel_bag")}  ${translate("travel_bag")}`,
+                    "order__pick_travel_bag"
+                )
                 .row()
                 .text(`${getEmoji("backpack")}  ${translate("backpack")}`, "order__pick_backpack")
                 .text(`${getEmoji("satchel")}  ${translate("satchel")}`, "order__pick_satchel")
@@ -131,7 +149,12 @@ export function generateOrdersMenu(
         }
 
         for (let i = 0; i < range; i++) {
-            ordersMenu.text(`${getEmoji(orders[i].subType)}  ${translate(orders[i].name)}`, `order__check_${orders[i].dbId}`).row();
+            ordersMenu
+                .text(
+                    `${getEmoji(orders[i].subType)}  ${translate(orders[i].name)}`,
+                    `order__check_${orders[i].dbId}`
+                )
+                .row();
         }
 
         ordersMenu.text("‹ Назад", "main_menu");
@@ -150,7 +173,10 @@ export function generateOrdersMenu(
         for (let i = range - maxPerMessage; i <= range; i++) {
             if (orders[i]?.dbId && !isOrdersEnd) {
                 ordersMenu
-                    .text(`${getEmoji(orders[i].subType)}  ${translate(orders[i].name)}`, `order__check_${orders[i].dbId}`)
+                    .text(
+                        `${getEmoji(orders[i].subType)}  ${translate(orders[i].name)}`,
+                        `order__check_${orders[i].dbId}`
+                    )
                     .row();
             } else {
                 isOrdersEnd = true;

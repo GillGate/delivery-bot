@@ -41,6 +41,10 @@ const emotes = {
 
     // #Статусы
     processing: "🔄",
+
+    // #Пользователь
+    fio: "🪪",
+    address: "🌍",
 };
 
 export function getEmoji(name) {

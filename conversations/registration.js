@@ -70,15 +70,17 @@ export async function registration(conversation, ctx) {
     currentOrder.address = currentUser.address;
     currentOrder.status = "processing";
 
-    let totalText = `Итоговая цена: ${currentOrder.price} руб. \n`;
-    totalText += `Стоимость товара: ${currentOrder.priceCNY} CNY \n\n`
+    let totalText = `Итоговая цена: ${currentOrder.price} ₽ \n`;
+    totalText += `Стоимость товара: ${currentOrder.priceCNY} ￥ \n\n`
+
     totalText += `Детали заказа:\n`;
     totalText += `- Имя товара: ${currentOrder.name}\n`;
     totalText += `- Тип товара: ${getEmoji(currentOrder.subType)}  ${translate(currentOrder.subType)}\n`;
     totalText += `- Ссылка на товар: ${currentOrder.link}\n`;
     totalText += `- Доп. параметры: ${currentOrder.params}\n\n`;
-    totalText += `ФИО получателя: ${currentOrder.fio}\n`;
-    totalText += `Адрес доставки: ${currentOrder.address}\n`;
+
+    totalText += `${getEmoji("fio")}  ФИО получателя: ${currentOrder.fio}\n`;
+    totalText += `${getEmoji("address")} Адрес доставки: ${currentOrder.address}\n`;
 
     ctx.reply(totalText, {
         reply_markup: regTotalMenu,
@@ -106,6 +108,7 @@ export async function registration(conversation, ctx) {
                 await setUserInfo(from.id, {
                     fio: currentUser.fio,
                     address: currentUser.address,
+                    isNewbie: currentUser.isNewbie,
                     username: from?.username ?? "",
                 });
 

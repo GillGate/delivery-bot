@@ -15,6 +15,7 @@ import { getUserOrders, updateUserInfo } from "#bot/api/firebase.api.js";
 import { translate } from "#bot/helpers/translate.js";
 import limitsConfig from "#bot/config/limits.config.js";
 import linksConfig from "#bot/config/links.config.js";
+import { getEmoji } from "#bot/helpers/getEmoji.js";
 
 export const order = new Composer();
 order.use(hydrate()); // edit message works in conversation?
@@ -108,15 +109,15 @@ order.callbackQuery(/order__check_/, async (ctx) => {
 
     let orderText = `Детали заказа:\n`;
     orderText += `- Имя товара: ${translate(order.name)}\n`;
-    orderText += `- Тип товара: ${translate(order.subType)}\n`;
-    orderText += `- Цена товара: ${order.price} руб.\n`;
+    orderText += `- Тип товара: ${getEmoji(order.subType)}  ${translate(order.subType)}\n`;
+    orderText += `- Цена товара: ${order.price} ₽\n`;
     orderText += `- Ссылка на товар: ${order.link}\n`;
-    orderText += `- Доп\. параметры: ${order.params}\n\n`;
+    orderText += `- Доп. параметры: ${order.params}\n\n`;
 
-    orderText += `ФИО получателя: ${order.fio}\n`;
-    orderText += `Адрес доставки: ${order.address}\n\n`;
+    orderText += `${getEmoji("fio")}  ФИО получателя: ${order.fio}\n`;
+    orderText += `${getEmoji("address")}  Адрес доставки: ${order.address}\n\n`;
 
-    orderText += `Статус: ${translate(order.status)}`;
+    orderText += `Статус: ${getEmoji(order.status)}  ${translate(order.status)}`;
 
     await ctx.editMessageText(orderText, {
         reply_markup: backKeyboard,
@@ -133,12 +134,11 @@ order.callbackQuery(/order__nav_/, async (ctx) => {
     }
 
     let orders = ctx.session.orders;
-    let ordersMenu = generateOrdersMenu(orders, ctx.session.currentPage);
     let msgText = `Ваш список заказов:\n\n`;
     msgText += `Страница: ${ctx.session.currentPage} из ${maxPages}`;
 
     await ctx.editMessageText(msgText, {
-        reply_markup: ordersMenu,
+        reply_markup: generateOrdersMenu(orders, ctx.session.currentPage),
     });
     await ctx.answerCallbackQuery();
 });
