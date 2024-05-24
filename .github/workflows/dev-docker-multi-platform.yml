@@ -95,8 +95,7 @@ jobs:
    
     - name: Push Docker Image
       run: |
-        echo "hello"
-        docker build -t saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev .
+        docker build --platform linux/amd64,linux/arm64 -t saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev .
         docker push saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev
 
     
