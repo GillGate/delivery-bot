@@ -95,8 +95,7 @@ jobs:
    
     - name: Push Docker Image
       run: |
-        docker buildx build --platform linux/amd64,linux/arm64 -t saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev .
-        docker push saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev
+        docker buildx build --platform linux/amd64,linux/arm64 -t saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev --push .
 
     
     - name: Logout from Docker
