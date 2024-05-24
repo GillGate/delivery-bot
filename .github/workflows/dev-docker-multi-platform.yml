@@ -82,17 +82,24 @@ jobs:
           echo "Bot did not respond correctly: $RESPONSE"
           exit 1
         fi
-        
+      
 
-    - name: Push Multi Platform Image
-      uses: docker/build-push-action@v5 
-      if: success() && steps.test_bot.outcome == 'success'
-      with:
-        context: .
-        platforms: linux/amd64,linux/arm64
-        push: ${{ github.event_name != 'pull_request' }}
-        tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev
-        
+   # - name: Push Multi Platform Image
+   #   uses: docker/build-push-action@v5 
+   #   if: success() && steps.test_bot.outcome == 'success'
+   #   with:
+   #     context: .
+   #     platforms: linux/amd64,linux/arm64
+   #     push: ${{ github.event_name != 'pull_request' }}
+   #     tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev
+   
+    - name: Push Docker Image
+      run: |
+        echo "hello"
+        docker build -t saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev .
+        docker push saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev
+
+    
     - name: Logout from Docker
       run: docker logout
       
