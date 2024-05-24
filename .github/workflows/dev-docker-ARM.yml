@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - dev
-  
-
+      
 jobs:
 
   build:
@@ -35,15 +34,6 @@ jobs:
       with: 
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-
-    - name: Output environment variables
-      run: echo "REGISTRY = $REGISTRY, IMAGE_NAME = $IMAGE_NAME"
-      env:
-        REGISTRY: ${{ secrets.REGISTRY }}
-        IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
-
-
-
     - name: Determine version number
       id: determine_version
       run: |
@@ -55,30 +45,13 @@ jobs:
 
     - name: Create .env file
       run: |
-        echo IMAGE_NAME=${{ env.IMAGE_NAME }} >> .env
-        echo "IMAGE_NAME=${{ env.IMAGE_NAME }}" >> .env
-        echo "DOCKER_ACCESS_TOKEN=${{ secrets.DOCKER_ACCESS_TOKEN }}" >> .env
-        echo DOCKER_ACCESS_TOKEN=${{ secrets.DOCKER_ACCESS_TOKEN }} >> .env
-        echo BOT_FIREBASE_PROJECT_ID=${{ secrets.BOT_FIREBASE_PROJECT_ID }} >> .env
-        echo BOT_ORDERS_CHAT_ID=${{ env.BOT_ORDERS_CHAT_ID }} >> .env
-        echo BOT_LINK_FREECURRENCY_API=${{ env.BOT_LINK_FREECURRENCY_API }} >> .env
-        echo BOT_LINK_OPEN_API=${{ env.BOT_LINK_OPEN_API }} >> .env
-        echo BOT_CONVERSION_FEE=${{ env.BOT_CONVERSION_FEE }} >> .env
-        echo BOT_WM_FEE=${{ env.BOT_WM_FEE }} >> .env
-        echo BOT_PROFIT_PERCENT=${{ env.BOT_PROFIT_PERCENT }} >> .env
-        echo BOT_PROFIT_PERMANENT=${{ env.BOT_PROFIT_PERMANENT }} >> .env
-        echo BOT_CHAT_TOPIC_ORDERS=${{ env.BOT_CHAT_TOPIC_ORDERS }} >> .env
-        echo BOT_CHAT_TOPIC_LOGS=${{ env.BOT_CHAT_TOPIC_LOGS }} >> .env
-        echo BOT_API_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }} >> .env
+        echo ${{ secrets.BOT_ENV }} > .env
 
-    - name: Show .env
-      run: |
-        cat .env >> env.show
-        cat .env
 
     - name: Create service account json file
       run: |
         echo "${{ secrets.BOT_FIREBASE_SERVICE_ACCOUNT }}" > serviceAccount.firestore.json
+
         
     - name: Build ARM Container 
       uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09
@@ -105,6 +78,7 @@ jobs:
         echo "Waiting for bot to be ready..."
         sleep 20
 
+
     - name: Test Telegram Bot
       id: test_bot
       env:
@@ -117,6 +91,7 @@ jobs:
           echo "Bot did not respond correctly: $RESPONSE"
           exit 1
         fi
+        
 
     - name: Push ARM Image
       uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 
@@ -124,12 +99,9 @@ jobs:
       with:
         context: .
         platforms: linux/arm64
-        load: true
         push: ${{ github.event_name != 'pull_request' }}
         tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev.arm
         labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha, mode=max
         
     - name: Logout from Docker
       run: docker logout
