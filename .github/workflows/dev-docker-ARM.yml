@@ -47,7 +47,7 @@ jobs:
     - name: Create .env file
       run: |
         echo "BOT_API_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }}" >> .env
-        echo "BOT_FIREBASE_PROJECT_ID=${{ env.BOT_FIREBASE_PROJECT_ID }}" >> .env
+        echo "BOT_FIREBASE_PROJECT_ID=${{ secrets.BOT_FIREBASE_PROJECT_ID }}" >> .env
         echo "BOT_ORDERS_CHAT_ID=${{ env.BOT_ORDERS_CHAT_ID }}" >> .env
         echo "BOT_LINK_FREECURRENCY_API=${{ env.BOT_LINK_FREECURRENCY_API }}" >> .env
         echo "BOT_LINK_OPEN_API=${{ env.BOT_LINK_OPEN_API }}" >> .env
