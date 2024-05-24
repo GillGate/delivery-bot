@@ -14,7 +14,7 @@ export async function getOrderLink(conversation, ctx) {
             let indexLink = orderInfoArray.findIndex((str) => str.includes("https://dw4.co"));
 
             if (indexLink === 0) {
-                ctx.session.order.link = orderInfo;
+                ctx.session.order.link = orderInfoArray[indexLink];
                 ctx.session.order.name = translate(ctx.session.order.subType);
 
                 return true;

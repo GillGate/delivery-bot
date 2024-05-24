@@ -3,29 +3,15 @@ import { Bot, GrammyError, HttpError, session } from "grammy";
 import { adapter } from "@grammyjs/storage-firestore";
 import { hydrate } from "@grammyjs/hydrate";
 import { order } from "#bot/actions/order.js";
-import { mainMenu } from "#bot/keyboards/general.js";
-import { db, getUserInfo } from "#bot/api/firebase.api.js";
-
-const initSessionData = {
-    user: {
-        fio: "",
-        address: "",
-    },
-    routeHistory: [],
-    order: {
-        type: "",
-        subType: "",
-        name: "",
-        link: "",
-        params: "",
-        price: "",
-    },
-};
+import { helpKeyboard } from "#bot/keyboards/general.js";
+import { db } from "#bot/api/firebase.api.js";
+import sessionConfig from "#bot/config/session.config.js";
+import sendStartMessage from "#bot/helpers/sendStartMessage.js";
 
 const bot = new Bot(process.env.BOT_API_TOKEN);
 bot.use(
     session({
-        initial: () => structuredClone(initSessionData),
+        initial: () => structuredClone(sessionConfig),
         // storage: adapter(db.collection("sessions")),
     })
 );
@@ -39,40 +25,7 @@ bot.api.setMyCommands([
     },
 ]);
 
-async function sendStartMessage(ctx, errorMode = false) {
-    ctx.session.routeHistory = [];
-    ctx.session.order = structuredClone(initSessionData.order);
-    ctx.session.conversation = {};
-
-    let helloText = `Привет 🚸\n\n`;
-    helloText += `Я Kul2Bot и я могу помочь тебе сделать заказ оригинальных вещей с Poizon, а также подсказать, что именно заказать, исходя из модных тенденций о которых пишет наш журнал.\n\n`;
-    helloText += `Что тебя интересует? 🫡`;
-
-    await ctx.reply(helloText, {
-        reply_markup: mainMenu,
-    });
-
-    let user = ctx.session.user;
-    if (user.fio === "" || user.address === "") {
-        try {
-            let userInfo = await getUserInfo(ctx.from.id);
-
-            if (userInfo.exists) {
-                ctx.session.user = userInfo.data();
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    }
-
-    console.log("session", ctx.session);
-
-    if (ctx?.callbackQuery && !errorMode) {
-        await ctx.answerCallbackQuery();
-    }
-}
-
-bot.command("start", async (ctx) => await sendStartMessage(ctx));
+bot.command("start", async (ctx) => await sendStartMessage(ctx, true));
 bot.callbackQuery("main_menu", async (ctx) => await sendStartMessage(ctx));
 
 bot.callbackQuery("back", async (ctx) => {
@@ -81,7 +34,18 @@ bot.callbackQuery("back", async (ctx) => {
 
     await ctx.editMessageText(routeParams.text, {
         reply_markup: routeParams.reply_markup,
+        parse_mode: "HTML",
     });
+    await ctx.answerCallbackQuery();
+});
+
+bot.callbackQuery("help", async (ctx) => {
+    await ctx.editMessageText(
+        "Для последовательного ознакомления с площадкой Poizon и основными принципами нашей работы рекомендуем последовательно ознакомиться с каждым из трёх пунктов, представленных ниже.",
+        {
+            reply_markup: helpKeyboard,
+        }
+    );
     await ctx.answerCallbackQuery();
 });
 
