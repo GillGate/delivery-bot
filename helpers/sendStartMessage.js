@@ -1,4 +1,4 @@
-import { getUserInfo } from "#bot/api/firebase.api.js";
+import { getUserCart, getUserInfo } from "#bot/api/firebase.api.js";
 import sessionConfig from "#bot/config/session.config.js";
 import { getMainMenu } from "#bot/keyboards/general.js";
 
@@ -24,6 +24,17 @@ export default async function (ctx, replyMode = false) {
                 console.log("load user", user);
             }
         } catch (e) {
+            console.error(e);
+        }
+    }
+
+    if(ctx.session.cart.length === 0) {
+        try {
+            ctx.session.cart = await getUserCart(ctx.from.id);
+            
+            console.log("load cart", ctx.session.cart);
+        }
+        catch (e) {
             console.error(e);
         }
     }

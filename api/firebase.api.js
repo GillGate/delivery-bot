@@ -6,7 +6,7 @@ export const db = new Firestore({
 });
 
 export async function setUserInfo(userId, info) {
-   return await db.collection("users").doc(`${userId}`).set(info);
+    return await db.collection("users").doc(`${userId}`).set(info);
 }
 
 export async function getUserInfo(userId) {

@@ -22,12 +22,14 @@ bot.use(cart);
 
 bot.api.setMyCommands([
     {
-        command: "start",
-        description: "Запуск бота",
+        command: "main_menu",
+        description: "Главное меню",
     },
+    // TODO: дублировать комманды из кнопок главного меню
 ]);
 
 bot.command("start", async (ctx) => await sendStartMessage(ctx, true));
+bot.command("main_menu", async (ctx) => await sendStartMessage(ctx, true));
 bot.callbackQuery("main_menu", async (ctx) => await sendStartMessage(ctx));
 
 bot.callbackQuery("back", async (ctx) => {

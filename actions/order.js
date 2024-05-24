@@ -15,6 +15,7 @@ import { getUserOrders, updateUserInfo } from "#bot/api/firebase.api.js";
 import { translate } from "#bot/helpers/translate.js";
 import limitsConfig from "#bot/config/limits.config.js";
 import linksConfig from "#bot/config/links.config.js";
+import sessionConfig from "#bot/config/session.config.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 
 export const order = new Composer();
@@ -50,6 +51,9 @@ order.callbackQuery(/order__create/, async (ctx) => {
     }
     if(mode === "calc") {
         ctx.session.temp.calcMode = true;
+    }
+    if(mode === "another") {
+        ctx.session.order = structuredClone(sessionConfig.order);
     }
 
     await ctx.editMessageText("Выберите категорию товара:", {
