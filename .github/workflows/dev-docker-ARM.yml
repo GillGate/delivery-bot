@@ -102,6 +102,7 @@ jobs:
       if: success() && steps.test_bot.outcome == 'success'
       with:
         context: .
+        load: true
         platforms: linux/arm64
         push: ${{ github.event_name != 'pull_request' }}
         tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev.arm
