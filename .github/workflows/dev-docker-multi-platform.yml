@@ -1,4 +1,4 @@
-  name: Build Test and Push Mutli Platform Docker Image
+name: Build Test and Push Mutli Platform Docker Image
 
 on:
   push:
