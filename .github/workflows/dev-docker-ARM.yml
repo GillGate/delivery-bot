@@ -47,6 +47,10 @@ jobs:
       run: |
         echo "${{ secrets.BOT_ENV }}" > .env
 
+    - name: Add Token
+      run: |
+        echo "BOT_API_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }}" >> .env
+
 
     - name: Create service account json file
       run: |
