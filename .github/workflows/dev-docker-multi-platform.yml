@@ -3,7 +3,7 @@ name: Build Test and Push Mutli Platform Docker Image
 on:
   push:
     branches:
-      - dev
+      - main
       
 jobs:
   build:
@@ -39,7 +39,7 @@ jobs:
 
     - name: Add Token
       run: |
-        echo "BOT_API_TOKEN=${{ secrets.BOT_API_TOKEN }}" >> .env
+        echo "BOT_API_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }}" >> .env
 
     - name: Create service account json file
       run: |
