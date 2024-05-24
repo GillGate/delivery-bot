@@ -6,7 +6,6 @@ on:
       - dev
       
 jobs:
-
   build:
     runs-on: ubuntu-latest
 
@@ -28,12 +27,6 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
 
-    - name: Extract Docker metadata
-      id: meta
-      uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934
-      with: 
-        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
     - name: Determine version number
       id: determine_version
       run: |
@@ -42,7 +35,6 @@ jobs:
         BUILD_NUMBER=$(git rev-parse --short HEAD)
         echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
 
-        
     - name: Create .env file
       run: |
         echo "${{ secrets.BOT_ENV }}" > .env
@@ -51,25 +43,21 @@ jobs:
       run: |
         echo "BOT_API_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }}" >> .env
 
-
     - name: Create service account json file
       run: |
         echo "${{ secrets.BOT_FIREBASE_SERVICE_ACCOUNT }}" > serviceAccount.firestore.json
 
         
-    - name: Build ARM Container 
+    - name: Build Multi Platform Container 
       uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09
       with:
         context: .
-        platforms: linux/arm64
+        platforms: linux/amd64,linux/arm64
         load: true
         tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}
-        labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
 
 
-    - name: Run ARM Container
+    - name: Run Container
       run: |
         docker run -d -e TELEGRAM_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }} \
         -e BUILD_DATE=${{ env.BUILD_DATE }} \
@@ -97,16 +85,14 @@ jobs:
         fi
         
 
-    - name: Push ARM Image
+    - name: Push Multi Platform Image
       uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 
       if: success() && steps.test_bot.outcome == 'success'
       with:
         context: .
-        load: true
-        platforms: linux/arm64
-        push: ${{ github.event_name != 'pull_request' }}
+        platforms: linux/amd64,linux/arm64
+        push: ${{ github.event_name != 'pull_request' }
         tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev.arm
-        labels: ${{ steps.meta.outputs.labels }}
         
     - name: Logout from Docker
       run: docker logout
