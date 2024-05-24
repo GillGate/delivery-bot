@@ -46,17 +46,17 @@ jobs:
 
     - name: Create .env file
       run: |
-        echo "BOT_API_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }}" >> .env
-        echo "BOT_FIREBASE_PROJECT_ID=${{ secrets.BOT_FIREBASE_PROJECT_ID }}" >> .env
-        echo "BOT_ORDERS_CHAT_ID=${{ env.BOT_ORDERS_CHAT_ID }}" >> .env
-        echo "BOT_LINK_FREECURRENCY_API=${{ env.BOT_LINK_FREECURRENCY_API }}" >> .env
-        echo "BOT_LINK_OPEN_API=${{ env.BOT_LINK_OPEN_API }}" >> .env
-        echo "BOT_CONVERSION_FEE=${{ env.BOT_CONVERSION_FEE }}" >> .env
-        echo "BOT_WM_FEE=${{ env.BOT_WM_FEE }}" >> .env
-        echo "BOT_PROFIT_PERCENT=${{ env.BOT_PROFIT_PERCENT }}" >> .env
-        echo "BOT_PROFIT_PERMANENT=${{ env.BOT_PROFIT_PERMANENT }}" >> .env
-        echo "BOT_CHAT_TOPIC_ORDERS=${{ env.BOT_CHAT_TOPIC_ORDERS }}" >> .env
-        echo "BOT_CHAT_TOPIC_LOGS=${{ env.BOT_CHAT_TOPIC_LOGS }}" >> .env
+        echo BOT_API_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }} >> .env
+        echo BOT_FIREBASE_PROJECT_ID=${{ secrets.BOT_FIREBASE_PROJECT_ID }} >> .env
+        echo BOT_ORDERS_CHAT_ID=${{ env.BOT_ORDERS_CHAT_ID }} >> .env
+        echo BOT_LINK_FREECURRENCY_API=${{ env.BOT_LINK_FREECURRENCY_API }} >> .env
+        echo BOT_LINK_OPEN_API=${{ env.BOT_LINK_OPEN_API }} >> .env
+        echo BOT_CONVERSION_FEE=${{ env.BOT_CONVERSION_FEE }} >> .env
+        echo BOT_WM_FEE=${{ env.BOT_WM_FEE }} >> .env
+        echo BOT_PROFIT_PERCENT=${{ env.BOT_PROFIT_PERCENT }} >> .env
+        echo BOT_PROFIT_PERMANENT=${{ env.BOT_PROFIT_PERMANENT }} >> .env
+        echo BOT_CHAT_TOPIC_ORDERS=${{ env.BOT_CHAT_TOPIC_ORDERS }} >> .env
+        echo BOT_CHAT_TOPIC_LOGS=${{ env.BOT_CHAT_TOPIC_LOGS }} >> .env
 
     - name: Create service account json file
       run: |
