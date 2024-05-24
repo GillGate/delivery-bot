@@ -110,23 +110,13 @@ export async function registration(conversation, ctx) {
     if (regResponse.match === "reg__confirm") {
         let { from } = ctx;
         //Добавить в условие обращение к базе и если там тоже нет выполнять услвоие
-        if (from.username === (null || undefined)) {
-            conversation.ctx.editMessageText(
-                "Пожалуйста, напишите ваш username или номер телефона чтобы наш менеджер мог с вами связаться"
-            );
-            const altUsername = await conversation.waitFor("message:text", {
-                otherwise: async (ctx) => {
-                    await ctx.reply(
-                        "Вы уверены, что хотите уйти, не оставив контакт для связи с вами? Ваш заказ будет утерян\nЕсли вы передумали, напишите контакты для связи",
-                        { reply_markup: backMainMenu }
-                    );
-                    const altUsername = await conversation.waitFor("message:text", {
-                        otherwise: () => {
-                            return;
-                        },
-                    });
-                },
-            });
+        if (!from?.username) {
+            let questionText = "Мы не смогли определить ваш username.";
+            questionText += "Для сохранения данных о вашем заказе, ";
+            questionText += "пожалуйста, оставьте ваш номер телефона для связи в телеграм ";
+            questionText += "или напишите нашему менеджеру\n";
+            questionText += "@romahaforever";
+            conversation.ctx.editMessageText(questionText, { reply_markup: backMainMenu });
         }
         console.log(totalText, currentUser);
 
