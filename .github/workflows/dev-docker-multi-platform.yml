@@ -1,4 +1,4 @@
-name: Build Test and Push Mutli Platform Docker Image
+  name: Build Test and Push Mutli Platform Docker Image
 
 on:
   push:
@@ -39,7 +39,7 @@ jobs:
 
     - name: Add Token
       run: |
-        echo "BOT_API_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }}" >> .env
+        echo "BOT_API_TOKEN=${{ secrets.BOT_API_TOKEN }}" >> .env
 
     - name: Create service account json file
       run: |
@@ -91,7 +91,7 @@ jobs:
         context: .
         platforms: linux/amd64,linux/arm64
         push: ${{ github.event_name != 'pull_request' }}
-        tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev.arm
+        tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev
         
     - name: Logout from Docker
       run: docker logout
