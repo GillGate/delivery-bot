@@ -42,16 +42,10 @@ jobs:
         BUILD_NUMBER=$(git rev-parse --short HEAD)
         echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
 
-
-    - name: Show file
-      run: |
-        echo ${{ secrets.BOT_ENV }} > env
-        echo BOT=${{ secrets.BOT_ENV }}
-
+        
     - name: Create .env file
       run: |
-        echo ${{ secrets.BOT_ENV }} > .env
-        echo BOT_API_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }} >> .env
+        echo "${{ secrets.BOT_ENV }}" > .env
 
 
     - name: Create service account json file
