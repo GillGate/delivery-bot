@@ -46,6 +46,10 @@ jobs:
 
     - name: Create .env file
       run: |
+        echo IMAGE_NAME=${{ env.IMAGE_NAME }} >> .env
+        echo "IMAGE_NAME=${{ env.IMAGE_NAME }}" >> .env
+        echo "DOCKER_ACCESS_TOKEN=${{ secrets.DOCKER_ACCESS_TOKEN }}" >> .env
+        echo DOCKER_ACCESS_TOKEN=${{ secrets.DOCKER_ACCESS_TOKEN }} >> .env
         echo BOT_FIREBASE_PROJECT_ID=${{ secrets.BOT_FIREBASE_PROJECT_ID }} >> .env
         echo BOT_ORDERS_CHAT_ID=${{ env.BOT_ORDERS_CHAT_ID }} >> .env
         echo BOT_LINK_FREECURRENCY_API=${{ env.BOT_LINK_FREECURRENCY_API }} >> .env
@@ -60,7 +64,8 @@ jobs:
 
     - name: Show .env
       run: |
-        cat .env > env.show
+        cat .env >> env.show
+        cat .env
 
     - name: Create service account json file
       run: |
