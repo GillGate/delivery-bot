@@ -109,6 +109,18 @@ jobs:
         push: ${{ github.event_name != 'pull_request' }}
         tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev.arm
         labels: ${{ steps.meta.outputs.labels }}
+        build-args: |
+          BOT_API_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }}
+          BOT_FIREBASE_PROJECT_ID=${{ secrets.BOT_FIREBASE_PROJECT_ID }}
+          BOT_ORDERS_CHAT_ID=${{ secrets.BOT_ORDERS_CHAT_ID }}
+          BOT_LINK_FREECURRENCY_API=${{ secrets.BOT_LINK_FREECURRENCY_API }}
+          BOT_LINK_OPEN_API=${{ secrets.BOT_LINK_OPEN_API }}
+          BOT_CONVERSION_FEE=${{ secrets.BOT_CONVERSION_FEE }}
+          BOT_WM_FEE=${{ secrets.BOT_WM_FEE }}
+          BOT_PROFIT_PERCENT=${{ secrets.BOT_PROFIT_PERCENT }}
+          BOT_PROFIT_PERMANENT=${{ secrets.BOT_PROFIT_PERMANENT }}
+          BOT_CHAT_TOPIC_ORDERS=${{ secrets.BOT_CHAT_TOPIC_ORDERS }}
+          BOT_CHAT_TOPIC_LOGS=${{ secrets.BOT_CHAT_TOPIC_LOGS }}
         
     - name: Logout from Docker
       run: docker logout
