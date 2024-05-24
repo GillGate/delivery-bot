@@ -1,8 +1,8 @@
 import { backMainMenu } from "#bot/keyboards/general.js";
-import { unlessActions } from "#bot/conversations/helpers/unlessActions.js";
+import unlessActions from "#bot/conversations/helpers/unlessActions.js";
 import { translate } from "#bot/helpers/translate.js";
 
-export async function getOrderLink(conversation, ctx) {
+export default async function(conversation, ctx) {
     return await conversation.waitUntil(
         async (ctx) => {
             let orderInfo = ctx.message?.text;

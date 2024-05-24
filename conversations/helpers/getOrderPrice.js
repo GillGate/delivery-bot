@@ -1,10 +1,10 @@
 import { backMainMenu } from "#bot/keyboards/general.js";
-import { unlessActions } from "#bot/conversations/helpers/unlessActions.js";
+import unlessActions from "#bot/conversations/helpers/unlessActions.js";
 import limitsConfig from "#bot/config/limits.config.js";
 import { convertedCNYWithFee } from "#bot/api/converter.api.js";
 import { calculateDelivery } from "#bot/helpers/calculateDelivery.js";
 
-export async function getOrderPrice(conversation, ctx) {
+export default async function(conversation, ctx) {
     return await conversation.waitUntil(
         async (ctx) => {
             let price = parseInt(ctx.message?.text);
@@ -33,7 +33,8 @@ export async function getOrderPrice(conversation, ctx) {
                 );
 
                 let totalPrice = rubPrice + currentProfit + currentDeliveryPrice; 
-                ctx.session.order.priceCNY = ctx.message?.text;
+                ctx.session.order.priceCNY = parseInt(ctx.message?.text);
+                ctx.session.order.priceRUB = parseInt(rubPrice);
                 ctx.session.order.price = Math.ceil(totalPrice); // по божески
                 // TODO: better UX improvemnt 10000 -> 10 000  
                 return true;

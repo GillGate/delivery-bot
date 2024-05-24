@@ -5,6 +5,7 @@ export default {
         isNewbie: true
     },
     routeHistory: [],
+    cart: [],
     order: {
         type: "",
         subType: "",

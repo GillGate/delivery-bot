@@ -13,7 +13,10 @@ export function getMainMenu(isNewbie = true) {
     mainMenu
         .text("🔎  Проверить заказы", "order__check")
         .row()
-        .text("🧮  Рассчитать стоимость", "order__create_calc")
+        .text("🧮  Калькулятор", "order__create_calc")
+        .text("🛒  Корзина", "cart__check")
+        .row()
+        .url("Связь с менеджером", process.env.BOT_MANAGER_USERNAME)
         .row()
         .text("ℹ️  Помощь", "help");
 
@@ -24,7 +27,7 @@ export const backMainMenu = new InlineKeyboard().text("‹ В главное м�
 
 export const backKeyboard = new InlineKeyboard().text("‹ Назад", "back");
 
-export const helpKeyboard = new InlineKeyboard()
+export const helpMenu = new InlineKeyboard()
     .url("Скачать Poizon", "https://dewu.com")
     .row()
     .url("Как использовать Poizon", "telegra.ph")
@@ -33,6 +36,4 @@ export const helpKeyboard = new InlineKeyboard()
     .row()
     .text("Как считается стоимость заказа", "order__price")
     .row()
-    // .text("📝  Узнать стоимость", "order__create")
-    // .row()
     .text("‹ Назад", "back");

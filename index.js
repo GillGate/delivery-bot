@@ -3,7 +3,8 @@ import { Bot, GrammyError, HttpError, session } from "grammy";
 import { adapter } from "@grammyjs/storage-firestore";
 import { hydrate } from "@grammyjs/hydrate";
 import { order } from "#bot/actions/order.js";
-import { helpKeyboard } from "#bot/keyboards/general.js";
+import { cart } from "#bot/actions/cart.js";
+import { helpMenu } from "#bot/keyboards/general.js";
 import { db } from "#bot/api/firebase.api.js";
 import sessionConfig from "#bot/config/session.config.js";
 import sendStartMessage from "#bot/helpers/sendStartMessage.js";
@@ -17,6 +18,7 @@ bot.use(
 );
 bot.use(hydrate());
 bot.use(order);
+bot.use(cart);
 
 bot.api.setMyCommands([
     {
@@ -36,17 +38,19 @@ bot.callbackQuery("back", async (ctx) => {
         reply_markup: routeParams.reply_markup,
         parse_mode: "HTML",
     });
-    await ctx.answerCallbackQuery();
+
+    ctx.answerCallbackQuery();
 });
 
 bot.callbackQuery("help", async (ctx) => {
     await ctx.editMessageText(
         "Для последовательного ознакомления с площадкой Poizon и основными принципами нашей работы рекомендуем последовательно ознакомиться с каждым из трёх пунктов, представленных ниже.",
         {
-            reply_markup: helpKeyboard,
+            reply_markup: helpMenu,
         }
     );
-    await ctx.answerCallbackQuery();
+    
+    ctx.answerCallbackQuery();
 });
 
 bot.catch(async (err) => {

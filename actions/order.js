@@ -7,7 +7,6 @@ import { calculate } from "#bot/conversations/calculate.js";
 import { backKeyboard } from "#bot/keyboards/general.js";
 import {
     checkMenu,
-    generateOrdersMenu,
     getSubTypeKeyboard,
     orderMenuBeforeCreate,
     selectCategoryKeyboard,
@@ -36,7 +35,8 @@ order.callbackQuery("order__make", async (ctx) => {
             prefer_small_media: true,
         }
     });
-    await ctx.answerCallbackQuery();
+
+    ctx.answerCallbackQuery();
 });
 
 order.callbackQuery(/order__create/, async (ctx) => {
@@ -55,7 +55,8 @@ order.callbackQuery(/order__create/, async (ctx) => {
     await ctx.editMessageText("Выберите категорию товара:", {
         reply_markup: selectCategoryKeyboard,
     });
-    await ctx.answerCallbackQuery();
+
+    ctx.answerCallbackQuery();
 });
 
 order.callbackQuery(/order__select_/, async (ctx) => {
@@ -65,14 +66,15 @@ order.callbackQuery(/order__select_/, async (ctx) => {
     await ctx.editMessageText("Выберите подкатегорию:", {
         reply_markup: getSubTypeKeyboard(currentType),
     });
-    await ctx.answerCallbackQuery();
+
+    ctx.answerCallbackQuery();
 });
 
 order.callbackQuery(/order__pick_/, async (ctx) => {
     let currentSubType = ctx.callbackQuery.data.split("__pick_")[1];
     ctx.session.order.subType = currentSubType;
 
-    await ctx.answerCallbackQuery();
+    ctx.answerCallbackQuery();
 
     if(ctx.session.temp?.calcMode) {
         await ctx.conversation.enter("calculate");
@@ -82,6 +84,15 @@ order.callbackQuery(/order__pick_/, async (ctx) => {
     }
 });
 
+order.callbackQuery("order__check", async (ctx) => {
+    await ctx.editMessageText("У вас нет оформленных заказов", {
+        reply_markup: checkMenu,
+    });
+
+    ctx.answerCallbackQuery();
+});
+
+/*
 let maxPages;
 order.callbackQuery("order__check", async (ctx) => {
     let orders = await getUserOrders(ctx.from.id);
@@ -106,7 +117,8 @@ order.callbackQuery("order__check", async (ctx) => {
             reply_markup: checkMenu,
         });
     }
-    await ctx.answerCallbackQuery();
+
+    ctx.answerCallbackQuery();
 });
 
 order.callbackQuery(/order__check_/, async (ctx) => {
@@ -147,18 +159,15 @@ order.callbackQuery(/order__nav_/, async (ctx) => {
     await ctx.editMessageText(msgText, {
         reply_markup: generateOrdersMenu(orders, ctx.session.currentPage),
     });
-    await ctx.answerCallbackQuery();
+
+    ctx.answerCallbackQuery();
 });
+*/
 
 order.callbackQuery("order__price", async (ctx) => {
     await ctx.editMessageText("С чего начинается цена...", {
         reply_markup: backKeyboard,
     });
-    await ctx.answerCallbackQuery();
+    
+    ctx.answerCallbackQuery();
 });
-
-// order.callbackQuery("order__calc", async (ctx) => {
-//     await ctx.answerCallbackQuery();
-
-//     await ctx.conversation.enter("calculate");
-// })

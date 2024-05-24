@@ -6,7 +6,7 @@ export const db = new Firestore({
 });
 
 export async function setUserInfo(userId, info) {
-    return await db.collection("users").doc(`${userId}`).set(info);
+   return await db.collection("users").doc(`${userId}`).set(info);
 }
 
 export async function getUserInfo(userId) {
@@ -15,6 +15,24 @@ export async function getUserInfo(userId) {
 
 export async function updateUserInfo(userId, info) {
     return await db.collection("users").doc(`${userId}`).update(info);
+}
+
+export async function addToCart(userId, order) {
+    return await db.collection("users").doc(`${userId}`).collection("cart").add(order);
+}
+
+export async function getUserCart(userId) {
+    let cart = [];
+    let snapshotOrders = await db.collection("users").doc(`${userId}`).collection("cart").get();
+
+    snapshotOrders.forEach((doc) => {
+        cart.push({
+            dbId: doc.id,
+            ...doc.data(),
+        });
+    });
+
+    return cart;
 }
 
 export async function addUserOrder(userId, order) {

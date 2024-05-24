@@ -1,15 +1,14 @@
 import { backMainMenu } from "#bot/keyboards/general.js";
-import { unlessActions } from "#bot/conversations/helpers/unlessActions.js";
+import unlessActions from "#bot/conversations/helpers/unlessActions.js";
 import limitsConfig from "#bot/config/limits.config.js";
 
-export async function getOrderAddress(conversation, ctx) {
+export default async function(conversation, ctx) {
     const { address: addressLimits } = limitsConfig;
 
     return await conversation.waitUntil(
         async (ctx) => {
             if (ctx?.callbackQuery?.data === "reg__keep_address") {
                 ctx.answerCallbackQuery();
-                // ctx.api.deleteMessage(ctx.from.id, ctx.callbackQuery.message.message_id);
                 ctx.session.temp.keepAddress = true;
                 return true;
             }

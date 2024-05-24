@@ -49,4 +49,5 @@ const emotes = {
 
 export function getEmoji(name) {
     return emotes[name] ? emotes[name] : "";
+    // return emotes[name] ?? ""; ?
 }

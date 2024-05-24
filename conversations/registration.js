@@ -1,18 +1,33 @@
-import { addUserOrder, setUserInfo } from "#bot/api/firebase.api.js";
+import { addToCart, addUserOrder, setUserInfo } from "#bot/api/firebase.api.js";
 import { backMainMenu } from "#bot/keyboards/general.js";
 import { regFioMenu, regAddressMenu, regTotalMenu, regParamsMenu } from "#bot/keyboards/registration.js";
-import { getOrderLink } from "#bot/conversations/helpers/getOrderLink.js";
-import { getOrderParams } from "#bot/conversations/helpers/getOrderParams.js";
-import { getOrderPrice } from "#bot/conversations/helpers/getOrderPrice.js";
-import { getOrderFio } from "#bot/conversations/helpers/getOrderFio.js";
-import { getOrderAddress } from "#bot/conversations/helpers/getOrderAddress.js";
-import { unlessActions } from "#bot/conversations/helpers/unlessActions.js";
+import getOrderLink from "#bot/conversations/helpers/getOrderLink.js";
+import getOrderParams from "#bot/conversations/helpers/getOrderParams.js";
+import getOrderPrice from "#bot/conversations/helpers/getOrderPrice.js";
+import getOrderFio from "#bot/conversations/helpers/getOrderFio.js";
+import getOrderAddress from "#bot/conversations/helpers/getOrderAddress.js";
+import unlessActions from "#bot/conversations/helpers/unlessActions.js";
 import { translate } from "#bot/helpers/translate.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
+import { getSubTypeKeyboard, selectCategoryKeyboard } from "#bot/keyboards/order.js";
 
 export async function registration(conversation, ctx) {
     let currentOrder = conversation.ctx.session.order;
     let currentUser = conversation.ctx.session.user;
+
+    // await conversation.ctx.editMessageText("Выберите категорию товара:", {
+    //     reply_markup: selectCategoryKeyboard,
+    // });
+
+    // let currentType = await getOrderType(conversation, ctx);
+
+    // console.log("currentType", currentType);
+
+    // await conversation.ctx.editMessageText("Выберите подкатегорию:", {
+    //     reply_markup: getSubTypeKeyboard(currentType),
+    // });
+
+    // await getOrderSubType(conversation, ctx, currentType);
 
     await conversation.ctx.editMessageText("Введите ссылку на товар", {
         reply_markup: backMainMenu,
@@ -30,9 +45,16 @@ export async function registration(conversation, ctx) {
 
     await getOrderParams(conversation, ctx);
 
-    ctx.reply("Укажите стоимость товара в юань:", {
-        reply_markup: backMainMenu,
-    });
+    if(conversation.ctx.session.temp?.skipParams) {
+        conversation.ctx.editMessageText("Укажите стоимость товара в юань:", {
+            reply_markup: backMainMenu,
+        });
+    }
+    else {
+        ctx.reply("Укажите стоимость товара в юань:", {
+            reply_markup: backMainMenu,
+        });
+    }
 
     await getOrderPrice(conversation, ctx);
 
@@ -55,7 +77,7 @@ export async function registration(conversation, ctx) {
         let getAddressText = `Ваш текущий адрес: ${currentUser.address} \n\n`;
         getAddressText += `Вы можете оставить его по кнопке ниже или ввести новый:`;
 
-        if(conversation.ctx.session?.temp?.keepFio) {
+        if(conversation.ctx.session.temp?.keepFio) {
             conversation.ctx.editMessageText(getAddressText, {
                 reply_markup: regAddressMenu,
             });
@@ -75,7 +97,6 @@ export async function registration(conversation, ctx) {
 
     currentOrder.fio = currentUser.fio;
     currentOrder.address = currentUser.address;
-    currentOrder.status = "processing";
 
     let totalText = `Итоговая цена: ${currentOrder.price} ₽ \n`;
     totalText += `Стоимость товара: ${currentOrder.priceCNY} ￥ \n\n`;
@@ -100,23 +121,23 @@ export async function registration(conversation, ctx) {
         });
     }
 
-    const regResponse = await conversation.waitForCallbackQuery("reg__confirm", {
+    const regResponse = await conversation.waitForCallbackQuery("cart__add", {
         otherwise: (ctx) =>
             unlessActions(ctx, () => {
-                ctx.reply("Вам следует подтвердить заказ или вернуться в главное меню", {
+                ctx.reply("Вам следует добавить заказ в корзину или вернуться в главное меню", {
                     reply_markup: regTotalMenu,
                 });
             }),
     });
 
-    if (regResponse.match === "reg__confirm") {
+    if (regResponse.match === "cart__add") {
         let { from } = ctx;
 
         console.log(totalText, currentUser);
 
-        await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, totalText, {
-            message_thread_id: process.env.BOT_CHAT_TOPIC_ORDERS,
-        });
+        // await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, totalText, {
+        //     message_thread_id: process.env.BOT_CHAT_TOPIC_ORDERS,
+        // });
 
         try {
             if (JSON.stringify(ctx.session.user) !== JSON.stringify(currentUser)) {
@@ -131,7 +152,7 @@ export async function registration(conversation, ctx) {
                 console.log("userData changed", currentUser);
             }
 
-            await addUserOrder(from.id, currentOrder);
+            await addToCart(from.id, currentOrder);
         } catch (e) {
             console.error(e);
         }
