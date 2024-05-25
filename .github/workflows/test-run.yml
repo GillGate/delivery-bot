@@ -3,18 +3,18 @@ name: Build Push Docker Image
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
 
     - name: Checkout Repository
       uses: actions/checkout@v4
       
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      uses: docker/setup-buildx-action@v3
       
     - name: Setup QEMU
       uses: docker/setup-qemu-action@v3
