@@ -7,6 +7,7 @@ import { helpKeyboard } from "#bot/keyboards/general.js";
 import { db } from "#bot/api/firebase.api.js";
 import sessionConfig from "#bot/config/session.config.js";
 import sendStartMessage from "#bot/helpers/sendStartMessage.js";
+import sendAdminMessage from "./helpers/sendAdminMessage.js";
 
 const bot = new Bot(process.env.BOT_API_TOKEN);
 bot.use(
@@ -26,6 +27,7 @@ bot.api.setMyCommands([
 ]);
 
 bot.command("start", async (ctx) => await sendStartMessage(ctx, true));
+bot.command("admin", async (ctx) => await sendAdminMessage(ctx));
 bot.callbackQuery("main_menu", async (ctx) => await sendStartMessage(ctx));
 
 bot.callbackQuery("back", async (ctx) => {

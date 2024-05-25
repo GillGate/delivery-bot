@@ -1,13 +1,12 @@
 import { InlineKeyboard } from "grammy";
 
 export function getMainMenu(isNewbie = true) {
-    let mainMenu = new InlineKeyboard()
+    let mainMenu = new InlineKeyboard();
 
-    if(isNewbie) {
-        mainMenu.text("📦  Заказать вещи", "order__make")
-    }   
-    else {
-        mainMenu.text("📦  Заказать вещи", "order__create")
+    if (isNewbie) {
+        mainMenu.text("📦  Заказать вещи", "order__make");
+    } else {
+        mainMenu.text("📦  Заказать вещи", "order__create");
     }
 
     mainMenu
@@ -36,3 +35,5 @@ export const helpKeyboard = new InlineKeyboard()
     // .text("📝  Узнать стоимость", "order__create")
     // .row()
     .text("‹ Назад", "back");
+
+export const adminMainMenu = new InlineKeyboard().text("zero");
