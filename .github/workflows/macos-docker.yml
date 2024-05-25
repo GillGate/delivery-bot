@@ -49,7 +49,8 @@ jobs:
 
     - name: Push Docker Image
       run: |
-        docker build -t saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev --push .
+        docker build -t saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev .
+        docker push saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev
 
     - name: Logout from Docker
       run: docker logout
