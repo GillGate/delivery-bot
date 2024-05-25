@@ -13,8 +13,8 @@ import getOrderPrice from "#bot/conversations/helpers/getOrderPrice.js";
 import getOrderFio from "#bot/conversations/helpers/getOrderFio.js";
 import getOrderAddress from "#bot/conversations/helpers/getOrderAddress.js";
 import unlessActions from "#bot/conversations/helpers/unlessActions.js";
-import { translate } from "#bot/helpers/translate.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
+import getHtmlOrderLink from "#bot/helpers/getHtmlOrderLink.js";
 
 export async function registration(conversation, ctx) {
     let currentOrder = conversation.ctx.session.order;
@@ -91,8 +91,7 @@ export async function registration(conversation, ctx) {
     currentOrder.fio = currentUser.fio;
     currentOrder.address = currentUser.address;
 
-    let htmlOrderLink = `<a href="${currentOrder.link}">${getEmoji(currentOrder.subType)}  `;
-    htmlOrderLink += `${translate(currentOrder.subType)}</a>`;
+    let htmlOrderLink = getHtmlOrderLink(currentOrder);
 
     let totalText = `Итоговая цена: ${currentOrder.price} ₽ \n`;
     totalText += `Стоимость товара: ${currentOrder.priceCNY} ￥ \n\n`;
@@ -134,6 +133,7 @@ export async function registration(conversation, ctx) {
 
         await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, totalText, {
             message_thread_id: process.env.BOT_CHAT_TOPIC_LOGS,
+            parse_mode: "HTML",
         });
 
         try {

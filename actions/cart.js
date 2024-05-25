@@ -1,12 +1,12 @@
 import { Composer } from "grammy";
 import { hydrate } from "@grammyjs/hydrate";
-import { traceRoutes } from "#bot/middleware/route.js";
 import { backKeyboard } from "#bot/keyboards/general.js";
 import { translate } from "#bot/helpers/translate.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 import { cartNoneMenu, generateOrdersMenu } from "#bot/keyboards/cart.js";
 import { getUserCart } from "#bot/api/firebase.api.js";
 import limitsConfig from "#bot/config/limits.config.js";
+import getHtmlOrderLink from "#bot/helpers/getHtmlOrderLink.js";
 
 export const cart = new Composer();
 cart.use(hydrate());
@@ -53,13 +53,9 @@ cart.callbackQuery(/cart__check_/, async (ctx) => {
     const cartItem = ctx.session.cart.filter((order) => order.dbId === currentOrderId)[0];
     console.log(cartItem);
 
-    let htmlOrderLink = `<a href="${cartItem.link}">${getEmoji(cartItem.subType)}  ${translate(
-        cartItem.subType
-    )}</a>`;
-
     let cartItemText = `Детали товара:\n`;
     cartItemText += `- Имя товара: ${translate(cartItem.name)}\n`;
-    cartItemText += `- Ссылка на товар: ${htmlOrderLink}\n`;
+    cartItemText += `- Ссылка на товар: ${getHtmlOrderLink(cartItem)}\n`;
     cartItemText += `- Доп. параметры: ${cartItem.params}\n`;
     cartItemText += `- Цена товара: ${cartItem.priceRUB} ₽\n`;
     // cartItemText += `${getEmoji("fio")}  ФИО получателя: ${cartItem.fio}\n`;

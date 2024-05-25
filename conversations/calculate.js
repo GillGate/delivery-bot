@@ -31,15 +31,18 @@ export async function calculate(conversation, ctx) {
 
     await getOrderPrice(conversation, ctx);
 
+    let htmlOrderLink = `<a href="${currentCalc.link}">${getEmoji(currentCalc.subType)} `;
+    htmlOrderLink += `${translate(currentCalc.subType)}</a>`;
+
     let totalText = `Расчётная цена: ${currentCalc.price} ₽ \n`;
     totalText += `Стоимость товара: ${currentCalc.priceCNY} ￥ \n\n`;
 
     totalText += `Детали расчёта:\n`;
     totalText += `- Имя товара: ${currentCalc.name}\n`;
-    totalText += `- Тип товара: ${getEmoji(currentCalc.subType)}  ${translate(currentCalc.subType)}\n`;
-    totalText += `- Ссылка на товар: ${currentCalc.link}\n`;
+    totalText += `- Ссылка на товар: ${htmlOrderLink}\n`;
 
     ctx.reply(totalText, {
         reply_markup: backMainMenu,
+        parse_mode: "HTML",
     });
 }
