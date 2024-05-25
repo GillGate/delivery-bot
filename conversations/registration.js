@@ -1,4 +1,4 @@
-import { addToCart, addUserOrder, setUserInfo } from "#bot/api/firebase.api.js";
+import { addToCart, setUserInfo } from "#bot/api/firebase.api.js";
 import { backMainMenu } from "#bot/keyboards/general.js";
 import {
     regFioMenu,
@@ -17,9 +17,10 @@ import { getEmoji } from "#bot/helpers/getEmoji.js";
 import getHtmlOrderLink from "#bot/helpers/getHtmlOrderLink.js";
 
 export async function registration(conversation, ctx) {
-    let currentOrder = conversation.ctx.session.order;
-    let currentCart = conversation.ctx.session.cart;
-    let currentUser = conversation.ctx.session.user;
+    let currentSession = conversation.ctx.session;
+    let currentOrder = currentSession.order;
+    let currentCart = currentSession.cart;
+    let currentUser = currentSession.user;
 
     await conversation.ctx.editMessageText("Введите ссылку на товар", {
         reply_markup: backMainMenu,
@@ -37,7 +38,7 @@ export async function registration(conversation, ctx) {
 
     await getOrderParams(conversation, ctx);
 
-    if (conversation.ctx.session.temp?.skipParams) {
+    if (currentSession.temp?.skipParams) {
         conversation.ctx.editMessageText("Укажите стоимость товара в юань:", {
             reply_markup: backMainMenu,
         });
@@ -69,7 +70,7 @@ export async function registration(conversation, ctx) {
             let getAddressText = `Ваш текущий адрес: ${currentUser.address} \n\n`;
             getAddressText += `Вы можете оставить его по кнопке ниже или ввести новый:`;
 
-            if (conversation.ctx.session.temp?.keepFio) {
+            if (currentSession.temp?.keepFio) {
                 conversation.ctx.editMessageText(getAddressText, {
                     reply_markup: regAddressMenu,
                 });
@@ -87,7 +88,6 @@ export async function registration(conversation, ctx) {
         await getOrderAddress(conversation, ctx);
     }
 
-    currentUser = conversation.ctx.session.user; // updated user data
     currentOrder.fio = currentUser.fio;
     currentOrder.address = currentUser.address;
 
@@ -102,9 +102,9 @@ export async function registration(conversation, ctx) {
     totalText += `- Доп. параметры: ${currentOrder.params}\n\n`;
 
     totalText += `${getEmoji("fio")}  ФИО получателя: ${currentOrder.fio}\n`;
-    totalText += `${getEmoji("address")} Адрес доставки: ${currentOrder.address}\n`;
+    totalText += `${getEmoji("address")}  Адрес доставки: ${currentOrder.address}\n`;
 
-    if (conversation.ctx.session.temp?.keepAddress) {
+    if (currentSession.temp?.keepAddress) {
         conversation.ctx.editMessageText(totalText, {
             reply_markup: regTotalMenu,
             parse_mode: "HTML",
@@ -153,7 +153,7 @@ export async function registration(conversation, ctx) {
                 `Товар ${getEmoji(currentOrder.subType)} добавлен в корзину`
             );
 
-            conversation.ctx.session.cart.push(currentOrder);
+            currentSession.cart.push(currentOrder);
             await addToCart(from.id, currentOrder);
         } catch (e) {
             console.error(e);

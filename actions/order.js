@@ -34,39 +34,32 @@ order.callbackQuery("order__make", async (ctx) => {
         link_preview_options: {
             is_disabled: true,
             prefer_small_media: true,
-        }
+        },
     });
-
     ctx.answerCallbackQuery();
 });
 
 order.callbackQuery(/order__create/, async (ctx) => {
     let mode = ctx.callbackQuery.data.split("__create_")[1] ?? "keep";
 
-    if(mode === "skip") {
+    if (mode === "skip") {
         ctx.session.user.isNewbie = false;
-        try {
-            if(ctx.session.user?.fio !== "") {
-                updateUserInfo(ctx.from.id, {
-                    isNewbie: false
-                });
-            }
-        }
-        catch(e) {
-            console.error(e);
+        if (ctx.session.user?.fio !== "") {
+            updateUserInfo(ctx.from.id, {
+                isNewbie: false,
+            });
         }
     }
-    if(mode === "calc") {
+    if (mode === "calc") {
         ctx.session.temp.calcMode = true;
     }
-    if(mode === "another") {
+    if (mode === "another") {
         ctx.session.order = structuredClone(sessionConfig.order);
     }
 
     await ctx.editMessageText("Выберите категорию товара:", {
         reply_markup: selectCategoryKeyboard,
     });
-
     ctx.answerCallbackQuery();
 });
 
@@ -77,20 +70,16 @@ order.callbackQuery(/order__select_/, async (ctx) => {
     await ctx.editMessageText("Выберите подкатегорию:", {
         reply_markup: getSubTypeKeyboard(currentType),
     });
-
     ctx.answerCallbackQuery();
 });
 
 order.callbackQuery(/order__pick_/, async (ctx) => {
-    let currentSubType = ctx.callbackQuery.data.split("__pick_")[1];
-    ctx.session.order.subType = currentSubType;
-
+    ctx.session.order.subType = ctx.callbackQuery.data.split("__pick_")[1];
     ctx.answerCallbackQuery();
 
-    if(ctx.session.temp?.calcMode) {
+    if (ctx.session.temp?.calcMode) {
         await ctx.conversation.enter("calculate");
-    }
-    else {
+    } else {
         await ctx.conversation.enter("registration");
     }
 });
@@ -99,7 +88,6 @@ order.callbackQuery("order__check", async (ctx) => {
     await ctx.editMessageText("У вас нет оформленных заказов", {
         reply_markup: checkMenu,
     });
-
     ctx.answerCallbackQuery();
 });
 
@@ -179,6 +167,5 @@ order.callbackQuery("order__price", async (ctx) => {
     await ctx.editMessageText("С чего начинается цена...", {
         reply_markup: backKeyboard,
     });
-    
     ctx.answerCallbackQuery();
 });

@@ -45,5 +45,5 @@ const terms = {
 
 export function translate(term) {
     const fTerm = term.trim().toLowerCase();
-    return terms[fTerm] ? terms[fTerm] : term;
+    return terms[fTerm] ?? term;
 }

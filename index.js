@@ -40,7 +40,6 @@ bot.callbackQuery("back", async (ctx) => {
         reply_markup: routeParams.reply_markup,
         parse_mode: "HTML",
     });
-
     ctx.answerCallbackQuery();
 });
 
@@ -51,7 +50,6 @@ bot.callbackQuery("help", async (ctx) => {
             reply_markup: helpMenu,
         }
     );
-    
     ctx.answerCallbackQuery();
 });
 
