@@ -45,9 +45,16 @@ order.callbackQuery(/order__create/, async (ctx) => {
 
     if(mode === "skip") {
         ctx.session.user.isNewbie = false;
-        updateUserInfo(ctx.from.id, {
-            isNewbie: false
-        });
+        try {
+            if(ctx.session.user?.fio !== "") {
+                updateUserInfo(ctx.from.id, {
+                    isNewbie: false
+                });
+            }
+        }
+        catch(e) {
+            console.error(e);
+        }
     }
     if(mode === "calc") {
         ctx.session.temp.calcMode = true;

@@ -18,8 +18,8 @@ import { getEmoji } from "#bot/helpers/getEmoji.js";
 
 export async function registration(conversation, ctx) {
     let currentOrder = conversation.ctx.session.order;
-    let currentUser = conversation.ctx.session.user;
     let currentCart = conversation.ctx.session.cart;
+    let currentUser = conversation.ctx.session.user;
 
     await conversation.ctx.editMessageText("Введите ссылку на товар", {
         reply_markup: backMainMenu,
@@ -53,7 +53,7 @@ export async function registration(conversation, ctx) {
         if (currentUser.fio !== "") {
             let getFioText = `Ваше текущее ФИО: ${currentUser.fio} \n\n`;
             getFioText += `Вы можете оставить его по кнопке ниже или ввести новое:`;
-    
+
             ctx.reply(getFioText, {
                 reply_markup: regFioMenu,
             });
@@ -87,12 +87,12 @@ export async function registration(conversation, ctx) {
         await getOrderAddress(conversation, ctx);
     }
 
+    currentUser = conversation.ctx.session.user; // updated user data
     currentOrder.fio = currentUser.fio;
     currentOrder.address = currentUser.address;
 
-    let htmlOrderLink = `<a href="${currentOrder.link}">${getEmoji(currentOrder.subType)}  ${translate(
-        currentOrder.subType
-    )}</a>`;
+    let htmlOrderLink = `<a href="${currentOrder.link}">${getEmoji(currentOrder.subType)}  `;
+    htmlOrderLink += `${translate(currentOrder.subType)}</a>`;
 
     let totalText = `Итоговая цена: ${currentOrder.price} ₽ \n`;
     totalText += `Стоимость товара: ${currentOrder.priceCNY} ￥ \n\n`;
@@ -100,17 +100,15 @@ export async function registration(conversation, ctx) {
     totalText += `Детали заказа:\n`;
     totalText += `- Имя товара: ${currentOrder.name}\n`;
     totalText += `- Ссылка на товар: ${htmlOrderLink}\n`;
-    totalText += `- Доп. параметры: ${currentOrder.params}`;
+    totalText += `- Доп. параметры: ${currentOrder.params}\n\n`;
 
-    if (currentCart.length === 0) {
-        totalText += `\n\n`;
-        totalText += `${getEmoji("fio")}  ФИО получателя: ${currentOrder.fio}\n`;
-        totalText += `${getEmoji("address")} Адрес доставки: ${currentOrder.address}\n`;
-    }
+    totalText += `${getEmoji("fio")}  ФИО получателя: ${currentOrder.fio}\n`;
+    totalText += `${getEmoji("address")} Адрес доставки: ${currentOrder.address}\n`;
 
     if (conversation.ctx.session.temp?.keepAddress) {
         conversation.ctx.editMessageText(totalText, {
             reply_markup: regTotalMenu,
+            parse_mode: "HTML",
         });
     } else {
         ctx.reply(totalText, {
@@ -124,6 +122,7 @@ export async function registration(conversation, ctx) {
             unlessActions(ctx, () => {
                 ctx.reply("Вам следует добавить заказ в корзину или вернуться в главное меню", {
                     reply_markup: regTotalMenu,
+                    parse_mode: "HTML",
                 });
             }),
     });
@@ -133,9 +132,9 @@ export async function registration(conversation, ctx) {
 
         console.log(totalText, currentUser);
 
-        // await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, totalText, {
-        //     message_thread_id: process.env.BOT_CHAT_TOPIC_ORDERS,
-        // });
+        await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, totalText, {
+            message_thread_id: process.env.BOT_CHAT_TOPIC_LOGS,
+        });
 
         try {
             if (JSON.stringify(ctx.session.user) !== JSON.stringify(currentUser)) {
@@ -150,7 +149,9 @@ export async function registration(conversation, ctx) {
                 console.log("userData changed", currentUser);
             }
 
-            conversation.ctx.answerCallbackQuery(`Товар ${getEmoji(currentOrder.subType)} добавлен в корзину`);
+            conversation.ctx.answerCallbackQuery(
+                `Товар ${getEmoji(currentOrder.subType)} добавлен в корзину`
+            );
 
             conversation.ctx.session.cart.push(currentOrder);
             await addToCart(from.id, currentOrder);

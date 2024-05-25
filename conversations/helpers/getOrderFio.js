@@ -15,7 +15,7 @@ export default async function(conversation, ctx) {
 
             let fio = ctx.message?.text;
             if (fio?.length >= fioLimits.min && fio?.length <= fioLimits.max) {
-                ctx.session.user.fio = fio;
+                conversation.ctx.session.user.fio = fio;
                 return true;
             }
         },

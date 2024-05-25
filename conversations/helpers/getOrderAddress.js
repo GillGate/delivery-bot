@@ -16,7 +16,7 @@ export default async function(conversation, ctx) {
             let address = ctx.message?.text;
 
             if (address?.length >= addressLimits.min && address?.length <= addressLimits.max) {
-                ctx.session.user.address = address;
+                conversation.ctx.session.user.address = address;
                 return true;
             }
         },
