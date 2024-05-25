@@ -4,7 +4,7 @@ import { traceRoutes } from "#bot/middleware/route.js";
 import { backKeyboard } from "#bot/keyboards/general.js";
 import { translate } from "#bot/helpers/translate.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
-import { generateOrdersMenu } from "#bot/keyboards/cart.js";
+import { cartNoneMenu, generateOrdersMenu } from "#bot/keyboards/cart.js";
 import { getUserCart } from "#bot/api/firebase.api.js";
 import limitsConfig from "#bot/config/limits.config.js";
 
@@ -12,10 +12,11 @@ export const cart = new Composer();
 cart.use(hydrate());
 
 let maxPages;
+let user;
 cart.callbackQuery("cart__check", async (ctx) => {
     let cart = await getUserCart(ctx.from.id);
     ctx.session.cart = cart;
-    let user = ctx.session?.user;
+    user = ctx.session?.user;
 
     maxPages = Math.ceil(cart.length / limitsConfig.maxOrdersPerMessage);
     ctx.session.currentPage = 1;
@@ -23,25 +24,24 @@ cart.callbackQuery("cart__check", async (ctx) => {
     if (cart.length > 0) {
         let msgText = "";
 
-        if(user) {
-            msgText += `${getEmoji("fio")}  ФИО получателя: ${user.fio}\n`
-            msgText += `${getEmoji("address")}  Адрес доставки: ${user.address}\n\n`
+        if (user?.fio) {
+            msgText += `${getEmoji("fio")}  ФИО получателя: ${user.fio}\n`;
+            msgText += `${getEmoji("address")}  Адрес доставки: ${user.address}\n\n`;
             // TODO: total sum of cart
         }
 
-        msgText += `Ваш список товаров:`;
+        msgText += `Ваш список товаров: `;
 
         if (maxPages > 1) {
-            msgText += `\n\n`;
-            msgText += `Страница: ${ctx.session.currentPage} из ${maxPages}`;
+            msgText += `${ctx.session.currentPage}/${maxPages}`;
         }
 
         await ctx.editMessageText(msgText, {
             reply_markup: generateOrdersMenu(cart, ctx.session.currentPage),
         });
     } else {
-        await ctx.editMessageText("Список товаров пуст", {
-            reply_markup: checkMenu,
+        await ctx.editMessageText("В корзине пока нет товаров", {
+            reply_markup: cartNoneMenu,
         });
     }
 
@@ -53,9 +53,9 @@ cart.callbackQuery(/cart__check_/, async (ctx) => {
     const cartItem = ctx.session.cart.filter((order) => order.dbId === currentOrderId)[0];
     console.log(cartItem);
 
-    let htmlOrderLink = `<a href="${cartItem.link}">${getEmoji(cartItem.subType)}  ${
-        translate(cartItem.subType)
-    }</a>`;
+    let htmlOrderLink = `<a href="${cartItem.link}">${getEmoji(cartItem.subType)}  ${translate(
+        cartItem.subType
+    )}</a>`;
 
     let cartItemText = `Детали товара:\n`;
     cartItemText += `- Имя товара: ${translate(cartItem.name)}\n`;
@@ -82,8 +82,16 @@ cart.callbackQuery(/cart__nav_/, async (ctx) => {
     }
 
     let cart = ctx.session.cart;
-    let msgText = `Ваш список заказов:\n\n`;
-    msgText += `Страница: ${ctx.session.currentPage} из ${maxPages}`;
+    let msgText = "";
+
+    if (user?.fio) {
+        msgText += `${getEmoji("fio")}  ФИО получателя: ${user.fio}\n`;
+        msgText += `${getEmoji("address")}  Адрес доставки: ${user.address}\n\n`;
+        // TODO: total sum of cart
+    }
+
+    msgText += `Ваш список товаров: `;
+    msgText += `${ctx.session.currentPage}/${maxPages}`;
 
     await ctx.editMessageText(msgText, {
         reply_markup: generateOrdersMenu(cart, ctx.session.currentPage),

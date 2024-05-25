@@ -3,6 +3,11 @@ import limitsConfig from "#bot/config/limits.config.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 import { translate } from "#bot/helpers/translate.js";
 
+export const cartNoneMenu = new InlineKeyboard()
+    .text("📦  Заказать вещи", "order__make")
+    .row()
+    .text("‹ Назад", "main_menu");
+
 export function generateOrdersMenu(
     orders,
     currentPage,

@@ -8,12 +8,12 @@ export const orderMenuBeforeCreate = new InlineKeyboard()
     .row()
     .text("Я уже знаю, больше не показывать", "order__create_skip")
     .row()
-    .text("‹ Назад", "back");
+    .text("‹ Назад", "main_menu");
 
 export const checkMenu = new InlineKeyboard()
     .text("📦  Сделать заказ", "order__make")
     .row()
-    .text("‹ Назад", "back");
+    .text("‹ Назад", "main_menu");
 
 export const selectCategoryKeyboard = new InlineKeyboard()
     .text(`${getEmoji("shoes")}  ${translate("shoes")}`, "order__select_shoes")

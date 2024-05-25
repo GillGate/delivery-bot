@@ -1,6 +1,12 @@
 import { addToCart, addUserOrder, setUserInfo } from "#bot/api/firebase.api.js";
 import { backMainMenu } from "#bot/keyboards/general.js";
-import { regFioMenu, regAddressMenu, regTotalMenu, regParamsMenu, regFinalMenu } from "#bot/keyboards/registration.js";
+import {
+    regFioMenu,
+    regAddressMenu,
+    regTotalMenu,
+    regParamsMenu,
+    regFinalMenu,
+} from "#bot/keyboards/registration.js";
 import getOrderLink from "#bot/conversations/helpers/getOrderLink.js";
 import getOrderParams from "#bot/conversations/helpers/getOrderParams.js";
 import getOrderPrice from "#bot/conversations/helpers/getOrderPrice.js";
@@ -43,7 +49,7 @@ export async function registration(conversation, ctx) {
 
     await getOrderPrice(conversation, ctx);
 
-    if(currentCart.length === 0) {
+    if (currentCart.length === 0) {
         if (currentUser.fio !== "") {
             let getFioText = `Ваше текущее ФИО: ${currentUser.fio} \n\n`;
             getFioText += `Вы можете оставить его по кнопке ниже или ввести новое:`;
@@ -84,9 +90,9 @@ export async function registration(conversation, ctx) {
     currentOrder.fio = currentUser.fio;
     currentOrder.address = currentUser.address;
 
-    let htmlOrderLink = `<a href="${currentOrder.link}">${getEmoji(currentOrder.subType)}  ${
-        translate(currentOrder.subType)
-    }</a>`;
+    let htmlOrderLink = `<a href="${currentOrder.link}">${getEmoji(currentOrder.subType)}  ${translate(
+        currentOrder.subType
+    )}</a>`;
 
     let totalText = `Итоговая цена: ${currentOrder.price} ₽ \n`;
     totalText += `Стоимость товара: ${currentOrder.priceCNY} ￥ \n\n`;
@@ -96,7 +102,7 @@ export async function registration(conversation, ctx) {
     totalText += `- Ссылка на товар: ${htmlOrderLink}\n`;
     totalText += `- Доп. параметры: ${currentOrder.params}`;
 
-    if(currentCart.length === 0) {
+    if (currentCart.length === 0) {
         totalText += `\n\n`;
         totalText += `${getEmoji("fio")}  ФИО получателя: ${currentOrder.fio}\n`;
         totalText += `${getEmoji("address")} Адрес доставки: ${currentOrder.address}\n`;
@@ -144,13 +150,15 @@ export async function registration(conversation, ctx) {
                 console.log("userData changed", currentUser);
             }
 
+            conversation.ctx.answerCallbackQuery(`Товар ${getEmoji(currentOrder.subType)} добавлен в корзину`);
+
             conversation.ctx.session.cart.push(currentOrder);
             await addToCart(from.id, currentOrder);
         } catch (e) {
             console.error(e);
         }
 
-        conversation.ctx.editMessageText(`Товар ${htmlOrderLink} добавлен в корзину`, {
+        conversation.ctx.editMessageText(`Товар ${htmlOrderLink} был добавлен в корзину`, {
             reply_markup: regFinalMenu,
             parse_mode: "HTML",
         });

@@ -36,4 +36,4 @@ export const helpMenu = new InlineKeyboard()
     .row()
     .text("Как считается стоимость заказа", "order__price")
     .row()
-    .text("‹ Назад", "back");
+    .text("‹ Назад", "main_menu");
