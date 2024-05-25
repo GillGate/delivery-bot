@@ -50,6 +50,8 @@ jobs:
     - name: Push Docker Image
       run: |
         docker build -t saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev .
+        open /Applications/Docker.app
+        sleep 5
         docker push saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev
 
     - name: Logout from Docker
