@@ -47,13 +47,15 @@ order.callbackQuery(/order__create/, async (ctx) => {
     let mode = ctx.callbackQuery.data.split("__create_")[1] ?? "keep";
     let cart = ctx.session.cart;
 
-    if(cart.length === limitsConfig.cartMaxLength) {
-        await ctx.editMessageText("Корзина переполнена, вам следует оформить заказ или удалить что-то лишнее из товаров ", {
-            reply_markup: backToCart,
-        });
+    if (cart.length === limitsConfig.cartMaxLength) {
+        await ctx.editMessageText(
+            "Корзина переполнена, вам следует оформить заказ или удалить что-то лишнее из товаров ",
+            {
+                reply_markup: backToCart,
+            }
+        );
         ctx.answerCallbackQuery();
-    }
-    else {
+    } else {
         if (mode === "skip") {
             ctx.session.user.isNewbie = false;
             if (ctx.session.user?.fio !== "") {
@@ -146,34 +148,33 @@ order.callbackQuery("order__confirm", async (ctx) => {
     let cart = ctx.session.cart;
     let user = ctx.session.user;
 
-    
-
     const order = {
         items: cart,
         user,
         totalSum,
-        status: "expectingPayment"
-    }
+        status: "expectingPayment",
+    };
 
     await addUserOrder(ctx.from.id, order);
-    let res = await cleanCart(ctx.from.id);
-    if(res) {
-        ctx.session.cart = [];
-        ctx.session.temp.order = order;
+    // let res = await cleanCart(ctx.from.id);
+    // if(res) {
+    // 
+    // }
+    ctx.session.cart = [];
+    ctx.session.temp.order = order;
 
-        if(user?.username) {
-            makeOrderText += `📞  Контакт для связи: @${user.username}`;
-        }
-
-        await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, makeOrderText, {
-            message_thread_id: process.env.BOT_CHAT_TOPIC_ORDERS,
-            parse_mode: "HTML",
-        });
+    if (user?.username) {
+        makeOrderText += `📞  Контакт для связи: @${user.username}`;
     }
 
+    await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, makeOrderText, {
+        message_thread_id: process.env.BOT_CHAT_TOPIC_ORDERS,
+        parse_mode: "HTML",
+    });
+
     ctx.editMessageText("💸 Заказ сформирован и ожидает оплаты", {
-        reply_markup: backMainMenu
-    })
+        reply_markup: backMainMenu,
+    });
 });
 
 /*

@@ -7,6 +7,12 @@ export default async function (conversation, ctx) {
 
     return await conversation.waitUntil(
         async (ctx) => {
+            if (ctx?.callbackQuery?.data === "reg__keep_address") {
+                ctx.answerCallbackQuery();
+                ctx.session.temp.keepAddress = true;
+                return true;
+            }
+
             let address = ctx.message?.text;
             if (address?.length >= addressLimits.min && address?.length <= addressLimits.max) {
                 conversation.ctx.session.user.address = address;

@@ -51,17 +51,41 @@ export async function registration(conversation, ctx) {
     await getOrderPrice(conversation, ctx);
 
     if (currentCart.length === 0) {
-        ctx.reply("Напишите своё ФИО, которое мы укажем при оформлении заказа:", {
-            reply_markup: backMainMenu,
-        });
+        if (currentUser.fio !== "") {
+            let getFioText = `Ваше текущее ФИО: ${currentUser.fio} \n\n`;
+            getFioText += `Вы можете оставить его по кнопке ниже или ввести новое:`;
+
+            ctx.reply(getFioText, {
+                reply_markup: regFioMenu,
+            });
+        } else {
+            ctx.reply("Напишите своё ФИО, которое мы укажем при оформлении заказа:", {
+                reply_markup: backMainMenu,
+            });
+        }
 
         await getUserFio(conversation, ctx);
 
-        ctx.reply("Укажите адрес где планируете забирать товар:", {
-            reply_markup: backMainMenu,
-        });
+        if (currentUser.address !== "") {
+            let getAddressText = `Ваш текущий адрес: ${currentUser.address} \n\n`;
+            getAddressText += `Вы можете оставить его по кнопке ниже или ввести новый:`;
 
-        await getUserAddress(conversation, ctx);
+            if (conversation.ctx.session?.temp?.keepFio) {
+                conversation.ctx.editMessageText(getAddressText, {
+                    reply_markup: regAddressMenu,
+                });
+            } else {
+                ctx.reply(getAddressText, {
+                    reply_markup: regAddressMenu,
+                });
+            }
+        } else {
+            ctx.reply("Укажите адрес где планируете забирать товар:", {
+                reply_markup: backMainMenu,
+            });
+        }
+
+        await getUserFio(conversation, ctx);
     }
 
     currentOrder.fio = currentUser.fio;

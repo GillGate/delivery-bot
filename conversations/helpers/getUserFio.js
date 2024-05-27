@@ -7,6 +7,12 @@ export default async function (conversation, ctx) {
 
     return await conversation.waitUntil(
         async (ctx) => {
+            if (ctx?.callbackQuery?.data === "reg__keep_fio") {
+                ctx.answerCallbackQuery();
+                ctx.session.temp.keepFio = true;
+                return true;
+            }
+            
             let fio = ctx.message?.text;
             if (fio?.length >= fioLimits.min && fio?.length <= fioLimits.max) {
                 conversation.ctx.session.user.fio = fio;

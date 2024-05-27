@@ -21,6 +21,6 @@ export const regTotalMenu = new InlineKeyboard()
     .text("‹ В главное меню", "main_menu");
 
 export const regFinalMenu = new InlineKeyboard()
-    .text("📝  Оформить ещё один заказ", "order__create_another")
+    .text("📝  Оформить ещё один товар", "order__create_another")
     .row()
     .text("‹ В главное меню", "main_menu");
