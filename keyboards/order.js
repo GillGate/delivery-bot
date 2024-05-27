@@ -18,6 +18,11 @@ export const checkMenu = new InlineKeyboard()
     .row()
     .text("‹ Назад", "main_menu");
 
+export const confirmOrderMenu = new InlineKeyboard()
+    .text("✍️  Подтвердить заказ", "order__confirm")
+    .row()
+    .text("‹ Назад", "back");
+
 export const selectCategoryKeyboard = new InlineKeyboard()
     .text(textWithIcon("shoes"), "order__select_shoes")
     .text(textWithIcon("outerwear"), "order__select_outerwear")

@@ -8,13 +8,31 @@ export const cartNoneMenu = new InlineKeyboard()
     .row()
     .text("‹ Назад", "main_menu");
 
-export function generateOrdersMenu(
-    orders,
-    currentPage,
-    maxPerMessage = limitsConfig.maxOrdersPerMessage
-) {
+export const backToCart = new InlineKeyboard().text("🛒 Перейти в корзину", "cart__enter");
+
+export const cartActions = new InlineKeyboard()
+    .text("🛍  Посмотреть товары", "cart__check")
+    .row()
+    .text(`${getEmoji("fio")}  Изменить ФИО`, "cart__change_fio")
+    .text(`${getEmoji("address")}  Изменить адрес`, "cart__change_address")
+    .row()
+    .text("📝  Оформить заказ", "order__place")
+    .row()
+    .text("‹ Назад", "main_menu");
+
+export function generateItemActions(itemId) {
+    return new InlineKeyboard()
+        .text("🗑  Удалить товар", `cart_item__delete_${itemId}`)
+        .row()
+        .text("‹ Назад", "back");
+}
+
+export function generateItemDeleteConfirm(itemId) {
+    return new InlineKeyboard().text("✅ Да", `cart__check_after_delete_${itemId}`).text("❌ Нет", "back");
+}
+
+export function generateOrdersMenu(orders, currentPage, maxPerMessage = limitsConfig.maxOrdersPerMessage) {
     let ordersMenu = new InlineKeyboard();
-    console.log("currentPage", currentPage);
 
     if (currentPage === 1) {
         let range;
@@ -34,7 +52,7 @@ export function generateOrdersMenu(
                 .row();
         }
 
-        ordersMenu.text("‹ Назад", "main_menu");
+        ordersMenu.text("‹ Назад", "cart__enter");
 
         if (orders.length > maxPerMessage) {
             ordersMenu.text("Дальше ›", "cart__nav_next");

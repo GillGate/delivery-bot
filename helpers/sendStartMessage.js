@@ -49,7 +49,7 @@ export default async function (ctx, replyMode = false) {
         });
     }
 
-    console.log("session", ctx.session);
+    // console.log("session", ctx.session);
 
     if (ctx?.callbackQuery && !replyMode) {
         ctx.answerCallbackQuery();

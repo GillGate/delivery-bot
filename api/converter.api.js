@@ -1,16 +1,10 @@
 import "dotenv/config";
-//TODO динамический подсчёт цены
-// const deliveryPriceCDEK = 500;
-const convertationFee = +process.env.BOT_CONVERSION_FEE;
-const wmFee = +process.env.BOT_WM_FEE;
+import pricingConfig from "#bot/config/pricing.config.js";
 
-const poshlinaFloor = +process.env.BOT_POSHLINA_FLOOR;
-const poshlinaAdmin = +process.env.BOT_POSHLINA_ADMIN_FEE;
-const poshlinaAgent = +process.env.BOT_POSHLINA_AGENT_FEE;
+const { convertationFee, wmFee, poshlinaFloor, poshlinaAdmin, poshlinaAgent } = pricingConfig;
 
-async function getCurrentRates() {
+export async function getCurrentRates() {
     try {
-        let dataOne, dataTwo;
         //Запрашиваем данные
         const responseOne = await fetch(process.env.BOT_LINK_FREECURRENCY_API);
         const responseTwo = await fetch(process.env.BOT_LINK_OPEN_API);
@@ -20,6 +14,7 @@ async function getCurrentRates() {
         const { rates: rateTwo } = await responseTwo.json();
 
         // TODO: update rates every 1h
+        console.log("current rate usd to cny ~", rateOne["RUB"]);
 
         return {
             dataOne: rateOne,
@@ -42,8 +37,10 @@ async function convertThroughUSD(amount, fromCurr, toCurr, rates) {
     return (responseOneRate + responseTwoRate) / 2;
 }
 
-export async function convertedCNYWithFee(cnyAmount) {
-    const rates = await getCurrentRates();
+export async function convertedCNYWithFee(cnyAmount, rates = null) {
+    if (rates === null) {
+        rates = await getCurrentRates();
+    }
 
     let currentSum = await convertThroughUSD(cnyAmount, "CNY", "RUB", rates);
     let amountInEuro = await convertThroughUSD(cnyAmount, "CNY", "EUR", rates);

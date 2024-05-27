@@ -14,5 +14,6 @@ export default {
         params: "",
         price: "",
     },
-    temp: {}
+    temp: {},
+    totalSum: 0
 }

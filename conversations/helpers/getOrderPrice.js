@@ -7,7 +7,7 @@ import { calculateDelivery } from "#bot/helpers/calculateDelivery.js";
 export default async function(conversation, ctx) {
     return await conversation.waitUntil(
         async (ctx) => {
-            let price = parseInt(ctx.message?.text);
+            let price = parseFloat(ctx.message?.text);
             const { price: priceLimits } = limitsConfig;
 
             const profitPercent = +process.env.BOT_PROFIT_PERCENT;
@@ -33,8 +33,8 @@ export default async function(conversation, ctx) {
                 );
 
                 let totalPrice = rubPrice + currentProfit + currentDeliveryPrice; 
-                ctx.session.order.priceCNY = parseInt(ctx.message?.text);
-                ctx.session.order.priceRUB = parseInt(rubPrice);
+                ctx.session.order.priceCNY = parseFloat(ctx.message?.text);
+                ctx.session.order.priceRUB = parseFloat(rubPrice);
                 ctx.session.order.price = Math.ceil(totalPrice); // по божески
                 // TODO: better UX improvemnt 10000 -> 10 000  
                 return true;

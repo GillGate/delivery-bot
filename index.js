@@ -35,6 +35,7 @@ bot.callbackQuery("main_menu", async (ctx) => await sendStartMessage(ctx));
 bot.callbackQuery("back", async (ctx) => {
     await ctx.session.routeHistory.pop(); // фальшивка ёбанная
     const routeParams = await ctx.session.routeHistory.pop();
+    ctx.session.conversation = {};
 
     await ctx.editMessageText(routeParams.text, {
         reply_markup: routeParams.reply_markup,

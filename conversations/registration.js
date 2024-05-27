@@ -10,8 +10,8 @@ import {
 import getOrderLink from "#bot/conversations/helpers/getOrderLink.js";
 import getOrderParams from "#bot/conversations/helpers/getOrderParams.js";
 import getOrderPrice from "#bot/conversations/helpers/getOrderPrice.js";
-import getOrderFio from "#bot/conversations/helpers/getOrderFio.js";
-import getOrderAddress from "#bot/conversations/helpers/getOrderAddress.js";
+import getUserFio from "#bot/conversations/helpers/getUserFio.js";
+import getUserAddress from "#bot/conversations/helpers/getUserAddress.js";
 import unlessActions from "#bot/conversations/helpers/unlessActions.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 import getHtmlOrderLink from "#bot/helpers/getHtmlOrderLink.js";
@@ -51,41 +51,17 @@ export async function registration(conversation, ctx) {
     await getOrderPrice(conversation, ctx);
 
     if (currentCart.length === 0) {
-        if (currentUser.fio !== "") {
-            let getFioText = `Ваше текущее ФИО: ${currentUser.fio} \n\n`;
-            getFioText += `Вы можете оставить его по кнопке ниже или ввести новое:`;
+        ctx.reply("Напишите своё ФИО, которое мы укажем при оформлении заказа:", {
+            reply_markup: backMainMenu,
+        });
 
-            ctx.reply(getFioText, {
-                reply_markup: regFioMenu,
-            });
-        } else {
-            ctx.reply("Напишите своё ФИО, которое мы укажем при оформлении заказа:", {
-                reply_markup: backMainMenu,
-            });
-        }
+        await getUserFio(conversation, ctx);
 
-        await getOrderFio(conversation, ctx);
+        ctx.reply("Укажите адрес где планируете забирать товар:", {
+            reply_markup: backMainMenu,
+        });
 
-        if (currentUser.address !== "") {
-            let getAddressText = `Ваш текущий адрес: ${currentUser.address} \n\n`;
-            getAddressText += `Вы можете оставить его по кнопке ниже или ввести новый:`;
-
-            if (currentSession.temp?.keepFio) {
-                conversation.ctx.editMessageText(getAddressText, {
-                    reply_markup: regAddressMenu,
-                });
-            } else {
-                ctx.reply(getAddressText, {
-                    reply_markup: regAddressMenu,
-                });
-            }
-        } else {
-            ctx.reply("Укажите адрес где планируете забирать товар:", {
-                reply_markup: backMainMenu,
-            });
-        }
-
-        await getOrderAddress(conversation, ctx);
+        await getUserAddress(conversation, ctx);
     }
 
     currentOrder.fio = currentUser.fio;
@@ -103,6 +79,7 @@ export async function registration(conversation, ctx) {
 
     totalText += `${getEmoji("fio")}  ФИО получателя: ${currentOrder.fio}\n`;
     totalText += `${getEmoji("address")}  Адрес доставки: ${currentOrder.address}\n`;
+    // изменить можно в корзине
 
     if (currentSession.temp?.keepAddress) {
         conversation.ctx.editMessageText(totalText, {
