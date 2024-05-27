@@ -113,11 +113,13 @@ order.callbackQuery("order__price", async (ctx) => {
     ctx.answerCallbackQuery();
 });
 
-let makeOrderText = "";
 let totalSum;
 order.callbackQuery("order__place", async (ctx) => {
     let cart = ctx.session.cart;
     let user = ctx.session.user;
+
+    ctx.session.temp.makeOrderText = "";
+    let makeOrderText = ctx.session.temp.makeOrderText;
 
     makeOrderText += "Список товаров на заказ:\n\n";
     let cartItemsText = "";
@@ -167,7 +169,7 @@ order.callbackQuery("order__confirm", async (ctx) => {
         makeOrderText += `📞  Контакт для связи: @${user.username}`;
     }
 
-    await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, makeOrderText, {
+    await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, ctx.session.temp.makeOrderText, {
         message_thread_id: process.env.BOT_CHAT_TOPIC_ORDERS,
         parse_mode: "HTML",
     });

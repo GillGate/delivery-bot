@@ -70,7 +70,7 @@ export async function registration(conversation, ctx) {
             let getAddressText = `Ваш текущий адрес: ${currentUser.address} \n\n`;
             getAddressText += `Вы можете оставить его по кнопке ниже или ввести новый:`;
 
-            if (conversation.ctx.session?.temp?.keepFio) {
+            if (conversation.ctx.session.temp?.keepFio) {
                 conversation.ctx.editMessageText(getAddressText, {
                     reply_markup: regAddressMenu,
                 });
@@ -85,9 +85,10 @@ export async function registration(conversation, ctx) {
             });
         }
 
-        await getUserFio(conversation, ctx);
+        await getUserAddress(conversation, ctx);
     }
 
+    currentUser = conversation.ctx.session.user;
     currentOrder.fio = currentUser.fio;
     currentOrder.address = currentUser.address;
 
