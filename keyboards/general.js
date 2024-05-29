@@ -11,7 +11,7 @@ export function getMainMenu(isNewbie = true) {
     }
 
     mainMenu
-        .text("🔎  Проверить заказы", "order__check")
+        .text("🔎  Проверить заказы", "orders__check")
         .row()
         .text("🧮  Калькулятор", "order__create_calc")
         .text("🛒  Корзина", "cart__enter")
@@ -36,4 +36,4 @@ export const helpMenu = new InlineKeyboard()
     .row()
     .text("Как считается стоимость заказа", "order__price")
     .row()
-    .text("‹ Назад", "main_menu");
+    .text("‹ В главное меню", "main_menu");

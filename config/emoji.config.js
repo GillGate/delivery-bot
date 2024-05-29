@@ -40,7 +40,7 @@ export default {
     gloves: "🧤",
 
     // #Статусы
-    expectingPayment: "💸",
+    expecting_payment: "💸",
     processing: "🔄",
 
     // #Пользователь

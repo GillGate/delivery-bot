@@ -4,10 +4,13 @@ import { adapter } from "@grammyjs/storage-firestore";
 import { hydrate } from "@grammyjs/hydrate";
 import { order } from "#bot/actions/order.js";
 import { cart } from "#bot/actions/cart.js";
+import { orders } from "#bot/actions/orders.js";
 import { helpMenu } from "#bot/keyboards/general.js";
 import { db } from "#bot/api/firebase.api.js";
 import sessionConfig from "#bot/config/session.config.js";
-import sendStartMessage from "#bot/helpers/sendStartMessage.js";
+import traceRoutes from "#bot/middleware/traceRoutes.js";
+import sendStartMessage from "#bot/handlers/sendStartMessage.js";
+import sendHelpMessage from "#bot/handlers/sendHelpMessage.js";
 
 const bot = new Bot(process.env.BOT_API_TOKEN);
 bot.use(
@@ -17,19 +20,31 @@ bot.use(
     })
 );
 bot.use(hydrate());
+bot.use(traceRoutes);
 bot.use(order);
 bot.use(cart);
+bot.use(orders);
 
 bot.api.setMyCommands([
     {
-        command: "main_menu",
+        command: "/start",
         description: "Главное меню",
     },
-    // TODO: дублировать комманды из кнопок главного меню
+    {
+        command: "/orders",
+        description: "Проверить заказы",
+    },
+    {
+        command: "/cart",
+        description: "Перейти в корзину",
+    },
+    {
+        command: "/help",
+        description: "Вся информация про сервис",
+    },
 ]);
 
 bot.command("start", async (ctx) => await sendStartMessage(ctx, true));
-bot.command("main_menu", async (ctx) => await sendStartMessage(ctx, true));
 bot.callbackQuery("main_menu", async (ctx) => await sendStartMessage(ctx));
 
 bot.callbackQuery("back", async (ctx) => {
@@ -44,15 +59,8 @@ bot.callbackQuery("back", async (ctx) => {
     ctx.answerCallbackQuery();
 });
 
-bot.callbackQuery("help", async (ctx) => {
-    await ctx.editMessageText(
-        "Для последовательного ознакомления с площадкой Poizon и основными принципами нашей работы рекомендуем последовательно ознакомиться с каждым из трёх пунктов, представленных ниже.",
-        {
-            reply_markup: helpMenu,
-        }
-    );
-    ctx.answerCallbackQuery();
-});
+bot.callbackQuery("help", async (ctx) => await sendHelpMessage(ctx));
+bot.command("help", async (ctx) => await sendHelpMessage(ctx, true));
 
 bot.catch(async (err) => {
     const ctx = err.ctx;

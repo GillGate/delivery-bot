@@ -6,7 +6,7 @@ import { translate } from "#bot/helpers/translate.js";
 export const cartNoneMenu = new InlineKeyboard()
     .text("📦  Заказать вещи", "order__make")
     .row()
-    .text("‹ Назад", "main_menu");
+    .text("‹ В главное меню", "main_menu");
 
 export const backToCart = new InlineKeyboard().text("🛒 Перейти в корзину", "cart__enter");
 
@@ -18,7 +18,7 @@ export const cartActions = new InlineKeyboard()
     .row()
     .text("📝  Оформить заказ", "order__place")
     .row()
-    .text("‹ Назад", "main_menu");
+    .text("‹ В главное меню", "main_menu");
 
 export function generateItemActions(itemId) {
     return new InlineKeyboard()
@@ -31,59 +31,54 @@ export function generateItemDeleteConfirm(itemId) {
     return new InlineKeyboard().text("✅ Да", `cart__check_after_delete_${itemId}`).text("❌ Нет", "back");
 }
 
-export function generateOrdersMenu(orders, currentPage, maxPerMessage = limitsConfig.maxOrdersPerMessage) {
-    let ordersMenu = new InlineKeyboard();
+export function generateCartItemsMenu(cart, currentPage, maxPerMessage = limitsConfig.maxOrdersPerMessage) {
+    let cartItemsMenu = new InlineKeyboard();
 
     if (currentPage === 1) {
         let range;
 
-        if (orders.length == 1) {
-            range = orders.length;
+        if (cart.length == 1) {
+            range = cart.length;
         } else {
-            range = orders.length - 1 < maxPerMessage ? orders.length : maxPerMessage;
+            range = cart.length - 1 < maxPerMessage ? cart.length : maxPerMessage;
         }
 
         for (let i = 0; i < range; i++) {
-            ordersMenu
+            cartItemsMenu
                 .text(
-                    `${getEmoji(orders[i].subType)}  ${translate(orders[i].name)}`,
-                    `cart__check_${orders[i].dbId}`
+                    `${getEmoji(cart[i].subType)}  ${translate(cart[i].name)}`,
+                    `cart__check_${cart[i].dbId}`
                 )
                 .row();
         }
 
-        ordersMenu.text("‹ Назад", "cart__enter");
+        cartItemsMenu.text("‹ Назад", "cart__enter");
 
-        if (orders.length > maxPerMessage) {
-            ordersMenu.text("Дальше ›", "cart__nav_next");
+        if (cart.length > maxPerMessage) {
+            cartItemsMenu.text("Дальше ›", "cart__nav_next");
         }
     } else {
-        /* 
-            if maxPerMessage = 5
-            6-10  | cuurentPage 2 | 2 * 5 = 10 | 10 - 5 = 5 + 1  = 6 
-            11-15 | currentPage 3 | 3 * 5 = 15 | 15 - 5 = 10 + 1 = 11
-        */
-        let isOrdersEnd = false;
+        let isItemsEnd = false;
         const range = currentPage * maxPerMessage;
         for (let i = range - maxPerMessage; i <= range; i++) {
-            if (orders[i]?.dbId && !isOrdersEnd) {
-                ordersMenu
+            if (cart[i]?.dbId && !isOrdersEnd) {
+                cartItemsMenu
                     .text(
-                        `${getEmoji(orders[i].subType)}  ${translate(orders[i].name)}`,
-                        `cart__check_${orders[i].dbId}`
+                        `${getEmoji(cart[i].subType)}  ${translate(cart[i].name)}`,
+                        `cart__check_${cart[i].dbId}`
                     )
                     .row();
             } else {
-                isOrdersEnd = true;
+                isItemsEnd = true;
             }
         }
 
-        if (!isOrdersEnd) {
-            ordersMenu.text("‹ Назад", "cart__nav_back").text("Дальше ›", "cart__nav_next");
+        if (!isItemsEnd) {
+            cartItemsMenu.text("‹ Назад", "cart__nav_back").text("Дальше ›", "cart__nav_next");
         } else {
-            ordersMenu.text("‹ Назад", "cart__nav_back");
+            cartItemsMenu.text("‹ Назад", "cart__nav_back");
         }
     }
 
-    return ordersMenu;
+    return cartItemsMenu;
 }

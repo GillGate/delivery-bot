@@ -11,12 +11,7 @@ export const orderMenuBeforeCreate = new InlineKeyboard()
     .row()
     .text("Я уже знаю, больше не показывать", "order__create_skip")
     .row()
-    .text("‹ Назад", "main_menu");
-
-export const checkMenu = new InlineKeyboard()
-    .text("📦  Сделать заказ", "order__make")
-    .row()
-    .text("‹ Назад", "main_menu");
+    .text("‹ В главное меню", "main_menu");
 
 export const confirmOrderMenu = new InlineKeyboard()
     .text("✍️  Подтвердить заказ", "order__confirm")
@@ -35,7 +30,7 @@ export const selectCategoryKeyboard = new InlineKeyboard()
     .row()
     .text(textWithIcon("accessories"), "order__select_accessories")
     .row()
-    .text("‹ Назад", "main_menu");
+    .text("‹ В главное меню", "main_menu");
 
 export function getSubTypeKeyboard(type) {
     let subTypeKeyboard = new InlineKeyboard();
@@ -48,7 +43,7 @@ export function getSubTypeKeyboard(type) {
                 .row()
                 .text(textWithIcon("slippers"), "order__pick_slippers")
                 .row()
-                .text("‹ Назад", "back");
+                .text("‹ Изменить категорию", "back");
             break;
         case "outerwear":
             subTypeKeyboard
@@ -60,7 +55,7 @@ export function getSubTypeKeyboard(type) {
                 .text(textWithIcon("down_jacket"), "order__pick_down_jacket")
                 .text(textWithIcon("light_jacket"), "order__pick_light_jacket")
                 .row()
-                .text("‹ Назад", "back");
+                .text("‹ Изменить категорию", "back");
             break;
         case "t_shirts_hoodie_shirts":
             subTypeKeyboard
@@ -72,7 +67,7 @@ export function getSubTypeKeyboard(type) {
                 .row()
                 .text(textWithIcon("shirt"), "order__pick_shirt")
                 .row()
-                .text("‹ Назад", "back");
+                .text("‹ Изменить категорию", "back");
             break;
         case "pants_shorts_skirt":
             subTypeKeyboard
@@ -82,7 +77,7 @@ export function getSubTypeKeyboard(type) {
                 .text(textWithIcon("trousers"), "order__pick_trousers")
                 .text(textWithIcon("skirt"), "order__pick_skirt")
                 .row()
-                .text("‹ Назад", "back");
+                .text("‹ Изменить категорию", "back");
             break;
         case "bags_backpacks":
             subTypeKeyboard
@@ -92,7 +87,7 @@ export function getSubTypeKeyboard(type) {
                 .text(textWithIcon("backpack"), "order__pick_backpack")
                 .text(textWithIcon("satchel"), "order__pick_satchel")
                 .row()
-                .text("‹ Назад", "back");
+                .text("‹ Изменить категорию", "back");
             break;
         case "accessories":
             subTypeKeyboard
@@ -105,7 +100,7 @@ export function getSubTypeKeyboard(type) {
                 .text(textWithIcon("scarf"), "order__pick_scarf")
                 .text(textWithIcon("gloves"), "order__pick_gloves")
                 .row()
-                .text("‹ Назад", "back");
+                .text("‹ Изменить категорию", "back");
             break;
     }
 

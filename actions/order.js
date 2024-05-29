@@ -1,12 +1,10 @@
 import { Composer } from "grammy";
 import { conversations, createConversation } from "@grammyjs/conversations";
 import { hydrate } from "@grammyjs/hydrate";
-import { traceRoutes } from "#bot/middleware/route.js";
 import { registration } from "#bot/conversations/registration.js";
 import { calculate } from "#bot/conversations/calculate.js";
 import { backKeyboard, backMainMenu } from "#bot/keyboards/general.js";
 import {
-    checkMenu,
     confirmOrderMenu,
     getSubTypeKeyboard,
     orderMenuBeforeCreate,
@@ -24,7 +22,6 @@ import calculateTotalSum from "#bot/helpers/calculateTotalSum.js";
 
 export const order = new Composer();
 order.use(hydrate());
-order.use(traceRoutes);
 order.use(conversations());
 order.use(createConversation(registration));
 order.use(createConversation(calculate));
@@ -99,13 +96,6 @@ order.callbackQuery(/order__pick_/, async (ctx) => {
     }
 });
 
-order.callbackQuery("order__check", async (ctx) => {
-    await ctx.editMessageText("У вас нет оформленных заказов", {
-        reply_markup: checkMenu,
-    });
-    ctx.answerCallbackQuery();
-});
-
 order.callbackQuery("order__price", async (ctx) => {
     await ctx.editMessageText("С чего начинается цена...", {
         reply_markup: backKeyboard,
@@ -118,8 +108,7 @@ order.callbackQuery("order__place", async (ctx) => {
     let cart = ctx.session.cart;
     let user = ctx.session.user;
 
-    ctx.session.temp.makeOrderText = "";
-    let makeOrderText = ctx.session.temp.makeOrderText;
+    let makeOrderText = "";
 
     makeOrderText += "Список товаров на заказ:\n\n";
     let cartItemsText = "";
@@ -128,16 +117,20 @@ order.callbackQuery("order__place", async (ctx) => {
         cartItemsText += `#${++index}: ${translate(cartItem.name)}\n`;
         cartItemsText += `- Ссылка: ${getHtmlOrderLink(cartItem)}\n`;
         cartItemsText += `- Доп. параметры: ${cartItem.params}\n`;
-        cartItemsText += `- Цена: ${cartItem.priceRUB} ₽\n\n`;
+        cartItemsText += `- Цена: ${cartItem.priceCNY} ¥\n`;
+        cartItemsText += `- Цена в рублях: ~${cartItem.priceRUB} ₽\n\n`;
     });
 
     makeOrderText += cartItemsText;
 
     totalSum = await calculateTotalSum(cart);
-    makeOrderText += `Итого к оплате: ${totalSum} ₽\n\n`;
+    makeOrderText += `Итого к оплате*: ${totalSum} ₽\n`;
+    makeOrderText += `*<i> - с учётом доставки</i>\n\n`;
 
     makeOrderText += `${getEmoji("fio")}  ФИО получателя: ${user.fio}\n`;
     makeOrderText += `${getEmoji("address")}  Адрес доставки: ${user.address}\n`;
+
+    ctx.session.temp.makeOrderText = makeOrderText;
 
     await ctx.editMessageText(makeOrderText, {
         reply_markup: confirmOrderMenu,
@@ -154,18 +147,19 @@ order.callbackQuery("order__confirm", async (ctx) => {
         items: cart,
         user,
         totalSum,
-        status: "expectingPayment",
+        status: "expecting_payment",
     };
 
     await addUserOrder(ctx.from.id, order);
     // let res = await cleanCart(ctx.from.id);
     // if(res) {
-    // 
+    //
     // }
     ctx.session.cart = [];
     ctx.session.temp.order = order;
 
     if (user?.username) {
+        let makeOrderText = ctx.session.temp.makeOrderText;
         makeOrderText += `📞  Контакт для связи: @${user.username}`;
     }
 
@@ -178,75 +172,3 @@ order.callbackQuery("order__confirm", async (ctx) => {
         reply_markup: backMainMenu,
     });
 });
-
-/*
-let maxPages;
-order.callbackQuery("order__check", async (ctx) => {
-    let orders = await getUserOrders(ctx.from.id);
-    ctx.session.orders = orders;
-
-    maxPages = Math.ceil(orders.length / limitsConfig.maxOrdersPerMessage);
-    ctx.session.currentPage = 1;
-
-    if (orders.length > 0) {
-        let msgText = `Ваш список заказов:`;
-
-        if (maxPages > 1) {
-            msgText += `\n\n`;
-            msgText += `Страница: ${ctx.session.currentPage} из ${maxPages}`;
-        }
-
-        await ctx.editMessageText(msgText, {
-            reply_markup: generateOrdersMenu(orders, ctx.session.currentPage),
-        });
-    } else {
-        await ctx.editMessageText("У вас нет активных заказов", {
-            reply_markup: checkMenu,
-        });
-    }
-
-    ctx.answerCallbackQuery();
-});
-
-order.callbackQuery(/order__check_/, async (ctx) => {
-    let currentOrderId = ctx.callbackQuery.data.split("__check_")[1];
-    const order = ctx.session.orders.filter((order) => order.dbId === currentOrderId)[0];
-    console.log(order);
-
-    let orderText = `Детали заказа:\n`;
-    orderText += `- Имя товара: ${translate(order.name)}\n`;
-    orderText += `- Тип товара: ${getEmoji(order.subType)}  ${translate(order.subType)}\n`;
-    orderText += `- Цена товара: ${order.price} ₽\n`;
-    orderText += `- Ссылка на товар: ${order.link}\n`;
-    orderText += `- Доп. параметры: ${order.params}\n\n`;
-
-    orderText += `${getEmoji("fio")}  ФИО получателя: ${order.fio}\n`;
-    orderText += `${getEmoji("address")}  Адрес доставки: ${order.address}\n\n`;
-
-    orderText += `Статус: ${getEmoji(order.status)}  ${translate(order.status)}`;
-
-    await ctx.editMessageText(orderText, {
-        reply_markup: backKeyboard,
-    });
-});
-
-order.callbackQuery(/order__nav_/, async (ctx) => {
-    let direction = ctx.callbackQuery.data.split("__nav_")[1];
-
-    if (direction === "next") {
-        ctx.session.currentPage++;
-    } else {
-        ctx.session.currentPage = Math.max(1, --ctx.session.currentPage);
-    }
-
-    let orders = ctx.session.orders;
-    let msgText = `Ваш список заказов:\n\n`;
-    msgText += `Страница: ${ctx.session.currentPage} из ${maxPages}`;
-
-    await ctx.editMessageText(msgText, {
-        reply_markup: generateOrdersMenu(orders, ctx.session.currentPage),
-    });
-
-    ctx.answerCallbackQuery();
-});
-*/

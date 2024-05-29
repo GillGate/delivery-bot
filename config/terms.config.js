@@ -40,6 +40,6 @@ export default {
     gloves: "Перчатки",
 
     // #Статусы
-    expectingPayment: "Ожидает оплаты",
+    expecting_payment: "Ожидает оплаты",
     processing: "В обработке",
 }

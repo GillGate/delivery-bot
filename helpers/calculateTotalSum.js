@@ -7,11 +7,12 @@ export default async function (orders = []) {
 
     if (orders.length > 0) {
         const rates = await getCurrentRates(); // для актуальной цены
+        
         return await orders.reduce(async (sum, order) => {
             const currentPrice = parseFloat(order.priceCNY);
             let rubPrice = await convertedCNYWithFee(currentPrice, rates);
 
-            let currentProfit = rubPrice * profitPercent + profitPermanent;
+            const currentProfit = rubPrice * profitPercent + profitPermanent;
             rubPrice += currentProfit;
 
             const deliveryPrice = calculateDelivery(order.subType);

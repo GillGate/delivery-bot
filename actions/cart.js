@@ -8,7 +8,7 @@ import {
     cartNoneMenu,
     generateItemActions,
     generateItemDeleteConfirm,
-    generateOrdersMenu,
+    generateCartItemsMenu,
 } from "#bot/keyboards/cart.js";
 import { deleteCartItem, getUserCart } from "#bot/api/firebase.api.js";
 import limitsConfig from "#bot/config/limits.config.js";
@@ -17,6 +17,8 @@ import { conversations, createConversation } from "@grammyjs/conversations";
 import { changeUserFio } from "#bot/conversations/changeUserFio.js";
 import { changeUserAddress } from "#bot/conversations/changeUserAddress.js";
 import calculateTotalSum from "#bot/helpers/calculateTotalSum.js";
+import getUserData from "#bot/helpers/getUserData.js";
+import sendCartMessage from "#bot/handlers/sendCartMessage.js";
 
 export const cart = new Composer();
 cart.use(hydrate());
@@ -25,48 +27,12 @@ cart.use(createConversation(changeUserFio));
 cart.use(createConversation(changeUserAddress));
 
 let maxPages;
-let user;
-cart.callbackQuery("cart__enter", async (ctx) => {
-    let cart = ctx.session.cart;
-    user = ctx.session.user;
-
-    if (cart.length === 0) {
-        cart = await getUserCart(ctx.from.id);
-        ctx.session.cart = cart;
-    }
-
-    if (cart.length > 0) {
-        let msgText = "";
-
-        if (user?.fio !== "") {
-            msgText += `${getEmoji("fio")}  ФИО получателя: ${user.fio}\n`;
-            msgText += `${getEmoji("address")}  Адрес доставки: ${user.address}\n\n`;
-        }
-
-        let totalSum = ctx.session.totalSum;
-
-        if (totalSum === 0) {
-            totalSum = await calculateTotalSum(cart);
-            ctx.session.totalSum = totalSum;
-        }
-
-        msgText += `Количество товаров в корзине: ${cart.length}\n`;
-        msgText += `Стоимость всех товаров (с учётом доставки): ~${totalSum} ₽`;
-
-        await ctx.editMessageText(msgText, {
-            reply_markup: cartActions,
-            parse_mode: "HTML",
-        });
-    } else {
-        await ctx.editMessageText("В корзине пока нет товаров", {
-            reply_markup: cartNoneMenu,
-        });
-    }
-});
+cart.callbackQuery("cart__enter", async (ctx) => await sendCartMessage(ctx));
+cart.command("cart", async (ctx) => await sendCartMessage(ctx, true));
 
 cart.callbackQuery(["cart__check", /cart__check_after_delete_/], async (ctx) => {
     let cart = ctx.session.cart;
-    user = ctx.session.user;
+    let user = await getUserData(ctx);
 
     let deletedItemId = ctx.callbackQuery.data.split("after_delete_")[1] ?? "";
     if (deletedItemId !== "") {
@@ -93,7 +59,7 @@ cart.callbackQuery(["cart__check", /cart__check_after_delete_/], async (ctx) => 
     }
 
     await ctx.editMessageText(msgText, {
-        reply_markup: generateOrdersMenu(cart, ctx.session.currentPage),
+        reply_markup: generateCartItemsMenu(cart, ctx.session.currentPage),
         parse_mode: "HTML",
     });
 });
@@ -106,7 +72,8 @@ cart.callbackQuery(/cart__check_/, async (ctx) => {
     cartItemText += `- Имя товара: ${translate(cartItem.name)}\n`;
     cartItemText += `- Ссылка на товар: ${getHtmlOrderLink(cartItem)}\n`;
     cartItemText += `- Доп. параметры: ${cartItem.params}\n`;
-    cartItemText += `- Цена товара: ${cartItem.priceRUB} ₽\n`;
+    cartItemText += `- Цена: ${cartItem.priceCNY} ¥\n`;
+    cartItemText += `- Цена в рублях: ~${cartItem.priceRUB} ₽\n\n`;
 
     await ctx.editMessageText(cartItemText, {
         reply_markup: generateItemActions(currentItemId),
@@ -127,19 +94,11 @@ cart.callbackQuery(/cart__nav_/, async (ctx) => {
     let cart = ctx.session.cart;
     let msgText = "";
 
-    /*
-    if (user?.fio !== "") {
-        msgText += `${getEmoji("fio")}  ФИО получателя: ${user.fio}\n`;
-        msgText += `${getEmoji("address")}  Адрес доставки: ${user.address}\n\n`;
-        // TODO: total sum of cart
-    }
-    */
-
     msgText += `Ваш список товаров: `;
     msgText += `${ctx.session.currentPage}/${maxPages}`;
 
     await ctx.editMessageText(msgText, {
-        reply_markup: generateOrdersMenu(cart, ctx.session.currentPage),
+        reply_markup: generateCartItemsMenu(cart, ctx.session.currentPage),
         parse_mode: "HTML",
     });
     ctx.answerCallbackQuery();

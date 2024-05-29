@@ -15,12 +15,13 @@ import getUserAddress from "#bot/conversations/helpers/getUserAddress.js";
 import unlessActions from "#bot/conversations/helpers/unlessActions.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 import getHtmlOrderLink from "#bot/helpers/getHtmlOrderLink.js";
+import getUserData from "#bot/helpers/getUserData.js";
 
 export async function registration(conversation, ctx) {
     let currentSession = conversation.ctx.session;
     let currentOrder = currentSession.order;
     let currentCart = currentSession.cart;
-    let currentUser = currentSession.user;
+    let currentUser = await getUserData(ctx);
 
     await conversation.ctx.editMessageText("Введите ссылку на товар", {
         reply_markup: backMainMenu,
@@ -86,11 +87,8 @@ export async function registration(conversation, ctx) {
         }
 
         await getUserAddress(conversation, ctx);
+        currentUser = conversation.ctx.session.user;
     }
-
-    currentUser = conversation.ctx.session.user;
-    currentOrder.fio = currentUser.fio;
-    currentOrder.address = currentUser.address;
 
     let htmlOrderLink = getHtmlOrderLink(currentOrder);
 
@@ -102,8 +100,8 @@ export async function registration(conversation, ctx) {
     totalText += `- Ссылка на товар: ${htmlOrderLink}\n`;
     totalText += `- Доп. параметры: ${currentOrder.params}\n\n`;
 
-    totalText += `${getEmoji("fio")}  ФИО получателя: ${currentOrder.fio}\n`;
-    totalText += `${getEmoji("address")}  Адрес доставки: ${currentOrder.address}\n`;
+    totalText += `${getEmoji("fio")}  ФИО получателя: ${currentUser.fio}\n`;
+    totalText += `${getEmoji("address")}  Адрес доставки: ${currentUser.address}\n`;
     // изменить можно в корзине
 
     if (currentSession.temp?.keepAddress) {
@@ -140,7 +138,6 @@ export async function registration(conversation, ctx) {
 
         try {
             if (JSON.stringify(ctx.session.user) !== JSON.stringify(currentUser)) {
-                // check data differenses
                 await setUserInfo(from.id, {
                     fio: currentUser.fio,
                     address: currentUser.address,

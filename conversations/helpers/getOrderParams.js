@@ -22,7 +22,7 @@ export default async function (conversation, ctx) {
         {
             otherwise: (ctx) =>
                 unlessActions(ctx, () => {
-                    ctx.reply("Укажите корректный параметры товара, например: Размер 47 или Цвет Чёрный", {
+                    ctx.reply("Укажите корректные параметры товара, например: Размер 47 или Цвет Чёрный", {
                         reply_markup: backMainMenu,
                     });
                 }),

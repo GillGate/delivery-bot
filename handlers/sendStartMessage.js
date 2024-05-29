@@ -1,6 +1,7 @@
 import { getUserCart, getUserInfo } from "#bot/api/firebase.api.js";
 import sessionConfig from "#bot/config/session.config.js";
 import { getMainMenu } from "#bot/keyboards/general.js";
+import getUserData from "#bot/helpers/getUserData.js";
 
 export default async function (ctx, replyMode = false) {
     ctx.session.routeHistory = [];
@@ -12,21 +13,7 @@ export default async function (ctx, replyMode = false) {
     helloText += `Я Kul2Bot и я могу помочь тебе сделать заказ оригинальных вещей с Poizon, а также подсказать, что именно заказать, исходя из модных тенденций о которых пишет наш журнал.\n\n`;
     helloText += `Что тебя интересует? 🫡`;
 
-    let user = ctx.session.user;
-    if (user.fio === "" || user.address === "") {
-        try {
-            let userInfo = await getUserInfo(ctx.from.id);
-
-            if (userInfo.exists) {
-                user = userInfo.data();
-                ctx.session.user = user;
-
-                console.log("load user", user);
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    }
+    let user = await getUserData(ctx);
 
     if(ctx.session.cart.length === 0) {
         try {
@@ -48,8 +35,6 @@ export default async function (ctx, replyMode = false) {
             reply_markup: getMainMenu(user.isNewbie),
         });
     }
-
-    // console.log("session", ctx.session);
 
     if (ctx?.callbackQuery && !replyMode) {
         ctx.answerCallbackQuery();
