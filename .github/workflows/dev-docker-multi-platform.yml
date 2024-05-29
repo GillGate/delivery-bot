@@ -1,0 +1,103 @@
+name: Build Test and Push Mutli Platform Docker Image
+
+on:
+  push:
+    branches:
+      - main
+      
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup QEMU
+      uses: docker/setup-qemu-action@v3
+
+    - name: Setup Dockerx build
+      uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with: 
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+
+    - name: Determine version number
+      id: determine_version
+      run: |
+        BUILD_DATE=$(date +%d-%m-%Y)
+        echo "BUILD_DATE=$BUILD_DATE" >> $GITHUB_ENV
+        BUILD_NUMBER=$(git rev-parse --short HEAD)
+        echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
+
+    - name: Create .env file
+      run: |
+        echo "${{ secrets.BOT_ENV }}" > .env
+
+    - name: Add Token
+      run: |
+        echo "BOT_API_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }}" >> .env
+
+    - name: Create service account json file
+      run: |
+        echo "${{ secrets.BOT_FIREBASE_SERVICE_ACCOUNT }}" > serviceAccount.firestore.json
+
+        
+    - name: Build Multi Platform Container 
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        platforms: linux/amd64
+        push: false
+        load: true
+        tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}
+
+
+    - name: Run Container
+      run: |
+        docker run -d -e TELEGRAM_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }} \
+        -e BUILD_DATE=${{ env.BUILD_DATE }} \
+        --name delivery-bot-test \
+        saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}
+
+
+    - name: Wait for Container to be Ready
+      run: |
+        echo "Waiting for bot to be ready..."
+        sleep 10
+
+
+    - name: Test Telegram Bot
+      id: test_bot
+      env:
+        TELEGRAM_TOKEN: ${{ secrets.DEV_BOT_API_TOKEN }}
+        CHAT_ID: ${{ secrets.TEST_CHAT_ID }}
+      run: |
+        MESSAGE="Test message from CI"
+        RESPONSE=$(curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" -d chat_id=${CHAT_ID} -d text="${MESSAGE}")
+        if [[ "$RESPONSE" != *"\"ok\":true"* ]]; then
+          echo "Bot did not respond correctly: $RESPONSE"
+          exit 1
+        fi
+      
+
+   # - name: Push Multi Platform Image
+   #   uses: docker/build-push-action@v5 
+   #   if: success() && steps.test_bot.outcome == 'success'
+   #   with:
+   #     context: .
+   #     platforms: linux/amd64,linux/arm64
+   #     push: ${{ github.event_name != 'pull_request' }}
+   #     tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev
+   
+    - name: Push Docker Image
+      run: |
+        docker buildx build --platform linux/amd64,linux/arm64 -t saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev --push .
+
+    
+    - name: Logout from Docker
+      run: docker logout
+      

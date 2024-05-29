@@ -4,6 +4,9 @@ export default {
         address: "",
         isNewbie: true
     },
+    cart: [],
+    orders: [],
+    totalSum: 0,
     routeHistory: [],
     order: {
         type: "",
@@ -13,5 +16,5 @@ export default {
         params: "",
         price: "",
     },
-    temp: {}
+    temp: {},
 }
