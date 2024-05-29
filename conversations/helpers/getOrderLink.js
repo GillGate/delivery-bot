@@ -19,9 +19,16 @@ export default async function(conversation, ctx) {
 
                 return true;
             } else if (indexLink > 0) {
-                let orderName = orderInfoArray.slice(indexLink + 1, indexLink + 5).join(" ");
-                ctx.session.order.name = orderName.replace(/\W/g, " ").trim().replace(/\s+/g, " ");
                 ctx.session.order.link = orderInfoArray[indexLink];
+
+                let orderName = orderInfoArray.slice(indexLink + 1, indexLink + 4).join(" ");
+                orderName = orderName.replace(/\W/g, " ").trim().replace(/\s+/g, " ");
+                if(orderName === "") {
+                    ctx.session.order.name = translate(ctx.session.order.subType);
+                } 
+                else {
+                    ctx.session.order.name = orderName;
+                }
 
                 return true;
             }

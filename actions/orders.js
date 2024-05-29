@@ -26,7 +26,7 @@ orders.callbackQuery(/orders__nav_/, async (ctx) => {
     }
 
     const orders = ctx.session.orders;
-    msgText = `Ваш список заказов: `;
+    let msgText = "Ваш список заказов: ";
     msgText += `${ctx.session.currentPage}/${ctx.session.temp.maxPages}`;
 
     await ctx.editMessageText(msgText, {

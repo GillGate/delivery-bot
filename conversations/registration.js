@@ -152,6 +152,8 @@ export async function registration(conversation, ctx) {
                 `Товар ${getEmoji(currentOrder.subType)} добавлен в корзину`
             );
 
+            currentOrder.date = Date.now();
+
             currentSession.cart.push(currentOrder);
             await addToCart(from.id, currentOrder);
         } catch (e) {

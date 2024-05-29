@@ -61,7 +61,7 @@ export function generateCartItemsMenu(cart, currentPage, maxPerMessage = limitsC
         let isItemsEnd = false;
         const range = currentPage * maxPerMessage;
         for (let i = range - maxPerMessage; i <= range; i++) {
-            if (cart[i]?.dbId && !isOrdersEnd) {
+            if (cart[i]?.dbId && !isItemsEnd) {
                 cartItemsMenu
                     .text(
                         `${getEmoji(cart[i].subType)}  ${translate(cart[i].name)}`,

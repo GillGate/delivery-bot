@@ -29,7 +29,7 @@ export function generateOrdersMenu(orders, currentPage, maxPerMessage = limitsCo
                 .row();
         }
 
-        ordersMenu.text("‹ В главное меню", "main_menu");
+        ordersMenu.text("‹ Назад", "main_menu");
 
         if (orders.length > maxPerMessage) {
             ordersMenu.text("Дальше ›", "orders__nav_next");
@@ -38,7 +38,8 @@ export function generateOrdersMenu(orders, currentPage, maxPerMessage = limitsCo
         let isOrdersEnd = false;
         const range = currentPage * maxPerMessage;
         for (let i = range - maxPerMessage; i <= range; i++) {
-            if (orders[i].dbId && !isOrdersEnd) {
+            console.log("as", orders[i]);
+            if (orders[i]?.dbId && !isOrdersEnd) {
                 let num = i;
                 ordersMenu
                     .text(

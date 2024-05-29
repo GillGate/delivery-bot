@@ -30,7 +30,7 @@ export default async function (ctx, replyMode = false) {
         }
 
         msgText += `Количество товаров в корзине: ${cart.length}\n`;
-        msgText += `Стоимость всех товаров (с учётом доставки): ~${totalSum} ₽`;
+        msgText += `Стоимость всех товаров: ~${totalSum} ₽`;
 
         cartKeyboard = cartActions;
     } else {
