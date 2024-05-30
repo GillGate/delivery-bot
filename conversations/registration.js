@@ -16,6 +16,7 @@ import unlessActions from "#bot/conversations/helpers/unlessActions.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 import getHtmlOrderLink from "#bot/helpers/getHtmlOrderLink.js";
 import getUserData from "#bot/helpers/getUserData.js";
+import { translate } from "#bot/helpers/translate.js";
 
 export async function registration(conversation, ctx) {
     let currentSession = conversation.ctx.session;
@@ -96,7 +97,7 @@ export async function registration(conversation, ctx) {
     totalText += `Стоимость товара: ${currentOrder.priceCNY} ￥ \n\n`;
 
     totalText += `Детали заказа:\n`;
-    totalText += `- Имя товара: ${currentOrder.name}\n`;
+    totalText += `- Имя товара: ${translate(currentOrder.name)}\n`;
     totalText += `- Ссылка на товар: ${htmlOrderLink}\n`;
     totalText += `- Доп. параметры: ${currentOrder.params}\n\n`;
 
