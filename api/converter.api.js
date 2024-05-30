@@ -1,32 +1,13 @@
 import "dotenv/config";
 import pricingConfig from "#bot/config/pricing.config.js";
+import { getCurrentRates, rates } from "./current-rates.api.js";
 
-const { convertationFee, wmFee, poshlinaFloor, poshlinaAdmin, poshlinaAgent } = pricingConfig;
+const { convertationFee, wmFee, dutyFloor, dutyBasePercent, dutyAdmin, dutyAgent } = pricingConfig;
 
-export async function getCurrentRates() {
-    try {
-        //Запрашиваем данные
-        const responseOne = await fetch(process.env.BOT_LINK_FREECURRENCY_API);
-        const responseTwo = await fetch(process.env.BOT_LINK_OPEN_API);
-
-        //Деструктуризация полученных данных
-        const { data: rateOne } = await responseOne.json();
-        const { rates: rateTwo } = await responseTwo.json();
-
-        // TODO: update rates every 1h
-        console.log("current rate usd to cny ~", rateOne["RUB"]);
-
-        return {
-            dataOne: rateOne,
-            dataTwo: rateTwo,
-        };
-    } catch (error) {
-        console.log(error);
-    }
-}
 
 //TODO Найти аналог freecurrencyapi - в месяц 5000 запросов или сделать так, чтобы запросы были редкими(напр. раз в час совершается запрос)
-async function convertThroughUSD(amount, fromCurr, toCurr, rates) {
+async function convertThroughUSD(amount, fromCurr, toCurr) {
+    console.log(rates)
     //Определяем стоимость fromCurr к USD -> USD к toCurr с учётом amount
     let responseOneRate =
         (amount / Number(rates.dataOne[fromCurr])) * Number(rates.dataOne[toCurr]).toFixed(3);
@@ -37,20 +18,20 @@ async function convertThroughUSD(amount, fromCurr, toCurr, rates) {
     return (responseOneRate + responseTwoRate) / 2;
 }
 
-export async function convertedCNYWithFee(cnyAmount, rates = null) {
+export async function convertedCNYWithFee(cnyAmount, rates) {
     if (rates === null) {
         rates = await getCurrentRates();
     }
 
-    let currentSum = await convertThroughUSD(cnyAmount, "CNY", "RUB", rates);
-    let amountInEuro = await convertThroughUSD(cnyAmount, "CNY", "EUR", rates);
+    let currentSum = await convertThroughUSD(cnyAmount, "CNY", "RUB");
+    let amountInEuro = await convertThroughUSD(cnyAmount, "CNY", "EUR",);
     let withAgentsFee = 0;
 
-    if (amountInEuro - amountInEuro * poshlinaAgent > poshlinaFloor) {
-        let difference = amountInEuro - poshlinaFloor;
-        let poshlina = difference * 0.15;
-        let poshlinaInRub = (await convertThroughUSD(poshlina, "EUR", "RUB", rates)) + poshlinaAdmin;
-        withAgentsFee = poshlinaInRub + poshlinaInRub * poshlinaAgent;
+    if (amountInEuro - amountInEuro * dutyAgent > dutyFloor) {
+        let dutyFreeThreshold = amountInEuro - dutyFloor;
+        let dutyInPercentCalc = dutyFreeThreshold * dutyBasePercent;
+        let dutyInRub = (await convertThroughUSD(dutyInPercentCalc, "EUR", "RUB")) + dutyAdmin;
+        withAgentsFee = dutyInRub + dutyInRub * dutyAgent;
     }
     console.log("poshlina", amountInEuro, withAgentsFee);
 

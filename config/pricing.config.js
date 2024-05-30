@@ -8,9 +8,10 @@ export default {
     wmFee: +process.env.BOT_WM_FEE,
 
     // #Custom fee pricing
-    poshlinaFloor: +process.env.BOT_POSHLINA_FLOOR,
-    poshlinaAdmin: +process.env.BOT_POSHLINA_ADMIN_FEE,
-    poshlinaAgent: +process.env.BOT_POSHLINA_AGENT_FEE,
+    dutyFloor: +process.env.BOT_DUTY_FLOOR,
+    dutyBasePercent: +process.env.BOT_DUTY_BASE_PERCENT,
+    dutyAdmin: +process.env.BOT_DUTY_ADMIN_FEE,
+    dutyAgent: +process.env.BOT_DUTY_AGENT_FEE,
 
     // #Delivery pricing
     rubPerKg3: 167,
