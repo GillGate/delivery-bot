@@ -16,8 +16,10 @@ import unlessActions from "#bot/conversations/helpers/unlessActions.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 import getHtmlOrderLink from "#bot/helpers/getHtmlOrderLink.js";
 import getUserData from "#bot/helpers/getUserData.js";
+import limitsConfig from "#bot/config/limits.config.js";
 
 export async function registration(conversation, ctx) {
+    const {deliveryPeriod} = limitsConfig
     let currentSession = conversation.ctx.session;
     let currentOrder = currentSession.order;
     let currentCart = currentSession.cart;
@@ -29,8 +31,8 @@ export async function registration(conversation, ctx) {
 
     await getOrderLink(conversation, ctx);
 
-    let paramsText = "Укажите дополнительную информацию про товар \n";
-    paramsText += "К примеру, для обуви это размер, а для футболки цвет \n";
+    let paramsText = "Укажите дополнительную информацию о товаре. ";
+    paramsText += "К примеру размер, цвет или комплектация товара \n\n";
     paramsText += "Если у товара нет особенностей, вы можете пропустить этот шаг";
 
     ctx.reply(paramsText, {
@@ -100,6 +102,8 @@ export async function registration(conversation, ctx) {
     totalText += `- Ссылка на товар: ${htmlOrderLink}\n`;
     totalText += `- Доп. параметры: ${currentOrder.params}\n\n`;
 
+    totalText += `${getEmoji("time")} Срок доставки: от `;
+    totalText += `${deliveryPeriod.min} до ${deliveryPeriod.max} дней + время доставки Poizon\n`;
     totalText += `${getEmoji("fio")}  ФИО получателя: ${currentUser.fio}\n`;
     totalText += `${getEmoji("address")}  Адрес доставки: ${currentUser.address}\n`;
     // изменить можно в корзине

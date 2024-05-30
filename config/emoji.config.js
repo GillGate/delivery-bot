@@ -38,10 +38,15 @@ export default {
     wallet: "👛",
     scarf: "🧣",
     gloves: "🧤",
+    headgear: "🎩",
+
+    other: "⚪️",
 
     // #Статусы
     expecting_payment: "💸",
     processing: "🔄",
+
+    time: "⏳",
 
     // #Пользователь
     fio: "🪪",

@@ -38,6 +38,9 @@ export default {
     wallet: "Кошелёк",
     scarf: "Шарф",
     gloves: "Перчатки",
+    headgear: "Головные уборы",
+
+    other: "Другое",
 
     // #Статусы
     expecting_payment: "Ожидает оплаты",

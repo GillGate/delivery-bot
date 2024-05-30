@@ -107,4 +107,12 @@ export default {
         factWeight: 0.18,
         sizes: [23, 17, 13],
     },
+    headgear:{
+        factWeight: 0.2,
+        sizes: [23, 17, 13]
+    },
+    other: {
+        factWeight: 0,
+        sizes: [0, 0, 0]
+    },
 };

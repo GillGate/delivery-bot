@@ -88,6 +88,15 @@ order.callbackQuery(/order__select_/, async (ctx) => {
 order.callbackQuery(/order__pick_/, async (ctx) => {
     ctx.session.order.subType = ctx.callbackQuery.data.split("__pick_")[1];
     ctx.answerCallbackQuery();
+    if(ctx.session.order.subType === "other"){
+        let otherDisclaimer = "⚠️Важно⚠️\n\nПри выборе категории 'Другое' "
+        otherDisclaimer += "стоимость доставки не входит в итоговую сумму заказа и рассчитывается отдельно менеджером"
+        await ctx.editMessageText(otherDisclaimer)
+        //Функция задержки должна быть куда-то перенесена оставляю пока тут не знаю куда перенести
+        const sleep = async (milisseconds) =>
+            new Promise((resolve) => setTimeout(resolve, milisseconds));
+        await sleep(5000)
+    }
 
     if (ctx.session.temp?.calcMode) {
         await ctx.conversation.enter("calculate");

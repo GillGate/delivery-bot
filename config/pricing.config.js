@@ -17,5 +17,5 @@ export default {
     rubDBEperKg: 719,
     koefVolumWeight: 190,
     m3ToSm3: 1000000,
-    rubDeliverySDEK: 200, // TODO: ? depends on factWeight, динамический подсчёт цены
+    rubDeliverySDEK: 500, // TODO: ? depends on factWeight, динамический подсчёт цены
 }
