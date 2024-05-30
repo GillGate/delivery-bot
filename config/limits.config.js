@@ -11,5 +11,6 @@ export default {
         min: 10,
         max: 180,
     },
+    cartMaxLength: 15,
     maxOrdersPerMessage: 5,
 };

@@ -16,6 +16,13 @@ export const regAddressMenu = new InlineKeyboard()
     .text("‹ В главное меню", "main_menu");
 
 export const regTotalMenu = new InlineKeyboard()
-    .text("✅  Подтвердить заказ", "reg__confirm")
+    .text("➕  Добавить товар в корзину", "cart__add")
+    .row()
+    .text("‹ В главное меню", "main_menu");
+
+export const regFinalMenu = new InlineKeyboard()
+    .text("📦  Добавить ещё один товар", "order__create_another")
+    .row()
+    .text("📝  Оформить заказ", "order__place")
     .row()
     .text("‹ В главное меню", "main_menu");

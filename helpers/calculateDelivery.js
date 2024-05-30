@@ -1,10 +1,7 @@
+import specsConfig from "#bot/config/specs.config.js";
 import pricingConfig from "#bot/config/pricing.config.js";
 
-const rubPerKg3 = 167;
-const rubDBEperKg = 719;
-const koefVolumWeight = 190;
-const m3ToSm3 = 1000000;
-const rubDeliverySDEK = 200; // TODO: ? depends on factWeight
+const { rubPerKg3, rubDBEperKg, koefVolumWeight, m3ToSm3, rubDeliverySDEK } = pricingConfig;
 
 function getVolumWeight(type) {
     let { sizes } = type;
@@ -13,7 +10,7 @@ function getVolumWeight(type) {
 
 export function calculateDelivery(type) {
     // DB Express
-    const currentType = pricingConfig[type];
+    const currentType = specsConfig[type];
     let volumWeight = getVolumWeight(currentType);
 
     return (

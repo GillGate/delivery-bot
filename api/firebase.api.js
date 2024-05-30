@@ -17,6 +17,39 @@ export async function updateUserInfo(userId, info) {
     return await db.collection("users").doc(`${userId}`).update(info);
 }
 
+export async function addToCart(userId, order) {
+    return await db.collection("users").doc(`${userId}`).collection("cart").add(order);
+}
+
+export async function deleteCartItem(userId, itemId) {
+    return await db.collection("users").doc(`${userId}`).collection("cart").doc(`${itemId}`).delete();
+}
+
+export async function cleanCart(userId) {
+    const cartCollection = db.collection("users").doc(`${userId}`).collection("cart");
+    let snapshotOrders = await cartCollection.get();
+
+    snapshotOrders.forEach(async (doc) => {
+        await cartCollection.doc(`${doc.id}`).delete();
+    });
+
+    return true;
+}
+
+export async function getUserCart(userId) {
+    let cart = [];
+    let snapshotOrders = await db.collection("users").doc(`${userId}`).collection("cart").get();
+
+    snapshotOrders.forEach((doc) => {
+        cart.push({
+            dbId: doc.id,
+            ...doc.data(),
+        });
+    });
+
+    return cart;
+}
+
 export async function addUserOrder(userId, order) {
     return await db.collection("users").doc(`${userId}`).collection("orders").add(order);
 }

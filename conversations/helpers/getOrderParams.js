@@ -1,13 +1,12 @@
 import { backMainMenu } from "#bot/keyboards/general.js";
-import { unlessActions } from "#bot/conversations/helpers/unlessActions.js";
+import unlessActions from "#bot/conversations/helpers/unlessActions.js";
 
-export async function getOrderParams(conversation, ctx) {
+export default async function (conversation, ctx) {
     return await conversation.waitUntil(
         async (ctx) => {
             if(ctx.callbackQuery?.data === "reg__skip_params") {
-                await ctx.api.deleteMessage(ctx.from.id, ctx.callbackQuery.message.message_id);
                 ctx.answerCallbackQuery();
-
+                ctx.session.temp.skipParams = true;
                 ctx.session.order.params = "Не указано";
                 return true;
             }
@@ -23,7 +22,7 @@ export async function getOrderParams(conversation, ctx) {
         {
             otherwise: (ctx) =>
                 unlessActions(ctx, () => {
-                    ctx.reply("Укажите корректный параметры товара, например: Размер 47 или Цвет Чёрный", {
+                    ctx.reply("Укажите корректные параметры товара, например: Размер 47 или Цвет Чёрный", {
                         reply_markup: backMainMenu,
                     });
                 }),

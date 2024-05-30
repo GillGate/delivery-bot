@@ -1,13 +1,13 @@
 import { backMainMenu } from "#bot/keyboards/general.js";
-import { unlessActions } from "#bot/conversations/helpers/unlessActions.js";
+import unlessActions from "#bot/conversations/helpers/unlessActions.js";
 import limitsConfig from "#bot/config/limits.config.js";
 import { convertedCNYWithFee } from "#bot/api/converter.api.js";
 import { calculateDelivery } from "#bot/helpers/calculateDelivery.js";
 
-export async function getOrderPrice(conversation, ctx) {
+export default async function (conversation, ctx) {
     return await conversation.waitUntil(
         async (ctx) => {
-            let price = parseInt(ctx.message?.text);
+            let price = parseFloat(ctx.message?.text);
             const { price: priceLimits } = limitsConfig;
 
             const profitPercent = +process.env.BOT_PROFIT_PERCENT;
@@ -17,9 +17,7 @@ export async function getOrderPrice(conversation, ctx) {
                 let rubPrice = await convertedCNYWithFee(price);
                 let currentProfit = rubPrice * profitPercent + profitPermanent;
 
-                let currentDeliveryPrice = calculateDelivery(
-                    conversation.ctx.session.order.subType
-                );
+                let currentDeliveryPrice = calculateDelivery(conversation.ctx.session.order.subType);
 
                 console.log(
                     "price",
@@ -32,10 +30,11 @@ export async function getOrderPrice(conversation, ctx) {
                     currentDeliveryPrice
                 );
 
-                let totalPrice = rubPrice + currentProfit + currentDeliveryPrice; 
-                ctx.session.order.priceCNY = ctx.message?.text;
+                let totalPrice = rubPrice + currentProfit + currentDeliveryPrice;
+                ctx.session.order.priceCNY = parseFloat(ctx.message?.text);
+                ctx.session.order.priceRUB = Math.ceil(parseFloat(rubPrice));
                 ctx.session.order.price = Math.ceil(totalPrice); // по божески
-                // TODO: better UX improvemnt 10000 -> 10 000  
+                // TODO: better UX improvemnt 10000 -> 10 000
                 return true;
             }
         },
