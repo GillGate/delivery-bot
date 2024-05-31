@@ -16,9 +16,11 @@ import unlessActions from "#bot/conversations/helpers/unlessActions.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 import getHtmlOrderLink from "#bot/helpers/getHtmlOrderLink.js";
 import getUserData from "#bot/helpers/getUserData.js";
+import limitsConfig from "#bot/config/limits.config.js";
 import { translate } from "#bot/helpers/translate.js";
 
 export async function registration(conversation, ctx) {
+    const {deliveryPeriod} = limitsConfig
     let currentSession = conversation.ctx.session;
     let currentOrder = currentSession.order;
     let currentCart = currentSession.cart;
@@ -30,8 +32,8 @@ export async function registration(conversation, ctx) {
 
     await getOrderLink(conversation, ctx);
 
-    let paramsText = "Укажите дополнительную информацию про товар \n";
-    paramsText += "К примеру, для обуви это размер, а для футболки цвет \n";
+    let paramsText = "Укажите дополнительную информацию о товаре. ";
+    paramsText += "К примеру размер, цвет или комплектация товара \n\n";
     paramsText += "Если у товара нет особенностей, вы можете пропустить этот шаг";
 
     ctx.reply(paramsText, {
@@ -101,6 +103,8 @@ export async function registration(conversation, ctx) {
     totalText += `- Ссылка на товар: ${htmlOrderLink}\n`;
     totalText += `- Доп. параметры: ${currentOrder.params}\n\n`;
 
+    totalText += `${getEmoji("time")} Срок доставки: от `;
+    totalText += `${deliveryPeriod.min} до ${deliveryPeriod.max} дней + время доставки Poizon\n`;
     totalText += `${getEmoji("fio")}  ФИО получателя: ${currentUser.fio}\n`;
     totalText += `${getEmoji("address")}  Адрес доставки: ${currentUser.address}\n`;
     // изменить можно в корзине
@@ -129,7 +133,15 @@ export async function registration(conversation, ctx) {
 
     if (regResponse.match === "cart__add") {
         let { from } = ctx;
-
+        //Добавить в условие обращение к базе и если там тоже нет выполнять услвоие
+        if (!from?.username) {
+            let questionText = "Мы не смогли определить ваш username.";
+            questionText += "Для сохранения данных о вашем заказе, ";
+            questionText += "пожалуйста, оставьте ваш номер телефона для связи в телеграм ";
+            questionText += "или напишите нашему менеджеру\n";
+            questionText += "@romahaforever";
+            conversation.ctx.editMessageText(questionText, { reply_markup: backMainMenu });
+        }
         console.log(totalText, currentUser);
 
         await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, totalText, {
@@ -143,7 +155,7 @@ export async function registration(conversation, ctx) {
                     fio: currentUser.fio,
                     address: currentUser.address,
                     isNewbie: currentUser.isNewbie,
-                    username: from?.username ?? "",
+                    username: from?.username ?? altUsername,
                 });
 
                 console.log("userData changed", currentUser);
@@ -160,6 +172,13 @@ export async function registration(conversation, ctx) {
         } catch (e) {
             console.error(e);
         }
+
+        let textForManager = `${totalText}\n\n`;
+        textForManager += `Contact: @${from?.username ?? altUsername}`;
+
+        await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, textForManager, {
+            message_thread_id: process.env.BOT_CHAT_TOPIC_ORDERS,
+        });
 
         conversation.ctx.editMessageText(`Товар ${htmlOrderLink} был добавлен в корзину`, {
             reply_markup: regFinalMenu,
