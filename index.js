@@ -12,7 +12,7 @@ import traceRoutes from "#bot/middleware/traceRoutes.js";
 import sendStartMessage from "#bot/handlers/sendStartMessage.js";
 import sendHelpMessage from "#bot/handlers/sendHelpMessage.js";
 
-const bot = new Bot(process.env.BOT_API_TOKEN);
+export const bot = new Bot(process.env.BOT_API_TOKEN);
 bot.use(
     session({
         initial: () => structuredClone(sessionConfig),
