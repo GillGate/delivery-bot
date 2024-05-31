@@ -37,6 +37,6 @@ export const helpMenu = new InlineKeyboard()
     .row()
     // .text("📝  Узнать стоимость", "order__create")
     // .row()
-    .text("‹ Назад", "back");
+    .text("‹ В главное меню", "main_menu");
 
 export const adminMainMenu = new InlineKeyboard().text("zero");

@@ -1,3 +1,5 @@
+import { bot } from "#bot/index.js";
+
 async function getCurrentRates() {
     try {
         //Запрашиваем данные
@@ -20,24 +22,35 @@ async function getCurrentRates() {
     }
 }
 
-
-let rates
+let rates;
 
 async function firstRatesCheck() {
     try {
+        let addRatesInfo;
         rates = await getCurrentRates();
-        console.log('Rread')
+        await (addRatesInfo = {
+            cny: rates.dataOne.CNY.toFixed(2),
+            rub: rates.dataOne.RUB.toFixed(2),
+            eur: rates.dataOne.EUR.toFixed(2),
+        });
+        let ratesThreadMessage = "Дела обстоят следующим образом:\n";
+        ratesThreadMessage += `            CNY->USD: ${addRatesInfo.cny}\n`;
+        ratesThreadMessage += `            RUB->USD: ${addRatesInfo.rub}\n`;
+        ratesThreadMessage += `            EUR->USD: ${addRatesInfo.eur}`;
+        await bot.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, ratesThreadMessage, {
+            message_thread_id: process.env.BOT_CHAT_TOPIC_RATES,
+        });
     } catch (error) {
         console.error(error);
     }
 }
 
-async function intervalRatesCheck (){
-    firstRatesCheck()
+async function intervalRatesCheck() {
+    firstRatesCheck();
     setInterval(async () => {
-        firstRatesCheck()
-    }, 100000)
-} 
-intervalRatesCheck()
+        firstRatesCheck();
+    }, 1000 * 60 * 60);
+}
+intervalRatesCheck();
 
-export { getCurrentRates, rates }
+export { intervalRatesCheck, rates };
