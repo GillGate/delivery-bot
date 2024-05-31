@@ -44,7 +44,7 @@ orders.callbackQuery(/orders__check_/, async (ctx) => {
     let orderItemsText = "";
 
     order.items.forEach((orderItem, index) => {
-        orderItemsText += `#${++index}: ${translate(orderItem.name)}\n`;
+        orderItemsText += `#${++index}: ${orderItem.name}\n`;
         orderItemsText += `- Ссылка: ${getHtmlOrderLink(orderItem)}\n`;
         orderItemsText += `- Доп. параметры: ${orderItem.params}\n`;
         orderItemsText += `- Цена: ${orderItem.priceCNY} ¥\n`;

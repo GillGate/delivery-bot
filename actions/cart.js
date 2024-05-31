@@ -69,7 +69,7 @@ cart.callbackQuery(/cart__check_/, async (ctx) => {
     const cartItem = ctx.session.cart.filter((item) => item.dbId === currentItemId)[0];
 
     let cartItemText = `Детали товара:\n`;
-    cartItemText += `- Имя товара: ${translate(cartItem.name)}\n`;
+    cartItemText += `- Имя товара: ${cartItem.name}\n`;
     cartItemText += `- Ссылка на товар: ${getHtmlOrderLink(cartItem)}\n`;
     cartItemText += `- Доп. параметры: ${cartItem.params}\n`;
     cartItemText += `- Цена: ${cartItem.priceCNY} ¥\n`;

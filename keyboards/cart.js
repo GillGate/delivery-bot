@@ -46,7 +46,7 @@ export function generateCartItemsMenu(cart, currentPage, maxPerMessage = limitsC
         for (let i = 0; i < range; i++) {
             cartItemsMenu
                 .text(
-                    `${getEmoji(cart[i].subType)}  ${translate(cart[i].name)}`,
+                    `${getEmoji(cart[i].subType)}  ${cart[i].name}`,
                     `cart__check_${cart[i].dbId}`
                 )
                 .row();
@@ -64,7 +64,7 @@ export function generateCartItemsMenu(cart, currentPage, maxPerMessage = limitsC
             if (cart[i]?.dbId && !isItemsEnd) {
                 cartItemsMenu
                     .text(
-                        `${getEmoji(cart[i].subType)}  ${translate(cart[i].name)}`,
+                        `${getEmoji(cart[i].subType)}  ${cart[i].name}`,
                         `cart__check_${cart[i].dbId}`
                     )
                     .row();

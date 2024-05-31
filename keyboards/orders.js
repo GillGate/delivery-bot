@@ -38,7 +38,6 @@ export function generateOrdersMenu(orders, currentPage, maxPerMessage = limitsCo
         let isOrdersEnd = false;
         const range = currentPage * maxPerMessage;
         for (let i = range - maxPerMessage; i <= range; i++) {
-            console.log("as", orders[i]);
             if (orders[i]?.dbId && !isOrdersEnd) {
                 let num = i;
                 ordersMenu

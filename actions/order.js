@@ -123,7 +123,7 @@ order.callbackQuery("order__place", async (ctx) => {
     let cartItemsText = "";
 
     cart.forEach((cartItem, index) => {
-        cartItemsText += `#${++index}: ${translate(cartItem.name)}\n`;
+        cartItemsText += `#${++index}: ${cartItem.name}\n`;
         cartItemsText += `- Ссылка: ${getHtmlOrderLink(cartItem)}\n`;
         cartItemsText += `- Доп. параметры: ${cartItem.params}\n`;
         cartItemsText += `- Цена: ${cartItem.priceCNY} ¥\n`;
