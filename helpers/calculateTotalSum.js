@@ -13,6 +13,10 @@ export default async function (orders = []) {
             await intervalRatesCheck();
         }
 
+        if (currRates === null || undefined) {
+            await intervalRatesCheck();
+        }
+
         return await orders.reduce(async (sum, order) => {
             const currentPrice = parseFloat(order.priceCNY);
             let rubPrice = await convertedCNYWithFee(currentPrice, currRates);

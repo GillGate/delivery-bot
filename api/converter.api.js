@@ -1,29 +1,8 @@
 import "dotenv/config";
 import pricingConfig from "#bot/config/pricing.config.js";
+import { intervalRatesCheck, rates } from "./current-rates.api.js";
 
-const { convertationFee, wmFee, poshlinaFloor, poshlinaAdmin, poshlinaAgent } = pricingConfig;
-
-export async function getCurrentRates() {
-    try {
-        //Запрашиваем данные
-        const responseOne = await fetch(process.env.BOT_LINK_FREECURRENCY_API);
-        const responseTwo = await fetch(process.env.BOT_LINK_OPEN_API);
-
-        //Деструктуризация полученных данных
-        const { data: rateOne } = await responseOne.json();
-        const { rates: rateTwo } = await responseTwo.json();
-
-        // TODO: update rates every 1h
-        console.log("current rate usd to cny ~", rateOne["RUB"]);
-
-        return {
-            dataOne: rateOne,
-            dataTwo: rateTwo,
-        };
-    } catch (error) {
-        console.log(error);
-    }
-}
+const { convertationFee, wmFee, dutyFloor, dutyBasePercent, dutyAdmin, dutyAgent } = pricingConfig;
 
 //TODO Найти аналог freecurrencyapi - в месяц 5000 запросов или сделать так, чтобы запросы были редкими(напр. раз в час совершается запрос)
 async function convertThroughUSD(amount, fromCurr, toCurr) {
@@ -37,9 +16,9 @@ async function convertThroughUSD(amount, fromCurr, toCurr) {
     return (responseOneRate + responseTwoRate) / 2;
 }
 
-export async function convertedCNYWithFee(cnyAmount, rates = null) {
-    if (rates === null) {
-        rates = await getCurrentRates();
+export async function convertedCNYWithFee(cnyAmount, rates) {
+    if (rates === null || undefined) {
+        await intervalRatesCheck();
     }
 
     let currentSum = await convertThroughUSD(cnyAmount, "CNY", "RUB");
