@@ -135,7 +135,11 @@ order.callbackQuery("order__place", async (ctx) => {
 
     totalSum = await calculateTotalSum(cart);
     makeOrderText += `Итого к оплате*: ${totalSum} ₽\n`;
-    makeOrderText += `*<i> - с учётом доставки</i>\n\n`;
+    if (currentOrder.dutySum === 0) {
+        makeOrderText += `*<i> - с учётом доставки</i>\n\n`;
+    } else {
+        makeOrderText += `*<i> - с учётом доставки и пошлины</i>\n\n`;
+    }
 
     makeOrderText += `${getEmoji("fio")}  ФИО получателя: ${user.fio}\n`;
     makeOrderText += `${getEmoji("address")}  Адрес доставки: ${user.address}\n`;

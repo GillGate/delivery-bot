@@ -20,7 +20,7 @@ import limitsConfig from "#bot/config/limits.config.js";
 import { translate } from "#bot/helpers/translate.js";
 
 export async function registration(conversation, ctx) {
-    const {deliveryPeriod} = limitsConfig
+    const { deliveryPeriod } = limitsConfig;
     let currentSession = conversation.ctx.session;
     let currentOrder = currentSession.order;
     let currentCart = currentSession.cart;
@@ -96,11 +96,16 @@ export async function registration(conversation, ctx) {
     let htmlOrderLink = getHtmlOrderLink(currentOrder);
 
     let totalText = `Итоговая цена: ${currentOrder.price} ₽ \n`;
-    totalText += `Стоимость товара: ${currentOrder.priceCNY} ￥ \n\n`;
+    if (currentOrder.dutySum !== 0) {
+        console.log(currentOrder.dutySum);
+        //TODO to add pricing link
+        totalText += `${getEmoji("attention")} <i>с учётом <a href='#'>пошлины</a></i>\n`;
+    }
 
     totalText += `Детали заказа:\n`;
     totalText += `- Имя товара: ${translate(currentOrder.name)}\n`;
     totalText += `- Ссылка на товар: ${htmlOrderLink}\n`;
+    totalText += `Стоимость товара: ${currentOrder.priceCNY} ￥ \n\n`;
     totalText += `- Доп. параметры: ${currentOrder.params}\n\n`;
 
     totalText += `${getEmoji("time")} Срок доставки: от `;

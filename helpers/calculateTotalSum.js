@@ -1,5 +1,5 @@
 import { convertedCNYWithFee } from "#bot/api/converter.api.js";
-import { intervalRatesCheck, rates } from "#bot/api/current-rates.api.js";
+import { firstRatesCheck, rates } from "#bot/api/current-rates.api.js";
 import { calculateDelivery } from "#bot/helpers/calculateDelivery.js";
 import pricingConfig from "#bot/config/pricing.config.js";
 
@@ -10,11 +10,11 @@ export default async function (orders = []) {
 
     if (orders.length > 0) {
         if (currRates === null || undefined) {
-            await intervalRatesCheck();
+            await firstRatesCheck();
         }
 
         if (currRates === null || undefined) {
-            await intervalRatesCheck();
+            await firstRatesCheck();
         }
 
         return await orders.reduce(async (sum, order) => {
