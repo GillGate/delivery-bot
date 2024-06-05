@@ -42,12 +42,15 @@ export async function registration(conversation, ctx) {
 
     await getOrderParams(conversation, ctx);
 
+    let costText = "Укажите стоимость товара в юань:\n";
+    costText += "❗️ Финальная стоимость товара на POIZON будет доступна после того, как вы укажите размер товара в приложении";
+
     if (currentSession.temp?.skipParams) {
-        conversation.ctx.editMessageText("Укажите стоимость товара в юань:", {
+        conversation.ctx.editMessageText(costText, {
             reply_markup: backMainMenu,
         });
     } else {
-        ctx.reply("Укажите стоимость товара в юань:", {
+        ctx.reply(costText, {
             reply_markup: backMainMenu,
         });
     }
@@ -133,6 +136,7 @@ export async function registration(conversation, ctx) {
 
     if (regResponse.match === "cart__add") {
         let { from } = ctx;
+        /*
         //Добавить в условие обращение к базе и если там тоже нет выполнять услвоие
         if (!from?.username) {
             let questionText = "Мы не смогли определить ваш username.";
@@ -142,9 +146,10 @@ export async function registration(conversation, ctx) {
             questionText += "@romahaforever";
             conversation.ctx.editMessageText(questionText, { reply_markup: backMainMenu });
         }
+        */
         console.log(totalText, currentUser);
 
-        await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, totalText, {
+        ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, totalText, {
             message_thread_id: process.env.BOT_CHAT_TOPIC_LOGS,
             parse_mode: "HTML",
         });
@@ -155,15 +160,11 @@ export async function registration(conversation, ctx) {
                     fio: currentUser.fio,
                     address: currentUser.address,
                     isNewbie: currentUser.isNewbie,
-                    username: from?.username ?? altUsername,
+                    username: from?.username //?? altUsername,
                 });
 
                 console.log("userData changed", currentUser);
             }
-
-            conversation.ctx.answerCallbackQuery(
-                `Товар ${getEmoji(currentOrder.subType)} добавлен в корзину`
-            );
 
             currentOrder.date = Date.now();
 
@@ -173,12 +174,17 @@ export async function registration(conversation, ctx) {
             console.error(e);
         }
 
-        let textForManager = `${totalText}\n\n`;
-        textForManager += `Contact: @${from?.username ?? altUsername}`;
+        let textForManager = `${totalText}\n`;
+        textForManager += `Contact: @${from?.username/*?? altUsername*/}`;
 
-        await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, textForManager, {
+        ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, textForManager, {
             message_thread_id: process.env.BOT_CHAT_TOPIC_ORDERS,
+            parse_mode: "HTML",
         });
+
+        conversation.ctx.answerCallbackQuery(
+            `Товар ${getEmoji(currentOrder.subType)} добавлен в корзину`
+        );
 
         conversation.ctx.editMessageText(`Товар ${htmlOrderLink} был добавлен в корзину`, {
             reply_markup: regFinalMenu,
