@@ -74,6 +74,7 @@ cart.callbackQuery(/cart__check_/, async (ctx) => {
     cartItemText += `- Доп. параметры: ${cartItem.params}\n`;
     cartItemText += `- Цена: ${cartItem.priceCNY} ¥\n`;
     cartItemText += `- Цена в рублях: ~${cartItem.priceRUB} ₽\n\n`;
+    // TODO: better UX improvemnt 10000 -> 10 000
 
     await ctx.editMessageText(cartItemText, {
         reply_markup: generateItemActions(currentItemId),

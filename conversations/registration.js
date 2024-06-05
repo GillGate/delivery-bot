@@ -42,20 +42,24 @@ export async function registration(conversation, ctx) {
 
     await getOrderParams(conversation, ctx);
 
-    let costText = "Укажите стоимость товара в юань:\n";
-    costText += "❗️ Финальная стоимость товара на POIZON будет доступна после того, как вы укажите размер товара в приложении";
+    let costText = "Укажите стоимость товара в юань:\n\n";
+    costText += "<i>❗️ Финальная стоимость товара на POIZON будет доступна после того, как вы укажите размер товара в приложении</i>";
 
     if (currentSession.temp?.skipParams) {
         conversation.ctx.editMessageText(costText, {
             reply_markup: backMainMenu,
+            parse_mode: "HTML",
         });
     } else {
         ctx.reply(costText, {
             reply_markup: backMainMenu,
+            parse_mode: "HTML",
         });
     }
 
     await getOrderPrice(conversation, ctx);
+
+    currentCart.length = 0;
 
     if (currentCart.length === 0) {
         if (currentUser.fio !== "") {
@@ -108,7 +112,7 @@ export async function registration(conversation, ctx) {
     totalText += `Детали заказа:\n`;
     totalText += `- Имя товара: ${translate(currentOrder.name)}\n`;
     totalText += `- Ссылка на товар: ${htmlOrderLink}\n`;
-    totalText += `Стоимость товара: ${currentOrder.priceCNY} ￥ \n\n`;
+    totalText += `- Стоимость товара: ${currentOrder.priceCNY} ￥ \n`;
     totalText += `- Доп. параметры: ${currentOrder.params}\n\n`;
 
     totalText += `${getEmoji("time")} Срок доставки: от `;

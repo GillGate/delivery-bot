@@ -9,6 +9,7 @@ export default async function (cnyAmount) {
     if (amountInEuro - amountInEuro * dutyAgent > dutyFloor) {
         let dutyFreeThreshold = amountInEuro - dutyFloor;
         let dutyInPercentCalc = dutyFreeThreshold * dutyBasePercent;
+
         //Конвертируем в рубли. Далее рассчёт идёт в рублях
         let dutyInRub = await convertThroughUSD(dutyInPercentCalc, "EUR", "RUB");
         let withAgentsFee = dutyInRub + dutyInRub * dutyAgent;
@@ -16,6 +17,6 @@ export default async function (cnyAmount) {
 
         totalDutyFee += withAdminFee;
     }
-    //     await console.log(withAgentsFee);
+
     return totalDutyFee;
 }

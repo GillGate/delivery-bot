@@ -122,6 +122,7 @@ order.callbackQuery("order__place", async (ctx) => {
 
     makeOrderText += "Список товаров на заказ:\n\n";
     let cartItemsText = "";
+    let totalDutySum = 0;
 
     cart.forEach((cartItem, index) => {
         cartItemsText += `#${++index}: ${cartItem.name}\n`;
@@ -129,13 +130,17 @@ order.callbackQuery("order__place", async (ctx) => {
         cartItemsText += `- Доп. параметры: ${cartItem.params}\n`;
         cartItemsText += `- Цена: ${cartItem.priceCNY} ¥\n`;
         cartItemsText += `- Цена в рублях: ~${cartItem.priceRUB} ₽\n\n`;
+        totalDutySum += cartItem?.dutySum ?? 0;
     });
+
+    console.log(totalDutySum);
 
     makeOrderText += cartItemsText;
 
     totalSum = await calculateTotalSum(cart);
     makeOrderText += `Итого к оплате*: ${totalSum} ₽\n`;
-    if (currentOrder.dutySum === 0) {
+    
+    if (totalDutySum === 0) {
         makeOrderText += `*<i> - с учётом доставки</i>\n\n`;
     } else {
         makeOrderText += `*<i> - с учётом доставки и пошлины</i>\n\n`;
