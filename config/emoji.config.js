@@ -47,8 +47,9 @@ export default {
     processing: "🔄",
 
     time: "⏳",
+    attention: "❗️",
 
     // #Пользователь
     fio: "🪪",
     address: "🌍",
-}
+};

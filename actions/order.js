@@ -19,7 +19,7 @@ import { getEmoji } from "#bot/helpers/getEmoji.js";
 import getHtmlOrderLink from "#bot/helpers/getHtmlOrderLink.js";
 import { backToCart } from "#bot/keyboards/cart.js";
 import calculateTotalSum from "#bot/helpers/calculateTotalSum.js";
-import {sleep} from "#bot/helpers/delayPromise.js";
+import { sleep } from "#bot/helpers/delayPromise.js";
 
 export const order = new Composer();
 order.use(hydrate());
@@ -28,7 +28,7 @@ order.use(createConversation(registration));
 order.use(createConversation(calculate));
 
 order.callbackQuery("order__make", async (ctx) => {
-    let orderText = 'Перед оформлением заказа настоятельно рекомендуем ознакомиться с '
+    let orderText = "Перед оформлением заказа настоятельно рекомендуем ознакомиться с ";
     orderText += `<a href="${linksConfig.guide}">гайдом</a> пользования площадки POIZON, а также с правилом нашей доставки! 🚸`;
 
     await ctx.editMessageText(orderText, {
@@ -90,12 +90,13 @@ order.callbackQuery(/order__select_/, async (ctx) => {
 order.callbackQuery(/order__pick_/, async (ctx) => {
     ctx.session.order.subType = ctx.callbackQuery.data.split("__pick_")[1];
     ctx.answerCallbackQuery();
-    if(ctx.session.order.subType === "other"){
-        let otherDisclaimer = "⚠️Важно⚠️\n\nПри выборе категории 'Другое' "
-        otherDisclaimer += "стоимость доставки не входит в итоговую сумму заказа и рассчитывается отдельно менеджером"
-        
-        await ctx.editMessageText(otherDisclaimer)
-        await sleep(5000)
+    if (ctx.session.order.subType === "other") {
+        let otherDisclaimer = "⚠️Важно⚠️\n\nПри выборе категории 'Другое' ";
+        otherDisclaimer +=
+            "стоимость доставки не входит в итоговую сумму заказа и рассчитывается отдельно менеджером";
+
+        await ctx.editMessageText(otherDisclaimer);
+        await sleep(5000);
     }
 
     if (ctx.session.temp?.calcMode) {
@@ -134,7 +135,11 @@ order.callbackQuery("order__place", async (ctx) => {
 
     totalSum = await calculateTotalSum(cart);
     makeOrderText += `Итого к оплате*: ${totalSum} ₽\n`;
-    makeOrderText += `*<i> - с учётом доставки</i>\n\n`;
+    if (currentOrder.dutySum === 0) {
+        makeOrderText += `*<i> - с учётом доставки</i>\n\n`;
+    } else {
+        makeOrderText += `*<i> - с учётом доставки и пошлины</i>\n\n`;
+    }
 
     makeOrderText += `${getEmoji("fio")}  ФИО получателя: ${user.fio}\n`;
     makeOrderText += `${getEmoji("address")}  Адрес доставки: ${user.address}\n`;

@@ -19,4 +19,4 @@ export default {
     koefVolumWeight: 190,
     m3ToSm3: 1000000,
     rubDeliverySDEK: 500, // TODO: ? depends on factWeight, динамический подсчёт цены
-}
+};
