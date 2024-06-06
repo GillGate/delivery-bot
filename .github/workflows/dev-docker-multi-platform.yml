@@ -56,42 +56,42 @@ jobs:
         tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}
 
 
-#    - name: Run Container
- #     run: |
- #       docker run -d -e TELEGRAM_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }} \
- #       -e BUILD_DATE=${{ env.BUILD_DATE }} \
- #       --name delivery-bot-test \
- #       saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}
+    - name: Run Container
+      run: |
+        docker run -d -e TELEGRAM_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }} \
+        -e BUILD_DATE=${{ env.BUILD_DATE }} \
+        --name delivery-bot-test \
+        saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}
 
 
- #   - name: Wait for Container to be Ready
- #     run: |
- #       echo "Waiting for bot to be ready..."
- #       sleep 10
+    - name: Wait for Container to be Ready
+      run: |
+        echo "Waiting for bot to be ready..."
+        sleep 10
 
 
-  #  - name: Test Telegram Bot
-  #    id: test_bot
-  #    env:
-  #      TELEGRAM_TOKEN: ${{ secrets.DEV_BOT_API_TOKEN }}
-  #      CHAT_ID: ${{ secrets.TEST_CHAT_ID }}
-  #    run: |
-  #      MESSAGE="Test message from CI"
-  #      RESPONSE=$(curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" -d chat_id=${CHAT_ID} -d text="${MESSAGE}")
-  #      if [[ "$RESPONSE" != *"\"ok\":true"* ]]; then
-  #        echo "Bot did not respond correctly: $RESPONSE"
-  #        exit 1
-  #      fi
+    - name: Test Telegram Bot
+      id: test_bot
+      env:
+        TELEGRAM_TOKEN: ${{ secrets.DEV_BOT_API_TOKEN }}
+        CHAT_ID: ${{ secrets.TEST_CHAT_ID }}
+      run: |
+        MESSAGE="Test message from CI"
+        RESPONSE=$(curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" -d chat_id=${CHAT_ID} -d text="${MESSAGE}")
+        if [[ "$RESPONSE" != *"\"ok\":true"* ]]; then
+          echo "Bot did not respond correctly: $RESPONSE"
+          exit 1
+        fi
       
 
-   # - name: Push Multi Platform Image
-   #   uses: docker/build-push-action@v5 
-   #   if: success() && steps.test_bot.outcome == 'success'
-   #   with:
-   #     context: .
-   #     platforms: linux/amd64,linux/arm64
-   #     push: ${{ github.event_name != 'pull_request' }}
-   #     tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev
+    - name: Push Multi Platform Image
+      uses: docker/build-push-action@v5 
+      if: success() && steps.test_bot.outcome == 'success'
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev
    
     - name: Push Docker Image
       run: |
