@@ -84,14 +84,14 @@ jobs:
         fi
       
 
-    - name: Push Multi Platform Image
-      uses: docker/build-push-action@v5 
-      if: success() && steps.test_bot.outcome == 'success'
-      with:
-        context: .
-        platforms: linux/amd64,linux/arm64
-        push: ${{ github.event_name != 'pull_request' }}
-        tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev
+   # - name: Push Multi Platform Image
+   #   uses: docker/build-push-action@v5 
+   #   if: success() && steps.test_bot.outcome == 'success'
+   #   with:
+   #     context: .
+   #     platforms: linux/amd64,linux/arm64
+   #     push: ${{ github.event_name != 'pull_request' }}
+   #     tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev
    
     - name: Push Docker Image
       run: |
@@ -100,3 +100,7 @@ jobs:
     
     - name: Logout from Docker
       run: docker logout
+      
+
+
+      
