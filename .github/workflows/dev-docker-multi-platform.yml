@@ -43,7 +43,7 @@ jobs:
 
     - name: Create service account json file
       run: |
-        echo "${{ secrets.BOT_FIREBASE_SERVICE_ACCOUNT }}" > serviceAccount.firestore.json
+        curl -o serviceAccount.firestore.json "${{ secrets.SERVICE_ACCOUNT }}"
 
         
     - name: Build Multi Platform Container 
