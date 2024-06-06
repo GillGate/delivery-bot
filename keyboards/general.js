@@ -1,4 +1,5 @@
 import { InlineKeyboard } from "grammy";
+import linksConfig from "#bot/config/links.config.js";
 
 export function getMainMenu(isNewbie = true) {
     let mainMenu = new InlineKeyboard();
@@ -29,7 +30,7 @@ export const backKeyboard = new InlineKeyboard().text("‹ Назад", "back");
 export const helpMenu = new InlineKeyboard()
     .url("Скачать Poizon", "https://dewu.com")
     .row()
-    .url("Как использовать Poizon", "telegra.ph")
+    .url("Как использовать Poizon", linksConfig.guide)
     .row()
     .url("О сроках доставки", "telegra.ph")
     .row()

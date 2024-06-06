@@ -16,6 +16,5 @@ export default async function (cnyAmount) {
 
         totalDutyFee += withAdminFee;
     }
-    //     await console.log(withAgentsFee);
     return totalDutyFee;
 }

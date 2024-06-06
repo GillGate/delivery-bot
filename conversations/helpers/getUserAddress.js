@@ -4,6 +4,7 @@ import limitsConfig from "#bot/config/limits.config.js";
 
 export default async function (conversation, ctx) {
     const { address: addressLimits } = limitsConfig;
+    const addressRegex = /^[А-я0-9./,\s]+$/gi;
 
     return await conversation.waitUntil(
         async (ctx) => {
@@ -14,9 +15,12 @@ export default async function (conversation, ctx) {
             }
 
             let address = ctx.message?.text;
+            
             if (address?.length >= addressLimits.min && address?.length <= addressLimits.max) {
-                conversation.ctx.session.user.address = address;
-                return true;
+                if(addressRegex.test(address)) {
+                    conversation.ctx.session.user.address = address;
+                    return true;
+                }
             }
         },
         {

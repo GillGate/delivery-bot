@@ -10,8 +10,7 @@ async function getCurrentRates() {
         const { data: rateOne } = await responseOne.json();
         const { rates: rateTwo } = await responseTwo.json();
 
-        // TODO: update rates every 1h
-        console.log("current rate usd to cny ~", rateOne["RUB"]);
+        console.log("current rate usd to cny in rub ~", rateOne["RUB"].toFixed(3));
 
         return {
             dataOne: rateOne,
@@ -28,11 +27,13 @@ async function firstRatesCheck() {
     try {
         let addRatesInfo;
         rates = await getCurrentRates();
+
         await (addRatesInfo = {
-            cny: rates.dataOne.CNY.toFixed(2),
-            rub: rates.dataOne.RUB.toFixed(2),
-            eur: rates.dataOne.EUR.toFixed(2),
+            cny: rates.dataOne.CNY.toFixed(3),
+            rub: rates.dataOne.RUB.toFixed(3),
+            eur: rates.dataOne.EUR.toFixed(3),
         });
+
         let ratesThreadMessage = "Дела обстоят следующим образом:\n";
         ratesThreadMessage += `            CNY->USD: ${addRatesInfo.cny}\n`;
         ratesThreadMessage += `            RUB->USD: ${addRatesInfo.rub}\n`;

@@ -38,8 +38,8 @@ export default async function (conversation, ctx) {
                 ctx.session.order.priceCNY = parseFloat(ctx.message?.text);
                 ctx.session.order.priceRUB = Math.ceil(parseFloat(rubPrice));
                 ctx.session.order.price = Math.ceil(totalPrice); // по божески
+
                 ctx.session.order.dutySum = Math.ceil(dutySum);
-                // TODO: better UX improvemnt 10000 -> 10 000
                 return true;
             }
         },
