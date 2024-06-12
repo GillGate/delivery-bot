@@ -43,7 +43,7 @@ jobs:
 
     - name: Create service account json file
       run: |
-        echo "${{ secrets.BOT_FIREBASE_SERVICE_ACCOUNT }}" > serviceAccount.firestore.json
+        curl -o serviceAccount.firestore.json "${{ secrets.BOT_FIREBASE_SERVICE_ACCOUNT }}"
 
         
     - name: Build Multi Platform Container 
@@ -58,10 +58,7 @@ jobs:
 
     - name: Run Container
       run: |
-        docker run -d -e TELEGRAM_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }} \
-        -e BUILD_DATE=${{ env.BUILD_DATE }} \
-        --name delivery-bot-test \
-        saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}
+        docker run -d saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}
 
 
     - name: Wait for Container to be Ready
@@ -100,7 +97,6 @@ jobs:
     
     - name: Logout from Docker
       run: docker logout
-      
-
-
+  
+ 
       
