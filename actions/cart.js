@@ -38,7 +38,7 @@ cart.callbackQuery(["cart__check", /cart__check_after_delete_/], async (ctx) => 
     if (deletedItemId !== "") {
         cart = cart.filter((item) => {
             if (item.dbId === deletedItemId) {
-                // deleteCartItem(ctx.from.id, deletedItemId);
+                deleteCartItem(ctx.from.id, deletedItemId);
                 ctx.answerCallbackQuery(`Товар ${getEmoji(item.subType)} был удалён`);
                 return false;
             } else {

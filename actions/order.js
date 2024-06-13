@@ -20,6 +20,7 @@ import getHtmlOrderLink from "#bot/helpers/getHtmlOrderLink.js";
 import { backToCart } from "#bot/keyboards/cart.js";
 import calculateTotalSum from "#bot/helpers/calculateTotalSum.js";
 import { sleep } from "#bot/helpers/delayPromise.js";
+import sheetUpdater from "#bot/api/google-sheet.api.js";
 
 export const order = new Composer();
 order.use(hydrate());
@@ -170,6 +171,18 @@ order.callbackQuery("order__confirm", async (ctx) => {
     };
 
     await addUserOrder(ctx.from.id, order);
+
+    let sheetDataObj = {
+        id: "?",
+        date: Date.now(),
+        user: ctx.session.user.fio,
+        contacts: order.user.username,
+        destination: ctx.session.user.address,
+        cart: ctx.session.cart,
+        declaredTotalPrice: ctx.session.totalSum,
+    };
+
+    await sheetUpdater(sheetDataObj);
     // let res = await cleanCart(ctx.from.id);
     // if(res) {
     //
