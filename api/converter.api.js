@@ -27,5 +27,13 @@ export async function convertedCNYWithFee(cnyAmount, rates) {
     let currentConversionFee = currentSum * convertationFee;
     let currentWMFee = currentSum * wmFee;
 
-    return currentSum + currentConversionFee + currentWMFee;
+    let conversionSum = currentSum + currentConversionFee + currentWMFee;
+    //Объект для передачи наружу промежуточных значений
+    let dataObject = {
+        total: conversionSum,
+        conversionFee: currentConversionFee,
+        wmFee: currentWMFee,
+    };
+
+    return dataObject;
 }

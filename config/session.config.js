@@ -2,6 +2,7 @@ export default {
     user: {
         fio: "",
         address: "",
+        number: "",
         isNewbie: true
     },
     cart: [],

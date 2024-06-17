@@ -15,7 +15,9 @@ export default async function (conversation, ctx) {
             const profitPermanent = +process.env.BOT_PROFIT_PERMANENT;
 
             if (!isNaN(price) && price > priceLimits.min && price < priceLimits.max) {
-                let rubPrice = await convertedCNYWithFee(price);
+                let convertationResult = await convertedCNYWithFee(price); //В переменной находится объект-результат
+
+                let rubPrice = convertationResult.total; // Извлекаем значение, содержащее полную сконвертированную сумму
                 let currentProfit = rubPrice * profitPercent + profitPermanent;
                 let dutySum = await dutySumCalc(price);
 
@@ -29,16 +31,19 @@ export default async function (conversation, ctx) {
                     "currentProfit",
                     currentProfit,
                     "delivery price",
-                    currentDeliveryPrice,
+                    currentDeliveryPrice.complete,
                     "POSHLINA",
                     dutySum
                 );
 
-                let totalPrice = rubPrice + currentProfit + currentDeliveryPrice + dutySum;
+                let totalPrice = rubPrice + currentProfit + currentDeliveryPrice.complete + dutySum;
+                ctx.session.order.chinaMoscowPrice = currentDeliveryPrice.withoutSdek;
+                ctx.session.order.conversionFee = convertationResult.conversionFee;
+                ctx.session.order.wmFee = convertationResult.wmFee;
+                ctx.session.order.currentProfit = Math.ceil(currentProfit);
                 ctx.session.order.priceCNY = parseFloat(ctx.message?.text);
                 ctx.session.order.priceRUB = Math.ceil(parseFloat(rubPrice));
                 ctx.session.order.price = Math.ceil(totalPrice); // по божески
-
                 ctx.session.order.dutySum = Math.ceil(dutySum);
                 return true;
             }

@@ -15,12 +15,12 @@ export default async function (orders = []) {
 
         return await orders.reduce(async (sum, order) => {
             const currentPrice = parseFloat(order.priceCNY);
-            let rubPrice = await convertedCNYWithFee(currentPrice, currRates);
+            let rubPrice = (await convertedCNYWithFee(currentPrice, currRates)).total;
 
             const currentProfit = rubPrice * profitPercent + profitPermanent;
             rubPrice += currentProfit;
 
-            const deliveryPrice = calculateDelivery(order.subType);
+            const deliveryPrice = calculateDelivery(order.subType).complete;
             let totalPrice = Math.ceil(rubPrice + deliveryPrice);
 
             return (await sum) + totalPrice;

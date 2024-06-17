@@ -8,6 +8,7 @@ import {
     confirmOrderMenu,
     getSubTypeKeyboard,
     orderMenuBeforeCreate,
+    otherKeyboard,
     selectCategoryKeyboard,
 } from "#bot/keyboards/order.js";
 import { addUserOrder, cleanCart, getUserOrders, updateUserInfo } from "#bot/api/firebase.api.js";
@@ -20,6 +21,7 @@ import getHtmlOrderLink from "#bot/helpers/getHtmlOrderLink.js";
 import { backToCart } from "#bot/keyboards/cart.js";
 import calculateTotalSum from "#bot/helpers/calculateTotalSum.js";
 import { sleep } from "#bot/helpers/delayPromise.js";
+import sheetUpdater from "#bot/api/google-sheet.api.js";
 
 export const order = new Composer();
 order.use(hydrate());
@@ -86,18 +88,21 @@ order.callbackQuery(/order__select_/, async (ctx) => {
     });
     ctx.answerCallbackQuery();
 });
+//delay was deleted, now it has the button "Далее"
+order.callbackQuery("order__pick_disclaimer", async (ctx) => {
+    let otherDisclaimer = "⚠️Важно⚠️\n\nПри выборе категории 'Другое' ";
+    otherDisclaimer += "стоимость доставки не входит в итоговую сумму заказа и \n";
+    otherDisclaimer += "рассчитывается отдельно менеджером"
+
+    await ctx.editMessageText(otherDisclaimer, {
+        reply_markup: otherKeyboard
+    })
+
+})
 
 order.callbackQuery(/order__pick_/, async (ctx) => {
     ctx.session.order.subType = ctx.callbackQuery.data.split("__pick_")[1];
     ctx.answerCallbackQuery();
-    if (ctx.session.order.subType === "other") {
-        let otherDisclaimer = "⚠️Важно⚠️\n\nПри выборе категории 'Другое' ";
-        otherDisclaimer +=
-            "стоимость доставки не входит в итоговую сумму заказа и рассчитывается отдельно менеджером";
-
-        await ctx.editMessageText(otherDisclaimer);
-        await sleep(5000);
-    }
 
     if (ctx.session.temp?.calcMode) {
         await ctx.conversation.enter("calculate");
@@ -139,7 +144,7 @@ order.callbackQuery("order__place", async (ctx) => {
 
     totalSum = await calculateTotalSum(cart);
     makeOrderText += `Итого к оплате*: ${totalSum} ₽\n`;
-    
+
     if (totalDutySum === 0) {
         makeOrderText += `*<i> - с учётом доставки</i>\n\n`;
     } else {
@@ -170,6 +175,19 @@ order.callbackQuery("order__confirm", async (ctx) => {
     };
 
     await addUserOrder(ctx.from.id, order);
+
+    let sheetDataObj = {
+        id: "?",
+        date: Date.now(),
+        user: ctx.session.user.fio,
+        username: order.user.username,
+        number: order.user.number,
+        destination: ctx.session.user.address,
+        cart: ctx.session.cart,
+        declaredTotalPrice: ctx.session.totalSum,
+    };
+
+    await sheetUpdater(sheetDataObj);
     // let res = await cleanCart(ctx.from.id);
     // if(res) {
     //

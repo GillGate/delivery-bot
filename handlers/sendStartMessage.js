@@ -15,13 +15,12 @@ export default async function (ctx, replyMode = false) {
 
     let user = await getUserData(ctx);
 
-    if(ctx.session.cart.length === 0) {
+    if (ctx.session.cart.length === 0) {
         try {
             ctx.session.cart = await getUserCart(ctx.from.id);
-            
-            console.log("load cart", ctx.session.cart);
-        }
-        catch (e) {
+
+            // console.log("load cart", ctx.session.cart);
+        } catch (e) {
             console.error(e);
         }
     }
