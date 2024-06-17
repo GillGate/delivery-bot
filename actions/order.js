@@ -8,6 +8,7 @@ import {
     confirmOrderMenu,
     getSubTypeKeyboard,
     orderMenuBeforeCreate,
+    otherKeyboard,
     selectCategoryKeyboard,
 } from "#bot/keyboards/order.js";
 import { addUserOrder, cleanCart, getUserOrders, updateUserInfo } from "#bot/api/firebase.api.js";
@@ -87,18 +88,21 @@ order.callbackQuery(/order__select_/, async (ctx) => {
     });
     ctx.answerCallbackQuery();
 });
+//delay was deleted, now it has the button "Далее"
+order.callbackQuery("order__pick_disclaimer", async (ctx) => {
+    let otherDisclaimer = "⚠️Важно⚠️\n\nПри выборе категории 'Другое' ";
+    otherDisclaimer += "стоимость доставки не входит в итоговую сумму заказа и \n";
+    otherDisclaimer += "рассчитывается отдельно менеджером"
+
+    await ctx.editMessageText(otherDisclaimer, {
+        reply_markup: otherKeyboard
+    })
+
+})
 
 order.callbackQuery(/order__pick_/, async (ctx) => {
     ctx.session.order.subType = ctx.callbackQuery.data.split("__pick_")[1];
     ctx.answerCallbackQuery();
-    if (ctx.session.order.subType === "other") {
-        let otherDisclaimer = "⚠️Важно⚠️\n\nПри выборе категории 'Другое' ";
-        otherDisclaimer +=
-            "стоимость доставки не входит в итоговую сумму заказа и рассчитывается отдельно менеджером";
-
-        await ctx.editMessageText(otherDisclaimer);
-        await sleep(5000);
-    }
 
     if (ctx.session.temp?.calcMode) {
         await ctx.conversation.enter("calculate");
@@ -176,7 +180,8 @@ order.callbackQuery("order__confirm", async (ctx) => {
         id: "?",
         date: Date.now(),
         user: ctx.session.user.fio,
-        contacts: order.user.username,
+        username: order.user.username,
+        number: order.user.number,
         destination: ctx.session.user.address,
         cart: ctx.session.cart,
         declaredTotalPrice: ctx.session.totalSum,

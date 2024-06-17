@@ -65,6 +65,9 @@ cart.callbackQuery(["cart__check", /cart__check_after_delete_/], async (ctx) => 
 });
 
 cart.callbackQuery(/cart__check_/, async (ctx) => {
+    //service logs to understand the problem with cart
+    console.log("CARTRIGHTNOW", ctx.session.cart);
+    console.log('CARTLOGHERE\n', ctx.callbackQuery.data.split("__check_"));
     let currentItemId = ctx.callbackQuery.data.split("__check_")[1];
     const cartItem = ctx.session.cart.filter((item) => item.dbId === currentItemId)[0];
 

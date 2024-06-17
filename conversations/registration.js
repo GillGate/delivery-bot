@@ -3,6 +3,7 @@ import { backMainMenu } from "#bot/keyboards/general.js";
 import {
     regFioMenu,
     regAddressMenu,
+    regNumberMenu,
     regTotalMenu,
     regParamsMenu,
     regFinalMenu,
@@ -12,6 +13,7 @@ import getOrderParams from "#bot/conversations/helpers/getOrderParams.js";
 import getOrderPrice from "#bot/conversations/helpers/getOrderPrice.js";
 import getUserFio from "#bot/conversations/helpers/getUserFio.js";
 import getUserAddress from "#bot/conversations/helpers/getUserAddress.js";
+import getUserNumber from "./helpers/getUserNumber.js";
 import unlessActions from "#bot/conversations/helpers/unlessActions.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 import getHtmlOrderLink from "#bot/helpers/getHtmlOrderLink.js";
@@ -25,6 +27,8 @@ export async function registration(conversation, ctx) {
     let currentOrder = currentSession.order;
     let currentCart = currentSession.cart;
     let currentUser = await getUserData(ctx);
+
+    console.log("CURRENT status CURRENT", currentSession.temp);
 
     await conversation.ctx.editMessageText("Введите ссылку на товар", {
         reply_markup: backMainMenu,
@@ -59,8 +63,6 @@ export async function registration(conversation, ctx) {
     }
 
     await getOrderPrice(conversation, ctx);
-
-    currentCart.length = 0;
 
     if (currentCart.length === 0) {
         if (currentUser.fio !== "") {
@@ -98,6 +100,35 @@ export async function registration(conversation, ctx) {
         }
 
         await getUserAddress(conversation, ctx);
+
+        //ask for number. standart Keyboard sucks. It's better to just make the user to write their number
+        if (currentUser.number !== "") {
+            let getNumber = `Ваш текущий номер: ${currentUser.number} \n\n`;
+            getNumber += `Вы можете оставить его по кнопке ниже или ввести новый:`;
+
+            if (conversation.ctx.session.temp?.keepAddress) {
+                conversation.ctx.editMessageText(getNumber, {
+                    reply_markup: regNumberMenu,
+                });
+            } else {
+                ctx.reply(getNumber, {
+                    reply_markup: regNumberMenu,
+                });
+            }
+        } else {
+            let numberText = "Укажите номер телефона получателя посылки в следующем формате:\n"
+            numberText += "<b>+79259232293</b>\n";
+            numberText += "Данный номер телефона будет передан службе доставки";
+
+            ctx.reply(numberText, {
+                reply_markup: backMainMenu,
+                parse_mode: "HTML",
+            });
+        }
+
+
+        await getUserNumber(conversation, ctx);
+
         currentUser = conversation.ctx.session.user;
     }
 
@@ -120,9 +151,12 @@ export async function registration(conversation, ctx) {
     totalText += `${deliveryPeriod.min} до ${deliveryPeriod.max} дней + время доставки Poizon\n`;
     totalText += `${getEmoji("fio")}  ФИО получателя: ${currentUser.fio}\n`;
     totalText += `${getEmoji("address")}  Адрес доставки: ${currentUser.address}\n`;
+    totalText += `${getEmoji("phone")}  Номер получателя: ${currentUser.number}\n`;
     // изменить можно в корзине
 
-    if (currentSession.temp?.keepAddress) {
+    console.log("CURRENT status CURRENT", currentSession.temp?.keepNumber);
+
+    if (currentSession.temp?.keepNumber) {
         conversation.ctx.editMessageText(totalText, {
             reply_markup: regTotalMenu,
             parse_mode: "HTML",
@@ -146,17 +180,6 @@ export async function registration(conversation, ctx) {
 
     if (regResponse.match === "cart__add") {
         let { from } = ctx;
-        /*
-        //Добавить в условие обращение к базе и если там тоже нет выполнять услвоие
-        if (!from?.username) {
-            let questionText = "Мы не смогли определить ваш username.";
-            questionText += "Для сохранения данных о вашем заказе, ";
-            questionText += "пожалуйста, оставьте ваш номер телефона для связи в телеграм ";
-            questionText += "или напишите нашему менеджеру\n";
-            questionText += "@romahaforever";
-            conversation.ctx.editMessageText(questionText, { reply_markup: backMainMenu });
-        }
-        */
         console.log(totalText, currentUser);
 
         ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, totalText, {
@@ -171,6 +194,7 @@ export async function registration(conversation, ctx) {
                     address: currentUser.address,
                     isNewbie: currentUser.isNewbie,
                     username: from?.username, //?? altUsername,
+                    number: currentUser.number,
                 });
 
                 console.log("userData changed", currentUser);

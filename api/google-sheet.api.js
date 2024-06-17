@@ -5,7 +5,6 @@ import { JWT } from "google-auth-library";
 
 import specsConfig from "#bot/config/specs.config.js";
 import pricingConfig from "#bot/config/pricing.config.js";
-//TODO: добавить проверку на содержание ячейки + убрать каунтер
 
 const spreadsheetId = process.env.BOT_SERVICE_ACCOUNT_SPREADSHEET_ID;
 const serviceAccountAuth = new JWT({
@@ -14,13 +13,23 @@ const serviceAccountAuth = new JWT({
     scopes: [process.env.BOT_SERVICE_ACCOUNT_SCOPE],
 });
 
-let rowCoutner = 3; //Initilize row counter. First two rows are filled with text so the first row is actually the third
-let ordersCounter = rowCoutner - 2;
 
 export default async function sheetUpdater(dataObject) {
     const doc = new GoogleSpreadsheet(spreadsheetId, serviceAccountAuth); //Authorization
     await doc.loadInfo(); // loads document properties and worksheets
     const sheet = doc.sheetsByIndex[0]; //choose working sheet
+
+    let rowCoutner = 1; //null row
+    let ordersCounter; //orders quantity
+    await sheet.loadCells(`A${rowCoutner}:A1000`) //1000 - произовльное большое значение
+    let checkCell = sheet.getCellByA1(`A${rowCoutner}`); //check row one by one
+
+    while (checkCell.value !== null) {
+        rowCoutner += 1
+        ordersCounter = rowCoutner - 2
+        checkCell = sheet.getCellByA1(`A${rowCoutner}`);
+    } //checking till it'll find an empty one
+
 
     await sheet.loadCells(`A${rowCoutner}:AA${rowCoutner}`); //load the necessary row
 
@@ -43,6 +52,8 @@ export default async function sheetUpdater(dataObject) {
         year: "numeric",
         month: "numeric",
         day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
     });
     dateCell.value = formattedDate;
 
@@ -52,7 +63,7 @@ export default async function sheetUpdater(dataObject) {
 
     // Контакты
     const contactsCell = sheet.getCellByA1(`F${rowCoutner}`);
-    contactsCell.value = new String(`@${dataObject.contacts}`);
+    contactsCell.value = new String(`@${dataObject.username}\n${dataObject.number}`); //now we have user's numbers!!
 
     // Адрес
     const destinationCell = sheet.getCellByA1(`G${rowCoutner}`);
