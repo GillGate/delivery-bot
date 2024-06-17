@@ -1,4 +1,4 @@
-import { InlineKeyboard } from "grammy";
+import { InlineKeyboard, Keyboard } from "grammy";
 
 export const regParamsMenu = new InlineKeyboard()
     .text("Пропустить шаг ›", "reg__skip_params")
@@ -12,6 +12,11 @@ export const regFioMenu = new InlineKeyboard()
 
 export const regAddressMenu = new InlineKeyboard()
     .text("✅  Оставить текущий", "reg__keep_address")
+    .row()
+    .text("‹ В главное меню", "main_menu");
+
+export const regNumberMenu = new InlineKeyboard()
+    .text("✅  Оставить текущий", "reg__keep_number")
     .row()
     .text("‹ В главное меню", "main_menu");
 
