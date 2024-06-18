@@ -103,6 +103,9 @@ order.callbackQuery("order__pick_disclaimer", async (ctx) => {
 order.callbackQuery(/order__pick_/, async (ctx) => {
     ctx.session.order.subType = ctx.callbackQuery.data.split("__pick_")[1];
     ctx.answerCallbackQuery();
+    let chatId = ctx.update.callback_query.message.chat.id
+    let messageId = ctx.update.callback_query.message.message_id
+    ctx.api.deleteMessage(chatId, messageId)
 
     if (ctx.session.temp?.calcMode) {
         await ctx.conversation.enter("calculate");

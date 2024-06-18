@@ -27,7 +27,6 @@ export function generateOrdersMenu(orders, currentPage, maxPerMessage = limitsCo
                     `orders__check_${orders[i].dbId}`
                 )
                 .row();
-            console.log('ORDERSLOGHERE\n', ordersMenu);
         }
 
         ordersMenu.text("‹ Назад", "main_menu");
