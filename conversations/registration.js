@@ -27,7 +27,6 @@ export async function registration(conversation, ctx) {
     let currentOrder = currentSession.order;
     let currentCart = currentSession.cart;
     let currentUser = await getUserData(ctx);
-
     console.log("CURRENT status CURRENT", currentSession.temp);
 
     await conversation.ctx.editMessageText("Введите ссылку на товар", {
@@ -130,8 +129,6 @@ export async function registration(conversation, ctx) {
         await getUserNumber(conversation, ctx);
 
         currentUser = conversation.ctx.session.user;
-    } else {
-        currentSession.temp = {} //At the moment of editing the very first way to fix session.temp that saves info about userInfo from the previous process of registration
     }
 
     let htmlOrderLink = getHtmlOrderLink(currentOrder);
@@ -155,8 +152,6 @@ export async function registration(conversation, ctx) {
     totalText += `${getEmoji("address")}  Адрес доставки: ${currentUser.address}\n`;
     totalText += `${getEmoji("phone")}  Номер получателя: ${currentUser.number}\n`;
     // изменить можно в корзине
-
-    console.log("CURRENT status KEEPNUMBER", currentSession.temp?.keepNumber);
 
     if (currentSession.temp?.keepNumber) {
         conversation.ctx.editMessageText(totalText, {
@@ -203,9 +198,10 @@ export async function registration(conversation, ctx) {
             }
 
             currentOrder.date = Date.now();
+            let dbId = await addToCart(from.id, currentOrder);
+            await (currentOrder.dbId = dbId.id);
+            await (currentSession.cart.push(currentOrder));
 
-            currentSession.cart.push(currentOrder);
-            await addToCart(from.id, currentOrder);
         } catch (e) {
             console.error(e);
         }
@@ -224,5 +220,6 @@ export async function registration(conversation, ctx) {
             reply_markup: regFinalMenu,
             parse_mode: "HTML",
         });
+        currentSession.temp = {}
     }
 }
