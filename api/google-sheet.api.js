@@ -19,7 +19,7 @@ export default async function sheetUpdater(dataObject) {
     await doc.loadInfo(); // loads document properties and worksheets
     const sheet = doc.sheetsByIndex[0]; //choose working sheet
 
-    let rowCoutner = 1; //null row
+    let rowCoutner = 3; //null row
     let ordersCounter; //orders quantity
     await sheet.loadCells(`A${rowCoutner}:A1000`) //1000 - произовльное большое значение
     let checkCell = sheet.getCellByA1(`A${rowCoutner}`); //check row one by one

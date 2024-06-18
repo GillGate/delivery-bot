@@ -31,8 +31,9 @@ cart.callbackQuery("cart__enter", async (ctx) => await sendCartMessage(ctx));
 cart.command("cart", async (ctx) => await sendCartMessage(ctx, true));
 
 cart.callbackQuery(["cart__check", /cart__check_after_delete_/], async (ctx) => {
-    let cart = ctx.session.cart;
-    let user = await getUserData(ctx);
+    let cart = await getUserCart(ctx.from.id);
+    ctx.session.cart = cart;
+    // let user = await getUserData(ctx);
 
     let deletedItemId = ctx.callbackQuery.data.split("after_delete_")[1] ?? "";
     if (deletedItemId !== "") {

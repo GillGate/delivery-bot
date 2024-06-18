@@ -130,6 +130,8 @@ export async function registration(conversation, ctx) {
         await getUserNumber(conversation, ctx);
 
         currentUser = conversation.ctx.session.user;
+    } else {
+        currentSession.temp = {} //At the moment of editing the very first way to fix session.temp that saves info about userInfo from the previous process of registration
     }
 
     let htmlOrderLink = getHtmlOrderLink(currentOrder);
@@ -154,7 +156,7 @@ export async function registration(conversation, ctx) {
     totalText += `${getEmoji("phone")}  Номер получателя: ${currentUser.number}\n`;
     // изменить можно в корзине
 
-    console.log("CURRENT status CURRENT", currentSession.temp?.keepNumber);
+    console.log("CURRENT status KEEPNUMBER", currentSession.temp?.keepNumber);
 
     if (currentSession.temp?.keepNumber) {
         conversation.ctx.editMessageText(totalText, {
