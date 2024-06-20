@@ -204,8 +204,12 @@ export async function registration(conversation, ctx) {
             }
 
             currentOrder.date = Date.now();
+
             let dbId = await addToCart(from.id, currentOrder);
+
+            await (currentOrder.fromId = from.id)
             await (currentOrder.dbId = dbId.id);
+
             await (currentSession.cart.push(currentOrder));
 
         } catch (e) {

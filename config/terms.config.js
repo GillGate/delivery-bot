@@ -42,7 +42,18 @@ export default {
 
     other: "Другое",
 
-    // #Статусы
-    expecting_payment: "Ожидает оплаты",
-    processing: "В обработке",
+    // #Статусы - а нужны ли?
+    statuses: {
+        processing: "В обработке",
+        paid: "Заказ оплачен",
+        sentToChinaStock: "Заказ отправлен на склад в Китае",
+        cameToChinaStock: "Заказ прибыл на склад в Китае",
+        sentToRussia: "Заказ отправлен в Россию",
+        cameToCustoms: "Заказ прибыл на таможню",
+        leftCustoms: "Заказ покинул таможню",
+        cameToMoscowStock: "Заказ прибыл на склад в Москве",
+        sentToClient: "Заказ отправлен получателю",
+        waitForFeedBack: "Ждём вашего отзыва, чтобы подарить вам 5% скидку", //TODO: Промокоды
+        done: "Заказ закрыт"
+    }
 }

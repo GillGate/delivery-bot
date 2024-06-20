@@ -11,6 +11,7 @@ import sessionConfig from "#bot/config/session.config.js";
 import traceRoutes from "#bot/middleware/traceRoutes.js";
 import sendStartMessage from "#bot/handlers/sendStartMessage.js";
 import sendHelpMessage from "#bot/handlers/sendHelpMessage.js";
+import sendAdminMessage from "./handlers/sendAdminMessage.js";
 
 export const bot = new Bot(process.env.BOT_API_TOKEN);
 bot.use(

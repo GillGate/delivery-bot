@@ -43,7 +43,6 @@ export default {
     other: "⚪️",
 
     // #Статусы
-    expecting_payment: "💸",
     processing: "🔄",
 
     time: "⏳",

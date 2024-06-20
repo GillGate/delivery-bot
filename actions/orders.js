@@ -55,7 +55,7 @@ orders.callbackQuery(/orders__check_/, async (ctx) => {
 
     const totalSum = await calculateTotalSum(order.items);
 
-    if (order.status === "expecting_payment") {
+    if (order.status === "processing") {
         orderText += `Итого к оплате: ${totalSum} ₽\n\n`;
         //когда заплатил обновить фиксированное свойство totalSum
     } else {
