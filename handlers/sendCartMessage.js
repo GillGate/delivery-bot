@@ -19,7 +19,8 @@ export default async function (ctx, replyMode = false) {
     if (cart.length > 0) {
         if (user?.fio !== "") {
             msgText += `${getEmoji("fio")}  ФИО получателя: ${user.fio}\n`;
-            msgText += `${getEmoji("address")}  Адрес доставки: ${user.address}\n\n`;
+            msgText += `${getEmoji("address")}  Адрес доставки: ${user.address}\n`;
+            msgText += `${getEmoji("phone")}  Контакт получателя: ${user.number}\n\n`;
         }
 
         let totalSum = ctx.session.totalSum;
@@ -38,7 +39,7 @@ export default async function (ctx, replyMode = false) {
         cartKeyboard = cartNoneMenu;
     }
 
-    if(replyMode) {
+    if (replyMode) {
         await ctx.reply(msgText, {
             reply_markup: cartKeyboard,
             parse_mode: "HTML",

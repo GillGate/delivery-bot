@@ -59,10 +59,11 @@ orders.callbackQuery(/orders__check_/, async (ctx) => {
 
     orderText += `${getEmoji("fio")}  ФИО получателя: ${order.user.fio}\n`;
     orderText += `${getEmoji("address")}  Адрес доставки: ${order.user.address}\n\n`;
+    orderText += `${getEmoji("phone")}  Контакт получателя: ${order.user.number}\n`;
 
     orderText += `Статус: ${getEmoji(order.status)}  ${translate(order.status)}`;
 
-    if (order.sdekTrackNumber !== null) {
+    if (order.sdekTrackNum !== null) {
         orderText += `\nТрек-номер CDEK: ${order.sdekTrackNum}`
     }
 

@@ -155,6 +155,7 @@ order.callbackQuery("order__place", async (ctx) => {
 
     makeOrderText += `${getEmoji("fio")}  ФИО получателя: ${user.fio}\n`;
     makeOrderText += `${getEmoji("address")}  Адрес доставки: ${user.address}\n`;
+    makeOrderText += `${getEmoji("phone")}  Контакт получателя: ${user.number}\n`;
 
     ctx.session.temp.makeOrderText = makeOrderText;
 
@@ -202,7 +203,7 @@ order.callbackQuery("order__confirm", async (ctx) => {
     };
 
     await sheetUpdater(sheetDataObj);
-    // let res = await cleanCart(ctx.from.id);
+    let res = await cleanCart(ctx.from.id);
     // if(res) {
     //
     // }
