@@ -40,4 +40,5 @@ export const helpMenu = new InlineKeyboard()
     // .row()
     .text("‹ В главное меню", "main_menu");
 
-export const adminMainMenu = new InlineKeyboard().text("zero");
+export const adminMainMenu = new InlineKeyboard()
+    .text("Заказы", "orders_in_process");
