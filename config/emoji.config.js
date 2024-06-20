@@ -44,6 +44,16 @@ export default {
 
     // #Статусы
     processing: "🔄",
+    paid: "💸",
+    sent_to_china_stock: "🚀",
+    came_to_china_stock: "🏣",
+    sent_to_russia: "🚅",
+    came_to_customs: "🛃",
+    left_customs: "✈️",
+    came_to_moscow_stock: "📦",
+    sent_to_client: "🚛",
+    wait_for_feed_back: "🎁", //TODO: Промокоды
+    done: "✅",
 
     time: "⏳",
     attention: "❗️",

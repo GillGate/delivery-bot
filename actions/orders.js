@@ -55,12 +55,7 @@ orders.callbackQuery(/orders__check_/, async (ctx) => {
 
     const totalSum = await calculateTotalSum(order.items);
 
-    if (order.status === "processing") {
-        orderText += `Итого к оплате: ${totalSum} ₽\n\n`;
-        //когда заплатил обновить фиксированное свойство totalSum
-    } else {
-        orderText += `Сумма: ${order.totalSum} ₽\n\n`;
-    }
+    orderText += `Сумма: ${order.totalSum} ₽\n\n`;
 
     orderText += `${getEmoji("fio")}  ФИО получателя: ${order.user.fio}\n`;
     orderText += `${getEmoji("address")}  Адрес доставки: ${order.user.address}\n\n`;

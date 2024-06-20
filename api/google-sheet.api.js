@@ -40,9 +40,9 @@ export async function sheetUpdater(dataObject) {
     const idCell = sheet.getCellByA1(`B${rowCoutner}`);
     idCell.value = dataObject.id;
 
-    // TODO: Статус заказа
+    // Статус заказа
     const statusCell = sheet.getCellByA1(`C${rowCoutner}`);
-    statusCell.value = 'В обработке';
+    statusCell.value = 'processing';
 
     // Дата заказа
     const dateCell = sheet.getCellByA1(`D${rowCoutner}`);
