@@ -68,6 +68,14 @@ export async function getUserOrders(userId) {
     return orders;
 }
 
-export async function updateOrderStatus(userId, orderId, status) {
-    await db.collection("users").doc(`${userId}`).collection("orders").doc(`${orderId}`).update({ status: `${status}` });
+export async function updateOrderStatus(userId, orderId, status, sdekNumber) {
+    console.log('USERID', userId, 'orderID', orderId);
+    if (!sdekNumber) {
+        await db.collection("users").doc(`${userId}`).collection("orders").doc(`${orderId}`).update({ status: `${status}` });
+    } else {
+        await db.collection("users").doc(`${userId}`).collection("orders").doc(`${orderId}`).update({
+            status: `${status}`,
+            sdekTrackNum: `${sdekNumber}`
+        });
+    }
 }

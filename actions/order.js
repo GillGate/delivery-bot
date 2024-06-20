@@ -182,6 +182,7 @@ order.callbackQuery("order__confirm", async (ctx) => {
         user,
         totalSum,
         orderId: orderIdGeneration,
+        sdekTrackNum: null,
         status: "processing",
     };
     //Нам нужен этот ид

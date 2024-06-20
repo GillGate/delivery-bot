@@ -62,6 +62,10 @@ orders.callbackQuery(/orders__check_/, async (ctx) => {
 
     orderText += `Статус: ${getEmoji(order.status)}  ${translate(order.status)}`;
 
+    if (order.sdekTrackNumber !== null) {
+        orderText += `\nТрек-номер CDEK: ${order.sdekTrackNum}`
+    }
+
     await ctx.editMessageText(orderText, {
         reply_markup: backKeyboard,
         parse_mode: "HTML",

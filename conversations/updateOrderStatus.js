@@ -10,7 +10,7 @@ export async function statusConversation(conversation, ctx) {
     //Получаем значения необходимые для выполнения операции по изменению статуса
     const sheetValues = await statusCellsGetter(tableRowNumber)
     //обновляем стутус в БД
-    await updateOrderStatus(sheetValues.userId, sheetValues.orderId, sheetValues.status)
+    await updateOrderStatus(sheetValues.userId, sheetValues.orderId, sheetValues.status, sheetValues.sdekNumber)
     //Сообщаем о том что работа выполнена
     await ctx.reply('JOB IS DONE')
 }
