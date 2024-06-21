@@ -20,7 +20,7 @@ import getHtmlOrderLink from "#bot/helpers/getHtmlOrderLink.js";
 import getUserData from "#bot/helpers/getUserData.js";
 import limitsConfig from "#bot/config/limits.config.js";
 import { translate } from "#bot/helpers/translate.js";
-import { InputFile } from "grammy";
+import { regMedia } from "#bot/config/media.config.js";
 
 export async function registration(conversation, ctx) {
     const { deliveryPeriod } = limitsConfig;
@@ -30,11 +30,6 @@ export async function registration(conversation, ctx) {
     let currentUser = await getUserData(ctx);
 
     let chatId = ctx.update.callback_query.message.chat.id;
-
-    let regMedia = {
-        link: new InputFile('media/reg__link.jpg'),
-        price: new InputFile('media/reg__price.jpg')
-    }
 
 
     await conversation.ctx.api.sendPhoto(chatId, regMedia.link, {
@@ -122,7 +117,7 @@ export async function registration(conversation, ctx) {
             }
         } else {
             let numberText = "Укажите номер телефона получателя посылки в следующем формате:\n"
-            numberText += "<b>+79259232293</b>\n";
+            numberText += "<b>+7**********</b>\n";
             numberText += "Данный номер телефона будет передан службе доставки";
 
             ctx.reply(numberText, {

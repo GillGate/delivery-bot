@@ -22,7 +22,7 @@ export default async function (conversation, ctx) {
           {
                otherwise: (ctx) =>
                     unlessActions(ctx, () => {
-                         ctx.reply("Пожалуйста, напишите ваш номер в данном формате:\n+79259232293", {
+                         ctx.reply("Пожалуйста, напишите ваш номер в данном формате:\n+7**********", {
                               reply_markup: backMainMenu,
                          })
                     })

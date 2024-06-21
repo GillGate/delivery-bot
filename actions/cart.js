@@ -19,6 +19,7 @@ import { changeUserAddress } from "#bot/conversations/changeUserAddress.js";
 import calculateTotalSum from "#bot/helpers/calculateTotalSum.js";
 import getUserData from "#bot/helpers/getUserData.js";
 import sendCartMessage from "#bot/handlers/sendCartMessage.js";
+import sendStartMessage from "#bot/handlers/sendStartMessage.js";
 
 export const cart = new Composer();
 cart.use(hydrate());
@@ -32,6 +33,7 @@ cart.command("cart", async (ctx) => await sendCartMessage(ctx, true));
 
 cart.callbackQuery(["cart__check", /cart__check_after_delete_/], async (ctx) => {
     let cart = ctx.session.cart;
+    // cart = {}
     // let user = await getUserData(ctx);
 
     let deletedItemId = ctx.callbackQuery.data.split("after_delete_")[1] ?? "";
@@ -49,6 +51,10 @@ cart.callbackQuery(["cart__check", /cart__check_after_delete_/], async (ctx) => 
     } else {
         ctx.answerCallbackQuery();
     }
+
+    // if (cart.length === 0) {
+    //     await sendStartMessage(ctx, true)
+    // }
 
     let msgText = "Ваш список товаров:";
     ctx.session.currentPage = 1;
