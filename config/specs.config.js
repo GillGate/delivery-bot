@@ -1,15 +1,15 @@
 export default {
     boots: {
         factWeight: 1.32,
-        sizes: [26, 36, 14],
+        sizes: [26, 36, 15],
     },
     sneakers: {
         factWeight: 0.85,
-        sizes: [26, 36, 14],
+        sizes: [26, 36, 15],
     },
     slippers: {
         factWeight: 0.78,
-        sizes: [26, 36, 14],
+        sizes: [26, 36, 15],
     },
     windbreaker: {
         factWeight: 0.75,
@@ -107,7 +107,7 @@ export default {
         factWeight: 0.18,
         sizes: [23, 17, 13],
     },
-    headgear:{
+    headgear: {
         factWeight: 0.2,
         sizes: [23, 17, 13]
     },

@@ -196,3 +196,42 @@ export async function statusCellsGetter(rowNumber) {
 
     return forDbValues
 }
+
+export async function infoForSheetsHandler(orderId, status, dbrpstCommonInfoObj) {
+    const doc = new GoogleSpreadsheet(spreadsheetId, serviceAccountAuth); //Authorization
+    await doc.loadInfo(); // loads document properties and worksheets
+    const sheet = doc.sheetsByIndex[0]; //choose working sheet
+
+    await sheet.loadCells(`K3:K500`) //1000 - произовльное большое значение
+    let rowCounter = 3
+    let checkCell = sheet.getCellByA1(`K${rowCounter}`)
+    console.log('checkcellvalue', checkCell.value);
+
+    while (checkCell.value !== orderId) {
+        rowCounter += 1
+        checkCell = sheet.getCellByA1(`K${rowCounter}`);
+        console.log("CHECKING");
+    } //checking till it'll find the necessary
+
+    //Загружаем и обновляем ячейку статуса
+    await sheet.loadCells(`C${rowCounter}`)
+
+    let statusCell = sheet.getCellByA1(`C${rowCounter}`)
+    statusCell.value = status
+
+    //При наличии, обновляем параметр веса и стоимости доставки
+    if (dbrpstCommonInfoObj.factWeight || dbrpstCommonInfoObj.factDeliveryPrice || dbrpstCommonInfoObj.dbrpstTracker) {
+        await sheet.loadCells(`E${rowCounter}:P${rowCounter}`)
+
+        let weightCell = sheet.getCellByA1(`N${rowCounter}`)
+        weightCell.value = dbrpstCommonInfoObj.factWeight
+
+        let deliveryPriceCell = sheet.getCellByA1(`P${rowCounter}`)
+        deliveryPriceCell.value = dbrpstCommonInfoObj.factDeliveryPrice
+
+        let dbrpstTrackerCell = sheet.getCellByA1(`E${rowCounter}`)
+        dbrpstTrackerCell.value = dbrpstCommonInfoObj.dbrpstTracker
+    }
+
+    await sheet.saveUpdatedCells();
+}
