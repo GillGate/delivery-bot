@@ -119,7 +119,6 @@ export async function registration(conversation, ctx) {
             }
         } else {
             let numberText = "Укажите номер телефона получателя посылки в следующем формате:\n"
-            numberText += "<b>+7**********</b>\n";
             numberText += "Данный номер телефона будет передан службе доставки";
 
             ctx.reply(numberText, {

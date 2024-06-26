@@ -1,4 +1,4 @@
-import { InlineKeyboard, Keyboard } from "grammy";
+import { InlineKeyboard, } from "grammy";
 
 export const regParamsMenu = new InlineKeyboard()
     .text("Пропустить шаг ›", "reg__skip_params")

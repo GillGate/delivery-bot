@@ -6,7 +6,7 @@ import { regMedia } from "#bot/config/media.config.js";
 
 export async function calculate(conversation, ctx) {
     let currentCalc = conversation.ctx.session.order;
-    let chatId = ctx.update.callback_query.message.chat.id;
+    let chatId = ctx.callbackQuery.message.chat.id;
 
     await conversation.ctx.api.sendPhoto(chatId, regMedia.link, {
         caption: 'Введите ссылку на товар',

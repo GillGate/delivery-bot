@@ -28,7 +28,7 @@ export async function dobropostUpdateConversation(conversation, ctx) {
     const { message: { text: dobropostUpdate } } = await conversation.wait()
 
     //Обрабатываем dobropostUpdate 
-    await dobropostStatusParser(dobropostUpdate)
+    await dobropostStatusParser(dobropostUpdate, ctx)
 
     //Сообщаем о том что работа выполнена
     await ctx.reply('JOB IS DONE')

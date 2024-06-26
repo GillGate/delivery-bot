@@ -24,11 +24,9 @@ export default async function (ctx) {
         await ctx.reply("Choose the option", {
             reply_markup: adminMainMenu
         });
-    } else {
-        await ctx.reply('NO')
-        await sendStartMessage(ctx)
-        return
     }
+    return
+
 }
 
 order.callbackQuery("orders_in_process", async (ctx) => {

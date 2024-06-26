@@ -1,13 +1,13 @@
 import { updateOrderStatus } from "#bot/api/firebase.api.js";
 import { infoForSheetsHandler } from "#bot/api/google-sheet.api.js";
-import { infoRegExps } from "#bot/config/regexp.config.js";
+import { infoRegExps } from "#bot/config/infoRegExps.config.js";
 
 function extractMatch(text, regex) {
      const match = text.match(regex);
      return match ? match[1] : null;
 }
 
-export async function dobropostStatusParser(message) {
+export async function dobropostStatusParser(message, ctx) {
      //TODO: заменить везде упоминания DOBROPOST
      const dobropostOrderId = extractMatch(message, infoRegExps.orderId)
 
@@ -42,8 +42,19 @@ export async function dobropostStatusParser(message) {
                console.log('cameToMoscowStatus');
           }
 
-          await updateOrderStatus(userDbId, orderDbId, status);
-          await infoForSheetsHandler(orderDbId, status, dbrpstCommonInfoObj);
+          try {
+               await updateOrderStatus(userDbId, orderDbId, status);
+          } catch (error) {
+               await ctx.reply('Error in updateOrderStatus occured, operation failed, check logs')
+               console.log("updateOrderStatus error\n", error);
+          }
+
+          try {
+               await infoForSheetsHandler(orderDbId, status, dbrpstCommonInfoObj);
+          } catch (error) {
+               await ctx.reply('Error in infoForSheetsHandler occured, operation failed, check logs')
+               console.log("infoForSheetsHandler error\n", error);
+          }
      }
      else {
           //TODO: сделать доп обработку в случае если нет ид
