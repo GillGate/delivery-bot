@@ -29,6 +29,8 @@ export async function registration(conversation, ctx) {
     let currentCart = currentSession.cart;
     let currentUser = await getUserData(ctx);
 
+    console.log("CURRENT status CURRENT", currentSession.temp);
+
     let chatId = ctx.update.callback_query.message.chat.id;
 
 

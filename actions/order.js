@@ -9,6 +9,7 @@ import {
     getSubTypeKeyboard,
     orderMenuBeforeCreate,
     otherKeyboard,
+    otherKeyboard,
     selectCategoryKeyboard,
 } from "#bot/keyboards/order.js";
 import { addUserOrder, cleanCart, getUserOrders, updateUserInfo } from "#bot/api/firebase.api.js";
@@ -98,6 +99,17 @@ order.callbackQuery("order__pick_disclaimer", async (ctx) => {
     })
 
 })
+//delay was deleted, now it has the button "Далее"
+order.callbackQuery("order__pick_disclaimer", async (ctx) => {
+    let otherDisclaimer = "⚠️Важно⚠️\n\nПри выборе категории 'Другое' ";
+    otherDisclaimer += "стоимость доставки не входит в итоговую сумму заказа и \n";
+    otherDisclaimer += "рассчитывается отдельно менеджером"
+
+    await ctx.editMessageText(otherDisclaimer, {
+        reply_markup: otherKeyboard
+    })
+
+})
 
 order.callbackQuery(/order__pick_/, async (ctx) => {
     ctx.session.order.subType = ctx.callbackQuery.data.split("__pick_")[1];
@@ -146,6 +158,7 @@ order.callbackQuery("order__place", async (ctx) => {
 
     totalSum = await calculateTotalSum(cart);
     makeOrderText += `Итого к оплате*: ${totalSum} ₽\n`;
+
 
     if (totalDutySum === 0) {
         makeOrderText += `*<i> - с учётом доставки</i>\n\n`;

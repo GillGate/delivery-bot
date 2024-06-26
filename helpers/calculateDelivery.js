@@ -16,9 +16,11 @@ export function calculateDelivery(type) {
 
     // Считаем стоимость доставки добропост
     let dobropostSum =
-        currentType.factWeight * rubDBEperKg +
-        (volumWeight - currentType.factWeight) * koefVolumWeight +
-        rubDeliveryMoscowSDEK + photosPrice;
+        // Считаем стоимость доставки добропост
+        let dobropostSum =
+            currentType.factWeight * rubDBEperKg +
+            (volumWeight - currentType.factWeight) * koefVolumWeight +
+            rubDeliveryMoscowSDEK + photosPrice;
 
     // Считаем общую стоимость доставки
     let expensesWithSDEK = dobropostSum + rubDeliverySDEK;
