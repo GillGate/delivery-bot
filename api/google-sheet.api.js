@@ -129,7 +129,7 @@ export async function sheetUpdater(dataObject) {
         let itemTCost = cartItem.priceRUB;
         rubPriceSum += itemTCost;
     });
-    rubPriceCell.value = new String(rubPriceSum);
+    rubPriceCell.value = Number(rubPriceSum);
 
     // Сумма погрешности конвертации
     const feeErrorCell = sheet.getCellByA1(`V${rowCoutner}`);
@@ -138,7 +138,7 @@ export async function sheetUpdater(dataObject) {
         let itemTCost = cartItem.conversionFee;
         feeErrorSum += itemTCost;
     });
-    feeErrorCell.value = new String(Math.ceil(feeErrorSum));
+    feeErrorCell.value = Number(Math.ceil(feeErrorSum));
 
     // Комиссия сервиса WM
     const wmFeeCell = sheet.getCellByA1(`X${rowCoutner}`);
@@ -147,7 +147,7 @@ export async function sheetUpdater(dataObject) {
         let itemTCost = cartItem.wmFee;
         wmFeeSum += itemTCost;
     });
-    wmFeeCell.value = new String(Math.ceil(wmFeeSum));
+    wmFeeCell.value = Number(Math.ceil(wmFeeSum));
 
     // Общая сумма пошлины
     const dutyFeeCell = sheet.getCellByA1(`Z${rowCoutner}`);
@@ -156,7 +156,7 @@ export async function sheetUpdater(dataObject) {
         let itemTCost = cartItem.dutySum;
         dutyFeeSum += itemTCost;
     });
-    dutyFeeCell.value = new String(dutyFeeSum);
+    dutyFeeCell.value = Number(dutyFeeSum);
 
     // Наша прибыль
     const ourProfitCell = sheet.getCellByA1(`AD${rowCoutner}`);
@@ -165,7 +165,7 @@ export async function sheetUpdater(dataObject) {
         let itemTCost = cartItem.currentProfit;
         ourProfitSum += itemTCost;
     });
-    ourProfitCell.value = new String(ourProfitSum);
+    ourProfitCell.value = Number(ourProfitSum);
 
     // Стоимость наших услуг без учёта нашей комиссии
     const priceWithoutFeeCell = sheet.getCellByA1(`AB${rowCoutner}`);
@@ -210,7 +210,7 @@ export async function infoForSheetsHandler(orderId, status, dbrpstCommonInfoObj)
     while (checkCell.value !== orderId) {
         rowCounter += 1
         checkCell = sheet.getCellByA1(`K${rowCounter}`);
-        console.log("CHECKING");
+        console.log("CHECKING sheet cells");
     } //checking till it'll find the necessary
 
     //Загружаем и обновляем ячейку статуса

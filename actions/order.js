@@ -9,7 +9,6 @@ import {
     getSubTypeKeyboard,
     orderMenuBeforeCreate,
     otherKeyboard,
-    otherKeyboard,
     selectCategoryKeyboard,
 } from "#bot/keyboards/order.js";
 import { addUserOrder, cleanCart, getUserOrders, updateUserInfo } from "#bot/api/firebase.api.js";

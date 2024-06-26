@@ -32,12 +32,14 @@ export async function calculate(conversation, ctx) {
 
     let htmlOrderLink = getHtmlOrderLink(currentCalc);
 
-    let totalText = `Расчётная цена: ${currentCalc.price} ₽ \n`;
-    totalText += `Стоимость товара: ${currentCalc.priceCNY} ￥ \n\n`;
+    let totalText = `*<b>Расчётная стоимость:</b> ${currentCalc.price} ₽ \n`;
+    totalText += `<b>Стоимость товара:</b> ${currentCalc.priceCNY} ￥ \n\n`;
 
-    totalText += `Детали расчёта:\n`;
+    totalText += `<b>Детали расчёта</b>:\n`;
     totalText += `- Имя товара: ${currentCalc.name}\n`;
-    totalText += `- Ссылка на товар: ${htmlOrderLink}\n`;
+    totalText += `- Ссылка на товар: ${htmlOrderLink}\n\n`;
+
+    totalText += `<b>*</b><i>В стоимость включены стоимости товара, доставки и сервисный сбор</i>`
 
     ctx.reply(totalText, {
         reply_markup: backMainMenu,

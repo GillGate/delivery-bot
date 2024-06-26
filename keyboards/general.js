@@ -34,10 +34,6 @@ export const helpMenu = new InlineKeyboard()
     .row()
     .url("О сроках доставки", linksConfig.delivery_details)
     .row()
-    .text("Как считается стоимость заказа", "order__price")
-    .row()
-    // .text("📝  Узнать стоимость", "order__create")
-    // .row()
     .text("‹ В главное меню", "main_menu");
 
 export const adminMainMenu = new InlineKeyboard()
