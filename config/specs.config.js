@@ -4,67 +4,67 @@ export default {
         sizes: [26, 36, 15],
     },
     sneakers: {
-        factWeight: 0.85,
+        factWeight: 1.5,
         sizes: [26, 36, 15],
     },
     slippers: {
-        factWeight: 0.78,
+        factWeight: 1.5,
         sizes: [26, 36, 15],
     },
     windbreaker: {
-        factWeight: 0.75,
+        factWeight: 1.25,
         sizes: [40, 29, 16],
     },
     overcoat: {
-        factWeight: 1.03,
+        factWeight: 2,
         sizes: [45, 34, 18],
     },
     coat: {
-        factWeight: 1.45,
+        factWeight: 2.5,
         sizes: [45, 34, 18],
     },
     down_jacket: {
-        factWeight: 1.7,
+        factWeight: 2.5,
         sizes: [45, 34, 18],
     },
     light_jacket: {
-        factWeight: 1.02,
+        factWeight: 1.5,
         sizes: [40, 29, 16],
     },
     t_shirt: {
-        factWeight: 0.25,
+        factWeight: 0.7,
         sizes: [23, 17, 13],
     },
     sweater: {
-        factWeight: 0.52,
+        factWeight: 1.1,
         sizes: [36, 26, 14],
     },
     hoodie: {
-        factWeight: 0.67,
+        factWeight: 1.2,
         sizes: [36, 26, 14],
     },
     turtleneck: {
-        factWeight: 0.33,
+        factWeight: 0.7,
         sizes: [23, 17, 13],
     },
     shirt: {
-        factWeight: 0.34,
+        factWeight: 0.7,
         sizes: [23, 17, 13],
     },
     jeans: {
-        factWeight: 0.83,
+        factWeight: 1.6,
         sizes: [36, 26, 14],
     },
     shorts: {
-        factWeight: 0.4,
-        sizes: [23, 17, 13],
-    },
-    trousers: {
         factWeight: 0.8,
         sizes: [23, 17, 13],
     },
+    trousers: {
+        factWeight: 1.4,
+        sizes: [23, 17, 13],
+    },
     skirt: {
-        factWeight: 0.65,
+        factWeight: 1.1,
         sizes: [23, 17, 13],
     },
     fanny_pack: {
@@ -72,43 +72,43 @@ export default {
         sizes: [23, 17, 13],
     },
     travel_bag: {
-        factWeight: 2.33,
+        factWeight: 3.5,
         sizes: [45, 34, 18],
     },
     backpack: {
-        factWeight: 1.72,
+        factWeight: 2,
         sizes: [40, 29, 16],
     },
     satchel: {
-        factWeight: 0.53,
+        factWeight: 0.8,
         sizes: [23, 17, 13],
     },
     belt: {
-        factWeight: 0.18,
+        factWeight: 0.4,
         sizes: [23, 17, 13],
     },
     umbrella: {
-        factWeight: 0.45,
+        factWeight: 0.7,
         sizes: [23, 17, 13],
     },
     glasses: {
-        factWeight: 0.13,
+        factWeight: 0.25,
         sizes: [23, 17, 13],
     },
     wallet: {
-        factWeight: 0.2,
+        factWeight: 0.25,
         sizes: [23, 17, 13],
     },
     scarf: {
-        factWeight: 0.28,
+        factWeight: 0.4,
         sizes: [23, 17, 13],
     },
     gloves: {
-        factWeight: 0.18,
+        factWeight: 0.25,
         sizes: [23, 17, 13],
     },
     headgear: {
-        factWeight: 0.2,
+        factWeight: 0.3,
         sizes: [23, 17, 13]
     },
     other: {
