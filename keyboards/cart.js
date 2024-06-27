@@ -3,10 +3,20 @@ import limitsConfig from "#bot/config/limits.config.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 import { translate } from "#bot/helpers/translate.js";
 
-export const cartNoneMenu = new InlineKeyboard()
-    .text("📦  Заказать вещи", "order__make")
-    .row()
-    .text("‹ В главное меню", "main_menu");
+export function getcartNoneMenu(isNewbie = true) {
+    let cartNoneMenu = new InlineKeyboard();
+
+    if (isNewbie) {
+        cartNoneMenu.text("📦  Заказать вещи", "order__make");
+    } else {
+        cartNoneMenu.text("📦  Заказать вещи", "order__create");
+    }
+
+    cartNoneMenu.row()
+    cartNoneMenu.text("‹ В главное меню", "main_menu");
+
+    return cartNoneMenu;
+}
 
 export const backToCart = new InlineKeyboard().text("🛒 Перейти в корзину", "cart__enter");
 

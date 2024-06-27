@@ -5,7 +5,6 @@ import { translate } from "#bot/helpers/translate.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 import {
     cartActions,
-    cartNoneMenu,
     generateItemActions,
     generateItemDeleteConfirm,
     generateCartItemsMenu,
@@ -49,25 +48,27 @@ cart.callbackQuery(["cart__check", /cart__check_after_delete_/], async (ctx) => 
         });
         ctx.session.cart = cart;
     } else {
+
         ctx.answerCallbackQuery();
     }
 
-    // if (cart.length === 0) {
-    //     await sendStartMessage(ctx, true)
-    // }
-
-    let msgText = "Ваш список товаров:";
-    ctx.session.currentPage = 1;
-    maxPages = Math.ceil(cart.length / limitsConfig.maxOrdersPerMessage);
-
-    if (maxPages > 1) {
-        msgText += `${ctx.session.currentPage}/${maxPages}`;
+    if (cart.length === 0) {
+        await sendStartMessage(ctx, true)
     }
+    else {
+        let msgText = "Ваш список товаров:";
+        ctx.session.currentPage = 1;
+        maxPages = Math.ceil(cart.length / limitsConfig.maxOrdersPerMessage);
 
-    await ctx.editMessageText(msgText, {
-        reply_markup: generateCartItemsMenu(cart, ctx.session.currentPage),
-        parse_mode: "HTML",
-    });
+        if (maxPages > 1) {
+            msgText += `${ctx.session.currentPage}/${maxPages}`;
+        }
+
+        await ctx.editMessageText(msgText, {
+            reply_markup: generateCartItemsMenu(cart, ctx.session.currentPage),
+            parse_mode: "HTML",
+        });
+    }
 });
 
 cart.callbackQuery(/cart__check_/, async (ctx) => {

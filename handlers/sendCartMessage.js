@@ -2,7 +2,7 @@ import { getUserCart } from "#bot/api/firebase.api.js";
 import calculateTotalSum from "#bot/helpers/calculateTotalSum.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 import getUserData from "#bot/helpers/getUserData.js";
-import { cartActions, cartNoneMenu } from "#bot/keyboards/cart.js";
+import { cartActions, getcartNoneMenu } from "#bot/keyboards/cart.js";
 
 export default async function (ctx, replyMode = false) {
     let cart = ctx.session.cart;
@@ -36,7 +36,7 @@ export default async function (ctx, replyMode = false) {
         cartKeyboard = cartActions;
     } else {
         msgText = "В корзине пока нет товаров";
-        cartKeyboard = cartNoneMenu;
+        cartKeyboard = getcartNoneMenu(user.isNewbie);
     }
 
     if (replyMode) {

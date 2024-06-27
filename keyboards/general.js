@@ -13,7 +13,7 @@ export function getMainMenu(isNewbie = true) {
     mainMenu
         .text("🔎  Проверить заказы", "orders__check")
         .row()
-        .text("🧮  Калькулятор", "order__create_calc")
+        .text("🧮  Расчёт", "order__create_calc")
         .text("🛒  Корзина", "cart__enter")
         .row()
         .url("Связь с менеджером", process.env.BOT_MANAGER_USERNAME)
