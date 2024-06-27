@@ -1,9 +1,8 @@
 import { backMainMenu } from "#bot/keyboards/general.js";
 import unlessActions from "#bot/conversations/helpers/unlessActions.js";
-import { infoRegExps } from "#bot/config/infoRegExps.config.js";
 
 export default async function (conversation, ctx) {
-     const numberRegex = infoRegExps.numberRegex;
+     const numberRegex = /^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/;
      return await conversation.waitUntil(
           async (ctx) => {
                if (ctx?.callbackQuery?.data === "reg__keep_number") {

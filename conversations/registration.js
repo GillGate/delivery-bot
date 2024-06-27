@@ -118,7 +118,7 @@ export async function registration(conversation, ctx) {
                 });
             }
         } else {
-            let numberText = "Укажите номер телефона получателя посылки в следующем формате:\n"
+            let numberText = "Укажите номер телефона получателя посылки\n"
             numberText += "Данный номер телефона будет передан службе доставки";
 
             ctx.reply(numberText, {
@@ -203,7 +203,7 @@ export async function registration(conversation, ctx) {
 
             let dbId = await addToCart(from.id, currentOrder);
 
-            await (currentOrder.fromId = from.id)
+            currentOrder.fromId = from.id
             await (currentOrder.dbId = dbId.id);
 
             await (currentSession.cart.push(currentOrder));
