@@ -55,17 +55,17 @@ orders.callbackQuery(/orders__check_/, async (ctx) => {
 
     const totalSum = await calculateTotalSum(order.items);
 
-    if (order.status === "expecting_payment") {
-        orderText += `Итого к оплате: ${totalSum} ₽\n\n`;
-        //когда заплатил обновить фиксированное свойство totalSum
-    } else {
-        orderText += `Сумма: ${order.totalSum} ₽\n\n`;
-    }
+    orderText += `Сумма: ${order.totalSum} ₽\n\n`;
 
     orderText += `${getEmoji("fio")}  ФИО получателя: ${order.user.fio}\n`;
     orderText += `${getEmoji("address")}  Адрес доставки: ${order.user.address}\n\n`;
+    orderText += `${getEmoji("phone")}  Контакт получателя: ${order.user.number}\n`;
 
     orderText += `Статус: ${getEmoji(order.status)}  ${translate(order.status)}`;
+
+    if (order.sdekTrackNum !== null) {
+        orderText += `\nТрек-номер CDEK: ${order.sdekTrackNum}`
+    }
 
     await ctx.editMessageText(orderText, {
         reply_markup: backKeyboard,

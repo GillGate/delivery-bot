@@ -20,6 +20,7 @@ import getHtmlOrderLink from "#bot/helpers/getHtmlOrderLink.js";
 import getUserData from "#bot/helpers/getUserData.js";
 import limitsConfig from "#bot/config/limits.config.js";
 import { translate } from "#bot/helpers/translate.js";
+import { regMedia } from "#bot/config/media.config.js";
 
 export async function registration(conversation, ctx) {
     const { deliveryPeriod } = limitsConfig;
@@ -30,9 +31,14 @@ export async function registration(conversation, ctx) {
 
     console.log("CURRENT status CURRENT", currentSession.temp);
 
-    await conversation.ctx.editMessageText("Введите ссылку на товар", {
+    let chatId = ctx.update.callback_query.message.chat.id;
+
+
+    await conversation.ctx.api.sendPhoto(chatId, regMedia.link, {
+        caption: 'Введите ссылку на товар',
+        show_caption_above_media: true,
         reply_markup: backMainMenu,
-    });
+    })
 
     await getOrderLink(conversation, ctx);
 
@@ -48,19 +54,15 @@ export async function registration(conversation, ctx) {
 
     let costText = "Укажите стоимость товара в юань:\n\n";
     costText +=
-        "<i>❗️ Финальная стоимость товара на POIZON будет доступна после того, как вы укажите размер товара в приложении</i>";
+        "❗️ Финальная стоимость товара на POIZON будет доступна после того, как вы укажите размер товара в приложении";
+    let costTextEntities = [{ "offset": 37, "length": 105, "type": "italic" }]
 
-    if (currentSession.temp?.skipParams) {
-        conversation.ctx.editMessageText(costText, {
-            reply_markup: backMainMenu,
-            parse_mode: "HTML",
-        });
-    } else {
-        ctx.reply(costText, {
-            reply_markup: backMainMenu,
-            parse_mode: "HTML",
-        });
-    }
+    await conversation.ctx.api.sendPhoto(chatId, regMedia.price, {
+        caption: costText,
+        show_caption_above_media: true,
+        reply_markup: backMainMenu,
+        caption_entities: costTextEntities
+    })
 
     await getOrderPrice(conversation, ctx);
 
@@ -116,8 +118,7 @@ export async function registration(conversation, ctx) {
                 });
             }
         } else {
-            let numberText = "Укажите номер телефона получателя посылки в следующем формате:\n"
-            numberText += "<b>+79259232293</b>\n";
+            let numberText = "Укажите номер телефона получателя посылки\n"
             numberText += "Данный номер телефона будет передан службе доставки";
 
             ctx.reply(numberText, {
@@ -153,8 +154,6 @@ export async function registration(conversation, ctx) {
     totalText += `${getEmoji("address")}  Адрес доставки: ${currentUser.address}\n`;
     totalText += `${getEmoji("phone")}  Номер получателя: ${currentUser.number}\n`;
     // изменить можно в корзине
-
-    console.log("CURRENT status CURRENT", currentSession.temp?.keepNumber);
 
     if (currentSession.temp?.keepNumber) {
         conversation.ctx.editMessageText(totalText, {
@@ -202,8 +201,13 @@ export async function registration(conversation, ctx) {
 
             currentOrder.date = Date.now();
 
-            currentSession.cart.push(currentOrder);
-            await addToCart(from.id, currentOrder);
+            let dbId = await addToCart(from.id, currentOrder);
+
+            currentOrder.fromId = from.id
+            await (currentOrder.dbId = dbId.id);
+
+            await (currentSession.cart.push(currentOrder));
+
         } catch (e) {
             console.error(e);
         }
@@ -222,5 +226,6 @@ export async function registration(conversation, ctx) {
             reply_markup: regFinalMenu,
             parse_mode: "HTML",
         });
+        currentSession.temp = {}
     }
 }

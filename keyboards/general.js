@@ -32,12 +32,11 @@ export const helpMenu = new InlineKeyboard()
     .row()
     .url("Как использовать Poizon", linksConfig.guide)
     .row()
-    .url("О сроках доставки", "telegra.ph")
+    .url("О сроках доставки", linksConfig.delivery_details)
     .row()
-    .text("Как считается стоимость заказа", "order__price")
-    .row()
-    // .text("📝  Узнать стоимость", "order__create")
-    // .row()
     .text("‹ В главное меню", "main_menu");
 
-export const adminMainMenu = new InlineKeyboard().text("zero");
+export const adminMainMenu = new InlineKeyboard()
+    .text("Обновить по таблице", "orders_in_process")
+    .row()
+    .text("Обновление Dobropost", "dobropost_status_update");
