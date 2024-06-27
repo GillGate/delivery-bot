@@ -21,7 +21,6 @@ import getUserData from "#bot/helpers/getUserData.js";
 import limitsConfig from "#bot/config/limits.config.js";
 import { translate } from "#bot/helpers/translate.js";
 import { regMedia } from "#bot/config/media.config.js";
-import { regMedia } from "#bot/config/media.config.js";
 
 export async function registration(conversation, ctx) {
     const { deliveryPeriod } = limitsConfig;

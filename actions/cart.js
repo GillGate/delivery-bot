@@ -19,12 +19,14 @@ import calculateTotalSum from "#bot/helpers/calculateTotalSum.js";
 import getUserData from "#bot/helpers/getUserData.js";
 import sendCartMessage from "#bot/handlers/sendCartMessage.js";
 import sendStartMessage from "#bot/handlers/sendStartMessage.js";
+import { changeUserNumber } from "#bot/conversations/changeUserNumber.js";
 
 export const cart = new Composer();
 cart.use(hydrate());
 cart.use(conversations());
 cart.use(createConversation(changeUserFio));
 cart.use(createConversation(changeUserAddress));
+cart.use(createConversation(changeUserNumber));
 
 let maxPages;
 cart.callbackQuery("cart__enter", async (ctx) => await sendCartMessage(ctx));
@@ -135,7 +137,9 @@ cart.callbackQuery(/cart__change_/, async (ctx) => {
 
     if (changeType === "fio") {
         await ctx.conversation.enter("changeUserFio");
-    } else {
+    } else if (changeType === "address") {
         await ctx.conversation.enter("changeUserAddress");
+    } else {
+        await ctx.conversation.enter("changeUserNumber");
     }
 });
