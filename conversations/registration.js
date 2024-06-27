@@ -192,7 +192,7 @@ export async function registration(conversation, ctx) {
                     fio: currentUser.fio,
                     address: currentUser.address,
                     isNewbie: currentUser.isNewbie,
-                    username: from?.username, //?? altUsername,
+                    username: from?.username ?? '',
                     number: currentUser.number,
                 });
 
@@ -203,8 +203,8 @@ export async function registration(conversation, ctx) {
 
             let dbId = await addToCart(from.id, currentOrder);
 
-            currentOrder.fromId = from.id
-            await (currentOrder.dbId = dbId.id);
+            await (currentOrder.fromId = from.id);
+           currentOrder.dbId = dbId.id;
 
             await (currentSession.cart.push(currentOrder));
 
@@ -213,7 +213,7 @@ export async function registration(conversation, ctx) {
         }
 
         let textForManager = `${totalText}\n`;
-        textForManager += `Contact: @${from?.username /*?? altUsername*/}`;
+        textForManager += `Contact: @${from?.username}`;
 
         ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, textForManager, {
             message_thread_id: process.env.BOT_CHAT_TOPIC_ORDERS,

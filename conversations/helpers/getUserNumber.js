@@ -20,7 +20,7 @@ export default async function (conversation, ctx) {
           {
                otherwise: (ctx) =>
                     unlessActions(ctx, () => {
-                         ctx.reply("Пожалуйста, напишите ваш номер", {
+                         ctx.reply("Пожалуйста, напишите корректный номер", {
                               reply_markup: backMainMenu,
                          })
                     })
