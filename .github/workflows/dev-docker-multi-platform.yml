@@ -87,7 +87,10 @@ jobs:
 #          echo "Bot did not respond correctly: $RESPONSE"
 #          exit 1
 #        fi
-      
+
+    - name: GCR login
+      run: |
+        gcloud auth configure-docker europe-docker.pkg.dev
 
     - name: Push Multi Platform Image
       uses: docker/build-push-action@v5 
