@@ -13,10 +13,10 @@ jobs:
 
     - name: GCR Password Retrieve
       run: |
-        curl -L -o temp_file.json "${{ secrets.GCR_JSON_KEY }}"
-        GCR_PASSWORD=$(cat temp_file.json)
+        curl -L -o temp_file "${{ secrets.GCR_JSON_KEY }}"
+        GCR_PASSWORD=$(cat temp_file)
         echo "GCR_PASSWORD=$GCR_PASSWORD" >> $GITHUB_ENV
-        rm temp_file.json
+        rm temp_file
         
     - name: Login to GCR
       uses: docker/login-action@v3
