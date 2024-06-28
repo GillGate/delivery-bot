@@ -57,9 +57,9 @@ export default {
 
     time: "⏳",
     attention: "❗️",
-    phone: "📞",
 
     // #Пользователь
     fio: "🪪",
     address: "🌍",
+    phone: "📞",
 };

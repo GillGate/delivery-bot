@@ -18,6 +18,7 @@ export async function dobropostStatusParser(message, ctx) {
 
      let status
      let dbrpstCommonInfoObj = {}
+     let uniqueId
 
      if (dobropostOrderId !== null) {
           if (infoRegExps.orderWeight.test(message)) {
@@ -50,7 +51,7 @@ export async function dobropostStatusParser(message, ctx) {
           }
 
           try {
-               await infoForSheetsHandler(orderDbId, status, dbrpstCommonInfoObj);
+               uniqueId = await infoForSheetsHandler(orderDbId, status, dbrpstCommonInfoObj);
           } catch (error) {
                await ctx.reply('Error in infoForSheetsHandler occured, operation failed, check logs')
                console.log("infoForSheetsHandler error\n", error);
@@ -59,6 +60,12 @@ export async function dobropostStatusParser(message, ctx) {
      else {
           //TODO: сделать доп обработку в случае если нет ид
           console.log('THEREISNO ORDERBDID CALL MY ADMIN');
+     }
+
+     return {
+          userId: userDbId,
+          status: status,
+          uniqueId: uniqueId
      }
 
      //TODO: обработчик изображений
