@@ -32,6 +32,7 @@ jobs:
         registry: gcr.io
         username: _json_key
         password: ${{ secrets.GCR_JSON_KEY }}
+        logout: false
 
     - name: Determine version number
       id: determine_version
