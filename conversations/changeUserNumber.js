@@ -14,7 +14,7 @@ export async function changeUserNumber(conversation, ctx) {
 
      let res = await getUserNumber(conversation, ctx);
 
-     let totalText = `Ваш адрес изменён на:\n`;
+     let totalText = `Ваш номер изменён на:\n`;
      totalText += `${getEmoji("phone")}  ${currentUser.number}`;
 
      ctx.reply(totalText, {

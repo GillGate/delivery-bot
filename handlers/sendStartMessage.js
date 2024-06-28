@@ -32,8 +32,11 @@ export default async function (ctx, replyMode = false) {
     } else if (ctx.update.callback_query.message?.photo) {
         let chatId = ctx.update.callback_query.message.chat.id;
         let messageId = ctx.update.callback_query.message.message_id;
-
-        await ctx.api.deleteMessage(chatId, messageId)
+        try {
+            await ctx.api.deleteMessage(chatId, messageId)
+        } catch (error) {
+            console.log(error);
+        }
         await ctx.reply(helloText, {
             reply_markup: getMainMenu(user.isNewbie),
         });

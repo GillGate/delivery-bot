@@ -11,7 +11,7 @@ export function getMainMenu(isNewbie = true) {
     }
 
     mainMenu
-        .text("🔎  Проверить заказы", "orders__check")
+        .text("🔎  Мои заказы", "orders__check")
         .row()
         .text("🧮  Расчёт", "order__create_calc")
         .text("🛒  Корзина", "cart__enter")
@@ -28,11 +28,10 @@ export const backMainMenu = new InlineKeyboard().text("‹ В главное м�
 export const backKeyboard = new InlineKeyboard().text("‹ Назад", "back");
 
 export const helpMenu = new InlineKeyboard()
-    .url("Скачать Poizon", "https://dewu.com")
-    .row()
+    .url("🌐 Скачать Poizon", "https://dewu.com")
     .url("Как использовать Poizon", linksConfig.guide)
     .row()
-    .url("О сроках доставки", linksConfig.delivery_details)
+    .url("📚 О сроках доставки и ценообразовании", linksConfig.delivery_details)
     .row()
     .text("‹ В главное меню", "main_menu");
 
