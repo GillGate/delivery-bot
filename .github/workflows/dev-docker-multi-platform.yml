@@ -30,7 +30,7 @@ jobs:
       uses: docker/login-action@v3
       with:
         registry: gcr.io
-        username: _json_key
+        username: GHACTIONS
         password: ${{ secrets.GCR_JSON_KEY }}
 
     - name: Determine version number
