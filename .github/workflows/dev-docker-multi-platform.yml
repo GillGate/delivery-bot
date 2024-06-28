@@ -10,19 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-
-    - name: GCR Password Retrieve
-      run: |
-        curl -L -o temp_file "${{ secrets.GCR_JSON_KEY }}"
-        GCR_PASSWORD=$(cat temp_file)
-        echo "$GCR_PASSWORD"
-        
     - name: Login to GCR
       uses: docker/login-action@v3
       with:
         registry: gcr.io
         username: _json_key
-        password: $GCR_PASSWORD
+        password: ${{ secrets.GCR_JSON_KEY }}
     
     - name: Checkout Repository
       uses: actions/checkout@v4
