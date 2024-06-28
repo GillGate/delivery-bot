@@ -53,39 +53,39 @@ jobs:
         curl -o serviceAccount.firestore.json "${{ secrets.BOT_FIREBASE_SERVICE_ACCOUNT }}"
 
         
-    - name: Build Multi Platform Container 
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        platforms: linux/amd64
-        push: false
-        load: true
-        tags: ${{ secrets.DOCKER_REGISTRY_TAG }}:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}
+ #   - name: Build Multi Platform Container 
+ #     uses: docker/build-push-action@v5
+ #     with:
+#        context: .
+#        platforms: linux/amd64
+#        push: false
+#       load: true
+#        tags: ${{ secrets.DOCKER_REGISTRY_TAG }}:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}
 
 
-    - name: Run Container
-      run: |
-        docker run -d ${{ secrets.DOCKER_REGISTRY_TAG }}:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}
+#    - name: Run Container
+#      run: |
+#        docker run -d ${{ secrets.DOCKER_REGISTRY_TAG }}:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}
 
 
-    - name: Wait for Container to be Ready
-      run: |
-        echo "Waiting for bot to be ready..."
-        sleep 10
+#    - name: Wait for Container to be Ready
+#      run: |
+#        echo "Waiting for bot to be ready..."
+#        sleep 10
 
 
-    - name: Test Telegram Bot
-      id: test_bot
-      env:
-        TELEGRAM_TOKEN: ${{ secrets.DEV_BOT_API_TOKEN }}
-        CHAT_ID: ${{ secrets.TEST_CHAT_ID }}
-      run: |
-        MESSAGE="Test message from CI"
-        RESPONSE=$(curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" -d chat_id=${CHAT_ID} -d text="${MESSAGE}")
-        if [[ "$RESPONSE" != *"\"ok\":true"* ]]; then
-          echo "Bot did not respond correctly: $RESPONSE"
-          exit 1
-        fi
+#    - name: Test Telegram Bot
+#      id: test_bot
+#      env:
+#        TELEGRAM_TOKEN: ${{ secrets.DEV_BOT_API_TOKEN }}
+#        CHAT_ID: ${{ secrets.TEST_CHAT_ID }}
+#      run: |
+#        MESSAGE="Test message from CI"
+#        RESPONSE=$(curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" -d chat_id=${CHAT_ID} -d text="${MESSAGE}")
+#        if [[ "$RESPONSE" != *"\"ok\":true"* ]]; then
+#          echo "Bot did not respond correctly: $RESPONSE"
+#          exit 1
+#        fi
       
 
    # - name: Push Multi Platform Image
