@@ -32,7 +32,6 @@ jobs:
         registry: europe-docker.pkg.dev
         username: _json_key
         password: ${{ secrets.GCR_JSON_KEY }}
-        logout: false
 
     - name: Determine version number
       id: determine_version
@@ -96,11 +95,11 @@ jobs:
    #     context: .
    #     platforms: linux/amd64
    #     push: ${{ github.event_name != 'pull_request' }}
-   #     tags: europe-docker.pkg.dev/angular-axe-420010/telegram-delivery/tg-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev
+   #     tags: ${{ secrets.DOCKER_REGISTRY_TAG }}:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev
    
     - name: Push Docker Image
       run: |
-        docker build --platform linux/amd64 -t europe-docker.pkg.dev/angular-axe-420010/telegram-delivery/tg-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev --push .
+        docker build --platform linux/amd64 -t ${{ secrets.DOCKER_REGISTRY_TAG }}:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev --push .
 
     
     - name: Logout from Docker
