@@ -29,7 +29,7 @@ jobs:
     - name: Login to GCR
       uses: docker/login-action@v3
       with:
-        registry: gcr.io
+        registry: europe-docker.pkg.dev
         username: _json_key
         password: ${{ secrets.GCR_JSON_KEY }}
         logout: false
@@ -88,11 +88,6 @@ jobs:
 #          echo "Bot did not respond correctly: $RESPONSE"
 #          exit 1
 #        fi
-
-    - name: GCR login
-      run: |
-        gcloud auth list
-        gcloud auth configure-docker europe-docker.pkg.dev
 
    # - name: Push Multi Platform Image
    #   uses: docker/build-push-action@v5 
