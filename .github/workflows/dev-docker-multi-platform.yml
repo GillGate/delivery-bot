@@ -96,6 +96,10 @@ jobs:
    #     platforms: linux/amd64,linux/arm64
    #     push: ${{ github.event_name != 'pull_request' }}
    #     tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev
+
+    - name: GCR
+      run: |
+       gcloud auth configure-docker europe-docker.pkg.dev
    
     - name: Push Docker Image
       run: |
