@@ -26,6 +26,8 @@ export const cartActions = new InlineKeyboard()
     .text(`${getEmoji("fio")}  Изменить ФИО`, "cart__change_fio")
     .text(`${getEmoji("address")}  Изменить адрес`, "cart__change_address")
     .row()
+    .text(`${getEmoji("phone")}  Изменить номер`, "cart__change_number")
+    .row()
     .text("📝  Оформить заказ", "order__place")
     .row()
     .text("‹ В главное меню", "main_menu");

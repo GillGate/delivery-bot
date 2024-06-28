@@ -19,12 +19,14 @@ import calculateTotalSum from "#bot/helpers/calculateTotalSum.js";
 import getUserData from "#bot/helpers/getUserData.js";
 import sendCartMessage from "#bot/handlers/sendCartMessage.js";
 import sendStartMessage from "#bot/handlers/sendStartMessage.js";
+import { changeUserNumber } from "#bot/conversations/changeUserNumber.js";
 
 export const cart = new Composer();
 cart.use(hydrate());
 cart.use(conversations());
 cart.use(createConversation(changeUserFio));
 cart.use(createConversation(changeUserAddress));
+cart.use(createConversation(changeUserNumber));
 
 let maxPages;
 cart.callbackQuery("cart__enter", async (ctx) => await sendCartMessage(ctx));
@@ -32,7 +34,8 @@ cart.command("cart", async (ctx) => await sendCartMessage(ctx, true));
 
 cart.callbackQuery(["cart__check", /cart__check_after_delete_/], async (ctx) => {
     let cart = ctx.session.cart;
-    let user = await getUserData(ctx);
+    // cart = {}
+    // let user = await getUserData(ctx);
 
     let deletedItemId = ctx.callbackQuery.data.split("after_delete_")[1] ?? "";
     if (deletedItemId !== "") {
@@ -134,7 +137,9 @@ cart.callbackQuery(/cart__change_/, async (ctx) => {
 
     if (changeType === "fio") {
         await ctx.conversation.enter("changeUserFio");
-    } else {
+    } else if (changeType === "address") {
         await ctx.conversation.enter("changeUserAddress");
+    } else {
+        await ctx.conversation.enter("changeUserNumber");
     }
 });

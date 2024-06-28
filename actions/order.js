@@ -23,6 +23,7 @@ import calculateTotalSum from "#bot/helpers/calculateTotalSum.js";
 import { sheetUpdater } from "#bot/api/google-sheet.api.js";
 
 export const order = new Composer();
+
 order.use(hydrate());
 order.use(conversations());
 order.use(createConversation(registration));
@@ -115,7 +116,12 @@ order.callbackQuery(/order__pick_/, async (ctx) => {
     ctx.answerCallbackQuery();
     let chatId = ctx.update.callback_query.message.chat.id
     let messageId = ctx.update.callback_query.message.message_id
-    ctx.api.deleteMessage(chatId, messageId)
+    try {
+        ctx.api.deleteMessage(chatId, messageId)
+
+    } catch (error) {
+        console.log(error);
+    }
 
     if (ctx.session.temp?.calcMode) {
         await ctx.conversation.enter("calculate");

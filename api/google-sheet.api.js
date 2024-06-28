@@ -182,12 +182,14 @@ export async function statusCellsGetter(rowNumber) {
 
     await sheet.loadCells(`A${rowNumber}:K${rowNumber}`) //1000 - произовльное большое значение
 
+    const orderUniqueId = sheet.getCellByA1(`B${rowNumber}`).value
     const statusValue = sheet.getCellByA1(`C${rowNumber}`).value
     const sdekTrackNum = sheet.getCellByA1(`D${rowNumber}`).value
     const userDbIdValue = sheet.getCellByA1(`J${rowNumber}`).value
     const orderDbIdValue = sheet.getCellByA1(`K${rowNumber}`).value
 
     const forDbValues = {
+        orderUniqueId: orderUniqueId,
         status: statusValue,
         sdekNumber: sdekTrackNum,
         userId: userDbIdValue,
@@ -219,9 +221,11 @@ export async function infoForSheetsHandler(orderId, status, dbrpstCommonInfoObj)
     let statusCell = sheet.getCellByA1(`C${rowCounter}`)
     statusCell.value = status
 
+    let orderUniqueId
     //При наличии, обновляем параметр веса и стоимости доставки
     if (dbrpstCommonInfoObj.factWeight || dbrpstCommonInfoObj.factDeliveryPrice || dbrpstCommonInfoObj.dbrpstTracker) {
-        await sheet.loadCells(`E${rowCounter}:P${rowCounter}`)
+        await sheet.loadCells(`C${rowCounter}:P${rowCounter}`)
+        orderUniqueId = sheet.getCellByA1(`B${rowCounter}`)
 
         let weightCell = sheet.getCellByA1(`N${rowCounter}`)
         weightCell.value = dbrpstCommonInfoObj.factWeight
@@ -233,5 +237,9 @@ export async function infoForSheetsHandler(orderId, status, dbrpstCommonInfoObj)
         dbrpstTrackerCell.value = dbrpstCommonInfoObj.dbrpstTracker
     }
 
+
+
     await sheet.saveUpdatedCells();
+
+    return orderUniqueId
 }
