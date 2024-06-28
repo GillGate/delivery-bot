@@ -94,9 +94,9 @@ jobs:
       if: success()
       with:
         context: .
-        platforms: linux/amd64, linux/arm64
+        platforms: linux/amd64
         push: ${{ github.event_name != 'pull_request' }}
-        tags: ${{ secrets.DOCKER_REGISTRY_TAG }}:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev
+        tags: europe-docker.pkg.dev/angular-axe-420010/telegram-delivery/tg-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev
    
  #   - name: Push Docker Image
  #     run: |
