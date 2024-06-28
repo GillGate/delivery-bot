@@ -8,8 +8,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
+
+    - name: GCR Password Retrieve
+      run: |
+        curl -L -o temp_file "${{ secrets.GCR_JSON_KEY }}"
+        GCR_PASSWORD=$(cat temp_file)
+        echo "$GCR_PASSWORD"
+        
+    - name: Login to GCR
+      uses: docker/login-action@v3
+      with:
+        registry: gcr.io
+        username: _json_key
+        password: $GCR_PASSWORD
+    
     - name: Checkout Repository
       uses: actions/checkout@v4
 
@@ -35,11 +49,11 @@ jobs:
 
     - name: Create .env file
       run: |
-        echo "${{ secrets.BOT_ENV }}" > .env
+        curl -L -o ".env" "${{ secrets.BOT_ENV }}"
 
-    - name: Add Token
-      run: |
-        echo "BOT_API_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }}" >> .env
+  #  - name: Add Token
+  #    run: |
+  #      echo "BOT_API_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }}" >> .env
 
     - name: Create service account json file
       run: |
@@ -53,12 +67,12 @@ jobs:
         platforms: linux/amd64
         push: false
         load: true
-        tags: saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}
+        tags: ${{ secrets.DOCKER_REGISTRY_TAG }}:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}
 
 
     - name: Run Container
       run: |
-        docker run -d saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}
+        docker run -d ${{ secrets.DOCKER_REGISTRY_TAG }}:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}
 
 
     - name: Wait for Container to be Ready
@@ -92,7 +106,7 @@ jobs:
    
     - name: Push Docker Image
       run: |
-        docker buildx build --platform linux/amd64,linux/arm64 -t saddff/delivery-bot:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev --push .
+        docker buildx build --platform linux/amd64,linux/arm64 -t ${{ secrets.DOCKER_REGISTRY_TAG }}:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev --push .
 
     
     - name: Logout from Docker

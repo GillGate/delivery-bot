@@ -11,7 +11,7 @@ export function getMainMenu(isNewbie = true) {
     }
 
     mainMenu
-        .text("🔎  Проверить заказы", "orders__check")
+        .text("🔎  Мои заказы", "orders__check")
         .row()
         .text("🧮  Расчёт", "order__create_calc")
         .text("🛒  Корзина", "cart__enter")
