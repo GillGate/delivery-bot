@@ -90,7 +90,6 @@ jobs:
 
     - name: GCR login
       run: |
-        gcloud auth login --cred-file=${{ secrets.GCR_JSON_KEY }}
         gcloud auth list
         gcloud auth configure-docker europe-docker.pkg.dev
 
