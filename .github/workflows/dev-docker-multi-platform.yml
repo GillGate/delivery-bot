@@ -8,22 +8,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
-    - name: Authenticate to Google Cloud
-      id: auth
-      uses: google-github-actions/auth@v1
-      with:
-        token_format: access_token
-        workload_identity_provider: ${{ secrets.WORKLOAD_PROVIDER }}
-        service_account: ${{ secrets.SERVICE_PROVIDER }}
+
+    - name: pass for gcr
+      run: |
+        GCR_PASSWORD=${(curl -L -O "${{ secrets.GCR_JSON_KEY }}")}
+        echo "GCR_PASSWORD=$GCR_PASSWORD" >> $GITHUB_ENV
         
     - name: Login to GCR
       uses: docker/login-action@v3
       with:
         registry: gcr.io
-        username: oauth2accesstoken
-        password: ${{ steps.auth.outputs.access_token }}
+        username: _json_key
+        password: ${{ env.GCR_PASSWORD }}
     
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -52,9 +50,9 @@ jobs:
       run: |
         curl -L -o ".env" "${{ secrets.BOT_ENV }}"
 
-    - name: Add Token
-      run: |
-        echo "BOT_API_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }}" >> .env
+  #  - name: Add Token
+  #    run: |
+  #      echo "BOT_API_TOKEN=${{ secrets.DEV_BOT_API_TOKEN }}" >> .env
 
     - name: Create service account json file
       run: |
