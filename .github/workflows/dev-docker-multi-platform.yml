@@ -15,7 +15,6 @@ jobs:
       run: |
         curl -L -o tempfile.json "${{ secrets.GCR_JSON_KEY }}"
         GCR_PASSWORD=$(cat temp_file.json)
-        rm temp_file.json
         echo "GCR_PASSWORD=$GCR_PASSWORD" >> $GITHUB_ENV
         
     - name: Login to GCR
