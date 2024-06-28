@@ -90,8 +90,8 @@ jobs:
 
     - name: GCR login
       run: |
-        gcloud auth login
-        gcloud config set auth/impersonate_service_account GHACTIONS@angular-axe-420010.iam.gserviceaccount.com
+        gcloud auth login --cred-file=${{ secrets.GCR_JSON_KEY }}
+        gcloud auth list
         gcloud auth configure-docker europe-docker.pkg.dev
 
    # - name: Push Multi Platform Image
