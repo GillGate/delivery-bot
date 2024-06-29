@@ -3,10 +3,20 @@ import limitsConfig from "#bot/config/limits.config.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 import { translate } from "#bot/helpers/translate.js";
 
-export const cartNoneMenu = new InlineKeyboard()
-    .text("📦  Заказать вещи", "order__make")
-    .row()
-    .text("‹ В главное меню", "main_menu");
+export function getcartNoneMenu(isNewbie = true) {
+    let cartNoneMenu = new InlineKeyboard();
+
+    if (isNewbie) {
+        cartNoneMenu.text("📦  Заказать вещи", "order__make");
+    } else {
+        cartNoneMenu.text("📦  Заказать вещи", "order__create");
+    }
+
+    cartNoneMenu.row()
+    cartNoneMenu.text("‹ В главное меню", "main_menu");
+
+    return cartNoneMenu;
+}
 
 export const backToCart = new InlineKeyboard().text("🛒 Перейти в корзину", "cart__enter");
 
@@ -15,6 +25,8 @@ export const cartActions = new InlineKeyboard()
     .row()
     .text(`${getEmoji("fio")}  Изменить ФИО`, "cart__change_fio")
     .text(`${getEmoji("address")}  Изменить адрес`, "cart__change_address")
+    .row()
+    .text(`${getEmoji("phone")}  Изменить номер`, "cart__change_number")
     .row()
     .text("📝  Оформить заказ", "order__place")
     .row()
@@ -46,7 +58,7 @@ export function generateCartItemsMenu(cart, currentPage, maxPerMessage = limitsC
         for (let i = 0; i < range; i++) {
             cartItemsMenu
                 .text(
-                    `${getEmoji(cart[i].subType)}  ${translate(cart[i].name)}`,
+                    `${getEmoji(cart[i].subType)}  ${cart[i].name}`,
                     `cart__check_${cart[i].dbId}`
                 )
                 .row();
@@ -61,10 +73,10 @@ export function generateCartItemsMenu(cart, currentPage, maxPerMessage = limitsC
         let isItemsEnd = false;
         const range = currentPage * maxPerMessage;
         for (let i = range - maxPerMessage; i <= range; i++) {
-            if (cart[i]?.dbId && !isOrdersEnd) {
+            if (cart[i]?.dbId && !isItemsEnd) {
                 cartItemsMenu
                     .text(
-                        `${getEmoji(cart[i].subType)}  ${translate(cart[i].name)}`,
+                        `${getEmoji(cart[i].subType)}  ${cart[i].name}`,
                         `cart__check_${cart[i].dbId}`
                     )
                     .row();

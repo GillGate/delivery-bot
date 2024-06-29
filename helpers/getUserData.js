@@ -3,7 +3,7 @@ import { getUserInfo } from "#bot/api/firebase.api.js";
 export default async function (ctx) {
     let user = ctx.session.user;
 
-    if (user.fio === "" || user.address === "") {
+    if (user.fio === "" || user.address === "" || user.number === "") {
         try {
             let userInfo = await getUserInfo(ctx.from.id);
 

@@ -1,61 +1,48 @@
 import "dotenv/config";
 import pricingConfig from "#bot/config/pricing.config.js";
+import { firstRatesCheck, rates } from "./current-rates.api.js";
 
-const { convertationFee, wmFee, poshlinaFloor, poshlinaAdmin, poshlinaAgent } = pricingConfig;
+const { convertationFee, wmFee } = pricingConfig;
 
-export async function getCurrentRates() {
-    try {
-        //Запрашиваем данные
-        const responseOne = await fetch(process.env.BOT_LINK_FREECURRENCY_API);
-        const responseTwo = await fetch(process.env.BOT_LINK_OPEN_API);
 
-        //Деструктуризация полученных данных
-        const { data: rateOne } = await responseOne.json();
-        const { rates: rateTwo } = await responseTwo.json();
-
-        // TODO: update rates every 1h
-        console.log("current rate usd to cny ~", rateOne["RUB"]);
-
-        return {
-            dataOne: rateOne,
-            dataTwo: rateTwo,
-        };
-    } catch (error) {
-        console.log(error);
-    }
-}
 
 //TODO Найти аналог freecurrencyapi - в месяц 5000 запросов или сделать так, чтобы запросы были редкими(напр. раз в час совершается запрос)
-async function convertThroughUSD(amount, fromCurr, toCurr, rates) {
+export async function convertThroughUSD(amount, fromCurr, toCurr) {
     //Определяем стоимость fromCurr к USD -> USD к toCurr с учётом amount
-    let responseOneRate =
-        (amount / Number(rates.dataOne[fromCurr])) * Number(rates.dataOne[toCurr]).toFixed(3);
-    let responseTwoRate =
-        (amount / Number(rates.dataTwo[fromCurr])) * Number(rates.dataTwo[toCurr]).toFixed(3);
+    let responseOneRate = rates.dataOne && rates.dataOne[fromCurr] ?
+        (amount / Number(rates.dataOne[fromCurr])) * Number(rates.dataOne[toCurr]).toFixed(3) : 0;
+    let responseTwoRate = rates.dataTwo && rates.dataTwo[fromCurr] ?
+        (amount / Number(rates.dataTwo[fromCurr])) * Number(rates.dataTwo[toCurr]).toFixed(3) : 0;
+    let responseThreeRate = rates.dataThree && rates.dataThree[fromCurr] ?
+        (amount / Number(rates.dataThree[fromCurr])) * Number(rates.dataThree[toCurr]).toFixed(3) : 0;
 
-    //Высчисляем среднее между двумя результатами
-    return (responseOneRate + responseTwoRate) / 2;
+    // Создаем массив из курсов валют и фильтруем все нулевые значения
+    let ratesArray = [responseOneRate, responseTwoRate, responseThreeRate].filter(rate => rate !== 0);
+
+    // Находим сумму оставшихся значений и делим на их количество
+    let averageRate = ratesArray.reduce((a, b) => a + b, 0) / ratesArray.length;
+
+    return averageRate;
 }
 
-export async function convertedCNYWithFee(cnyAmount, rates = null) {
-    if (rates === null) {
-        rates = await getCurrentRates();
+export async function convertedCNYWithFee(cnyAmount, rates) {
+    if (rates === null || undefined) {
+        await firstRatesCheck();
     }
 
-    let currentSum = await convertThroughUSD(cnyAmount, "CNY", "RUB", rates);
-    let amountInEuro = await convertThroughUSD(cnyAmount, "CNY", "EUR", rates);
-    let withAgentsFee = 0;
-
-    if (amountInEuro - amountInEuro * poshlinaAgent > poshlinaFloor) {
-        let difference = amountInEuro - poshlinaFloor;
-        let poshlina = difference * 0.15;
-        let poshlinaInRub = (await convertThroughUSD(poshlina, "EUR", "RUB", rates)) + poshlinaAdmin;
-        withAgentsFee = poshlinaInRub + poshlinaInRub * poshlinaAgent;
-    }
-    console.log("poshlina", amountInEuro, withAgentsFee);
+    let currentSum = await convertThroughUSD(cnyAmount, "CNY", "RUB");
+    let amountInEuro = await convertThroughUSD(cnyAmount, "CNY", "EUR");
 
     let currentConversionFee = currentSum * convertationFee;
     let currentWMFee = currentSum * wmFee;
 
-    return currentSum + currentConversionFee + currentWMFee + withAgentsFee;
+    let conversionSum = currentSum + currentConversionFee + currentWMFee;
+    //Объект для передачи наружу промежуточных значений
+    let dataObject = {
+        total: conversionSum,
+        conversionFee: currentConversionFee,
+        wmFee: currentWMFee,
+    };
+
+    return dataObject;
 }

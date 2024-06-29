@@ -5,11 +5,19 @@ export default {
     },
     fio: {
         min: 4,
-        max: 100,
+        max: 80,
     },
     address: {
         min: 10,
-        max: 180,
+        max: 120,
+    },
+    params: {
+        min: 2,
+        max: 120
+    },
+    deliveryPeriod:{
+        min: 17,
+        max: 23,
     },
     cartMaxLength: 15,
     maxOrdersPerMessage: 5,

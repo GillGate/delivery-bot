@@ -26,7 +26,7 @@ orders.callbackQuery(/orders__nav_/, async (ctx) => {
     }
 
     const orders = ctx.session.orders;
-    msgText = `Ваш список заказов: `;
+    let msgText = "Ваш список заказов: ";
     msgText += `${ctx.session.currentPage}/${ctx.session.temp.maxPages}`;
 
     await ctx.editMessageText(msgText, {
@@ -44,7 +44,7 @@ orders.callbackQuery(/orders__check_/, async (ctx) => {
     let orderItemsText = "";
 
     order.items.forEach((orderItem, index) => {
-        orderItemsText += `#${++index}: ${translate(orderItem.name)}\n`;
+        orderItemsText += `#${++index}: ${orderItem.name}\n`;
         orderItemsText += `- Ссылка: ${getHtmlOrderLink(orderItem)}\n`;
         orderItemsText += `- Доп. параметры: ${orderItem.params}\n`;
         orderItemsText += `- Цена: ${orderItem.priceCNY} ¥\n`;
@@ -55,17 +55,17 @@ orders.callbackQuery(/orders__check_/, async (ctx) => {
 
     const totalSum = await calculateTotalSum(order.items);
 
-    if (order.status === "expecting_payment") {
-        orderText += `Итого к оплате: ${totalSum} ₽\n\n`;
-        //когда заплатил обновить фиксированное свойство totalSum
-    } else {
-        orderText += `Сумма: ${order.totalSum} ₽\n\n`;
-    }
+    orderText += `Сумма: ${order.totalSum} ₽\n\n`;
 
     orderText += `${getEmoji("fio")}  ФИО получателя: ${order.user.fio}\n`;
     orderText += `${getEmoji("address")}  Адрес доставки: ${order.user.address}\n\n`;
+    orderText += `${getEmoji("phone")}  Контакт получателя: ${order.user.number}\n`;
 
     orderText += `Статус: ${getEmoji(order.status)}  ${translate(order.status)}`;
+
+    if (order.sdekTrackNum !== null) {
+        orderText += `\nТрек-номер CDEK: ${order.sdekTrackNum}`
+    }
 
     await ctx.editMessageText(orderText, {
         reply_markup: backKeyboard,

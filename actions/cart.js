@@ -5,7 +5,6 @@ import { translate } from "#bot/helpers/translate.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 import {
     cartActions,
-    cartNoneMenu,
     generateItemActions,
     generateItemDeleteConfirm,
     generateCartItemsMenu,
@@ -19,12 +18,15 @@ import { changeUserAddress } from "#bot/conversations/changeUserAddress.js";
 import calculateTotalSum from "#bot/helpers/calculateTotalSum.js";
 import getUserData from "#bot/helpers/getUserData.js";
 import sendCartMessage from "#bot/handlers/sendCartMessage.js";
+import sendStartMessage from "#bot/handlers/sendStartMessage.js";
+import { changeUserNumber } from "#bot/conversations/changeUserNumber.js";
 
 export const cart = new Composer();
 cart.use(hydrate());
 cart.use(conversations());
 cart.use(createConversation(changeUserFio));
 cart.use(createConversation(changeUserAddress));
+cart.use(createConversation(changeUserNumber));
 
 let maxPages;
 cart.callbackQuery("cart__enter", async (ctx) => await sendCartMessage(ctx));
@@ -38,7 +40,7 @@ cart.callbackQuery(["cart__check", /cart__check_after_delete_/], async (ctx) => 
     if (deletedItemId !== "") {
         cart = cart.filter((item) => {
             if (item.dbId === deletedItemId) {
-                // deleteCartItem(ctx.from.id, deletedItemId);
+                deleteCartItem(ctx.from.id, deletedItemId);
                 ctx.answerCallbackQuery(`Товар ${getEmoji(item.subType)} был удалён`);
                 return false;
             } else {
@@ -50,30 +52,39 @@ cart.callbackQuery(["cart__check", /cart__check_after_delete_/], async (ctx) => 
         ctx.answerCallbackQuery();
     }
 
-    let msgText = "Ваш список товаров:";
-    ctx.session.currentPage = 1;
-    maxPages = Math.ceil(cart.length / limitsConfig.maxOrdersPerMessage);
-
-    if (maxPages > 1) {
-        msgText += `${ctx.session.currentPage}/${maxPages}`;
+    if (cart.length === 0) {
+        await sendStartMessage(ctx, true)
     }
+    else {
+        let msgText = "Ваш список товаров:";
+        ctx.session.currentPage = 1;
+        maxPages = Math.ceil(cart.length / limitsConfig.maxOrdersPerMessage);
 
-    await ctx.editMessageText(msgText, {
-        reply_markup: generateCartItemsMenu(cart, ctx.session.currentPage),
-        parse_mode: "HTML",
-    });
+        if (maxPages > 1) {
+            msgText += `${ctx.session.currentPage}/${maxPages}`;
+        }
+
+        await ctx.editMessageText(msgText, {
+            reply_markup: generateCartItemsMenu(cart, ctx.session.currentPage),
+            parse_mode: "HTML",
+        });
+    }
 });
 
 cart.callbackQuery(/cart__check_/, async (ctx) => {
+    //service logs to understand the problem with cart
+    console.log("CARTRIGHTNOW", ctx.session.cart);
+    console.log('CARTLOGHERE\n', ctx.callbackQuery.data.split("__check_"));
     let currentItemId = ctx.callbackQuery.data.split("__check_")[1];
     const cartItem = ctx.session.cart.filter((item) => item.dbId === currentItemId)[0];
 
     let cartItemText = `Детали товара:\n`;
-    cartItemText += `- Имя товара: ${translate(cartItem.name)}\n`;
+    cartItemText += `- Имя товара: ${cartItem.name}\n`;
     cartItemText += `- Ссылка на товар: ${getHtmlOrderLink(cartItem)}\n`;
     cartItemText += `- Доп. параметры: ${cartItem.params}\n`;
     cartItemText += `- Цена: ${cartItem.priceCNY} ¥\n`;
     cartItemText += `- Цена в рублях: ~${cartItem.priceRUB} ₽\n\n`;
+    // TODO: better UX improvemnt 10000 -> 10 000
 
     await ctx.editMessageText(cartItemText, {
         reply_markup: generateItemActions(currentItemId),
@@ -124,7 +135,9 @@ cart.callbackQuery(/cart__change_/, async (ctx) => {
 
     if (changeType === "fio") {
         await ctx.conversation.enter("changeUserFio");
-    } else {
+    } else if (changeType === "address") {
         await ctx.conversation.enter("changeUserAddress");
+    } else {
+        await ctx.conversation.enter("changeUserNumber");
     }
 });

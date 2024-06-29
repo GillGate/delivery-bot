@@ -11,8 +11,9 @@ import sessionConfig from "#bot/config/session.config.js";
 import traceRoutes from "#bot/middleware/traceRoutes.js";
 import sendStartMessage from "#bot/handlers/sendStartMessage.js";
 import sendHelpMessage from "#bot/handlers/sendHelpMessage.js";
+import sendAdminMessage from "./handlers/sendAdminMessage.js";
 
-const bot = new Bot(process.env.BOT_API_TOKEN);
+export const bot = new Bot(process.env.BOT_API_TOKEN);
 bot.use(
     session({
         initial: () => structuredClone(sessionConfig),
@@ -45,6 +46,7 @@ bot.api.setMyCommands([
 ]);
 
 bot.command("start", async (ctx) => await sendStartMessage(ctx, true));
+bot.command("admin", async (ctx) => await sendAdminMessage(ctx));
 bot.callbackQuery("main_menu", async (ctx) => await sendStartMessage(ctx));
 
 bot.callbackQuery("back", async (ctx) => {

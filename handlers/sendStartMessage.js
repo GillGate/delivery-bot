@@ -15,18 +15,28 @@ export default async function (ctx, replyMode = false) {
 
     let user = await getUserData(ctx);
 
-    if(ctx.session.cart.length === 0) {
+    if (ctx.session.cart.length === 0) {
         try {
             ctx.session.cart = await getUserCart(ctx.from.id);
-            
-            console.log("load cart", ctx.session.cart);
-        }
-        catch (e) {
+
+            // console.log("load cart", ctx.session.cart);
+        } catch (e) {
             console.error(e);
         }
     }
 
     if (replyMode) {
+        await ctx.reply(helloText, {
+            reply_markup: getMainMenu(user.isNewbie),
+        });
+    } else if (ctx.update.callback_query.message?.photo) {
+        let chatId = ctx.update.callback_query.message.chat.id;
+        let messageId = ctx.update.callback_query.message.message_id;
+        try {
+            await ctx.api.deleteMessage(chatId, messageId)
+        } catch (error) {
+            console.log(error);
+        }
         await ctx.reply(helloText, {
             reply_markup: getMainMenu(user.isNewbie),
         });

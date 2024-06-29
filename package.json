@@ -17,6 +17,8 @@
     "@grammyjs/hydrate": "^1.4.1",
     "@grammyjs/storage-firestore": "^2.4.2",
     "dotenv": "^16.4.5",
+    "google-auth-library": "^9.10.0",
+    "google-spreadsheet": "^4.1.2",
     "grammy": "^1.21.1",
     "nodemon": "^3.1.0"
   },

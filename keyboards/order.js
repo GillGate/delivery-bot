@@ -30,7 +30,12 @@ export const selectCategoryKeyboard = new InlineKeyboard()
     .row()
     .text(textWithIcon("accessories"), "order__select_accessories")
     .row()
+    .text(textWithIcon("other"), "order__pick_disclaimer")
+    .row()
     .text("‹ В главное меню", "main_menu");
+
+export const otherKeyboard = new InlineKeyboard()
+    .text("Далее", "order__pick_other")
 
 export function getSubTypeKeyboard(type) {
     let subTypeKeyboard = new InlineKeyboard();
@@ -99,6 +104,8 @@ export function getSubTypeKeyboard(type) {
                 .row()
                 .text(textWithIcon("scarf"), "order__pick_scarf")
                 .text(textWithIcon("gloves"), "order__pick_gloves")
+                .row()
+                .text(`${getEmoji("headgear")}  ${translate("headgear")}`, "order__pick_headgear")
                 .row()
                 .text("‹ Изменить категорию", "back");
             break;

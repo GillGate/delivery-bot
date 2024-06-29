@@ -8,6 +8,7 @@ import {
     confirmOrderMenu,
     getSubTypeKeyboard,
     orderMenuBeforeCreate,
+    otherKeyboard,
     selectCategoryKeyboard,
 } from "#bot/keyboards/order.js";
 import { addUserOrder, cleanCart, getUserOrders, updateUserInfo } from "#bot/api/firebase.api.js";
@@ -19,15 +20,18 @@ import { getEmoji } from "#bot/helpers/getEmoji.js";
 import getHtmlOrderLink from "#bot/helpers/getHtmlOrderLink.js";
 import { backToCart } from "#bot/keyboards/cart.js";
 import calculateTotalSum from "#bot/helpers/calculateTotalSum.js";
+import { sheetUpdater } from "#bot/api/google-sheet.api.js";
 
 export const order = new Composer();
+
 order.use(hydrate());
 order.use(conversations());
 order.use(createConversation(registration));
 order.use(createConversation(calculate));
 
 order.callbackQuery("order__make", async (ctx) => {
-    let orderText = `Перед оформлением заказа настоятельно рекомендуем ознакомиться с <a href="${linksConfig.guide}">гайдом</a> пользования площадки POIZON, а также с правилом нашей доставки! 🚸`;
+    let orderText = "Перед оформлением заказа настоятельно рекомендуем ознакомиться с ";
+    orderText += `<a href="${linksConfig.guide}">гайдом</a> пользования площадки POIZON, а также с правилом нашей доставки! 🚸`;
 
     await ctx.editMessageText(orderText, {
         reply_markup: orderMenuBeforeCreate,
@@ -84,10 +88,40 @@ order.callbackQuery(/order__select_/, async (ctx) => {
     });
     ctx.answerCallbackQuery();
 });
+//delay was deleted, now it has the button "Далее"
+order.callbackQuery("order__pick_disclaimer", async (ctx) => {
+    let otherDisclaimer = "⚠️Важно⚠️\n\nПри выборе категории 'Другое' ";
+    otherDisclaimer += "стоимость доставки не входит в итоговую сумму заказа и \n";
+    otherDisclaimer += "рассчитывается отдельно менеджером"
+
+    await ctx.editMessageText(otherDisclaimer, {
+        reply_markup: otherKeyboard
+    })
+
+})
+//delay was deleted, now it has the button "Далее"
+order.callbackQuery("order__pick_disclaimer", async (ctx) => {
+    let otherDisclaimer = "⚠️Важно⚠️\n\nПри выборе категории 'Другое' ";
+    otherDisclaimer += "стоимость доставки не входит в итоговую сумму заказа и \n";
+    otherDisclaimer += "рассчитывается отдельно менеджером"
+
+    await ctx.editMessageText(otherDisclaimer, {
+        reply_markup: otherKeyboard
+    })
+
+})
 
 order.callbackQuery(/order__pick_/, async (ctx) => {
     ctx.session.order.subType = ctx.callbackQuery.data.split("__pick_")[1];
     ctx.answerCallbackQuery();
+    let chatId = ctx.update.callback_query.message.chat.id
+    let messageId = ctx.update.callback_query.message.message_id
+    try {
+        ctx.api.deleteMessage(chatId, messageId)
+
+    } catch (error) {
+        console.log(error);
+    }
 
     if (ctx.session.temp?.calcMode) {
         await ctx.conversation.enter("calculate");
@@ -112,23 +146,34 @@ order.callbackQuery("order__place", async (ctx) => {
 
     makeOrderText += "Список товаров на заказ:\n\n";
     let cartItemsText = "";
+    let totalDutySum = 0;
 
     cart.forEach((cartItem, index) => {
-        cartItemsText += `#${++index}: ${translate(cartItem.name)}\n`;
+        cartItemsText += `#${++index}: ${cartItem.name}\n`;
         cartItemsText += `- Ссылка: ${getHtmlOrderLink(cartItem)}\n`;
         cartItemsText += `- Доп. параметры: ${cartItem.params}\n`;
         cartItemsText += `- Цена: ${cartItem.priceCNY} ¥\n`;
         cartItemsText += `- Цена в рублях: ~${cartItem.priceRUB} ₽\n\n`;
+        totalDutySum += cartItem?.dutySum ?? 0;
     });
+
+    console.log(totalDutySum);
 
     makeOrderText += cartItemsText;
 
     totalSum = await calculateTotalSum(cart);
     makeOrderText += `Итого к оплате*: ${totalSum} ₽\n`;
-    makeOrderText += `*<i> - с учётом доставки</i>\n\n`;
+
+
+    if (totalDutySum === 0) {
+        makeOrderText += `*<i> - с учётом доставки</i>\n\n`;
+    } else {
+        makeOrderText += `*<i> - с учётом доставки и пошлины</i>\n\n`;
+    }
 
     makeOrderText += `${getEmoji("fio")}  ФИО получателя: ${user.fio}\n`;
     makeOrderText += `${getEmoji("address")}  Адрес доставки: ${user.address}\n`;
+    makeOrderText += `${getEmoji("phone")}  Контакт получателя: ${user.number}\n`;
 
     ctx.session.temp.makeOrderText = makeOrderText;
 
@@ -142,26 +187,46 @@ order.callbackQuery("order__place", async (ctx) => {
 order.callbackQuery("order__confirm", async (ctx) => {
     let cart = ctx.session.cart;
     let user = ctx.session.user;
+    let { from } = ctx;
+
+    //TODO: улучшить алгоритм создания id
+    const cartUniqueId = cart[0].dbId.split('').slice(-2).join('')
+    const fromIdStr = from.id.toString();
+    const userUniqueId = fromIdStr.split('').slice(-3).join('')
+
+    const orderIdGeneration = `ch${userUniqueId}${cartUniqueId}`
 
     const order = {
         items: cart,
         user,
         totalSum,
-        status: "expecting_payment",
+        orderId: orderIdGeneration,
+        sdekTrackNum: null,
+        status: "processing",
+    };
+    //Нам нужен этот ид
+    const { id: orderDbId } = await addUserOrder(ctx.from.id, order);
+
+    let sheetDataObj = {
+        id: orderIdGeneration,
+        date: Date.now(),
+        user: ctx.session.user.fio,
+        userId: from.id,
+        orderId: orderDbId,
+        username: order.user.username,
+        number: order.user.number,
+        destination: ctx.session.user.address,
+        cart: cart,
+        declaredTotalPrice: ctx.session.totalSum,
     };
 
-    await addUserOrder(ctx.from.id, order);
-    // let res = await cleanCart(ctx.from.id);
+    await sheetUpdater(sheetDataObj);
+    let res = await cleanCart(ctx.from.id);
     // if(res) {
     //
     // }
     ctx.session.cart = [];
     ctx.session.temp.order = order;
-
-    if (user?.username) {
-        let makeOrderText = ctx.session.temp.makeOrderText;
-        makeOrderText += `📞  Контакт для связи: @${user.username}`;
-    }
 
     await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, ctx.session.temp.makeOrderText, {
         message_thread_id: process.env.BOT_CHAT_TOPIC_ORDERS,
