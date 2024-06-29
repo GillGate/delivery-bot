@@ -3,7 +3,6 @@ name: Build Test and Push Mutli Platform Docker Image
 on:
   push:
     branches:
-      - dev
       - main
       
 jobs:
