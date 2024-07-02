@@ -68,7 +68,6 @@ export async function tableUpdateConversation(conversation, ctx) {
 }
 
 export async function dobropostUpdateConversation(conversation, ctx) {
-
     await ctx.reply('Пришлите сообщение от Dobropost.\n!!!Сообщение должно содержать ordername!!!')
 
     //запрашиваем dobropostUpdate

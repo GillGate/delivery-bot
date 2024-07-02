@@ -107,7 +107,7 @@ export function getSubTypeKeyboard(type) {
                 .row()
                 .text(`${getEmoji("headgear")}  ${translate("headgear")}`, "order__pick_headgear")
                 .row()
-                .text("‹ Назад", "back");
+                .text("‹ Изменить категорию", "back");
             break;
     }
 
