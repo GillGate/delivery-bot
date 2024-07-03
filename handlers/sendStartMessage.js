@@ -9,6 +9,8 @@ export default async function (ctx, replyMode = false) {
     ctx.session.conversation = {};
     ctx.session.temp = {};
 
+    console.log(ctx.from, ctx.chat);
+
     let helloText = `Привет 🚸\n\n`;
     helloText += `Я Kul2Bot и я могу помочь тебе сделать заказ оригинальных вещей с Poizon, а также подсказать, что именно заказать, исходя из модных тенденций о которых пишет наш журнал.\n\n`;
     helloText += `Что тебя интересует? 🫡`;
@@ -18,8 +20,6 @@ export default async function (ctx, replyMode = false) {
     if (ctx.session.cart.length === 0) {
         try {
             ctx.session.cart = await getUserCart(ctx.from.id);
-
-            // console.log("load cart", ctx.session.cart);
         } catch (e) {
             console.error(e);
         }
@@ -29,14 +29,16 @@ export default async function (ctx, replyMode = false) {
         await ctx.reply(helloText, {
             reply_markup: getMainMenu(user.isNewbie),
         });
-    } else if (ctx.update.callback_query.message?.photo) {
-        let chatId = ctx.update.callback_query.message.chat.id;
-        let messageId = ctx.update.callback_query.message.message_id;
+    } else if (ctx.callbackQuery.message?.photo) {
+        let chatId = ctx.callbackQuery.message.chat.id;
+        let messageId = ctx.callbackQuery.message.message_id;
+
         try {
-            await ctx.api.deleteMessage(chatId, messageId)
+            ctx.api.deleteMessage(chatId, messageId);
         } catch (error) {
             console.log(error);
         }
+
         await ctx.reply(helloText, {
             reply_markup: getMainMenu(user.isNewbie),
         });
