@@ -29,10 +29,9 @@ export async function registration(conversation, ctx) {
     let currentCart = currentSession.cart;
     let currentUser = await getUserData(ctx);
 
-    console.log("CURRENT status CURRENT", currentSession.temp);
+    console.log("CURRENT status temp", currentSession.temp);
 
     let chatId = ctx.update.callback_query.message.chat.id;
-
 
     await conversation.ctx.api.sendPhoto(chatId, regMedia.link, {
         caption: 'Введите ссылку на товар',
@@ -129,8 +128,7 @@ export async function registration(conversation, ctx) {
 
 
         await getUserNumber(conversation, ctx);
-
-        currentUser = conversation.ctx.session.user;
+        currentUser = currentSession.user;
     }
 
     let htmlOrderLink = getHtmlOrderLink(currentOrder);
@@ -144,10 +142,10 @@ export async function registration(conversation, ctx) {
 
     totalText += `Детали заказа:\n`;
     totalText += `- Имя товара: ${translate(currentOrder.name)}\n`;
-    totalText += `- Ссылка на товар: ${htmlOrderLink}\n`;
-    totalText += `- Стоимость товара: ${currentOrder.priceCNY} ￥ \n`;
-    totalText += `- Доп. параметры: ${currentOrder.params}\n\n`;
-
+    totalText += `- Доп. параметры: ${currentOrder.params}\n`;
+    totalText += `- Ссылка: ${htmlOrderLink}\n`;
+    totalText += `- Стоимость: ${currentOrder.priceCNY} ￥ \n\n`;
+    
     totalText += `${getEmoji("time")} Срок доставки: от `;
     totalText += `${deliveryPeriod.min} до ${deliveryPeriod.max} дней + время доставки Poizon\n`;
     totalText += `${getEmoji("fio")}  ФИО получателя: ${currentUser.fio}\n`;
@@ -199,21 +197,23 @@ export async function registration(conversation, ctx) {
                 console.log("userData changed", currentUser);
             }
 
-            currentOrder.date = Date.now();
-
             let dbId = await addToCart(from.id, currentOrder);
-
             await (currentOrder.fromId = from.id);
+            
             currentOrder.dbId = dbId.id;
-
-            await (currentSession.cart.push(currentOrder));
-
+            currentOrder.date = Date.now();
+            currentSession.cart.push(currentOrder);
         } catch (e) {
             console.error(e);
         }
 
         let textForManager = `${totalText}\n`;
-        textForManager += `Contact: @${from?.username}`;
+        if(from?.username) {
+            textForManager += `Contact: @${from.username}`;
+        }
+        else {
+            textForManager += `Contact: Не указан`;
+        }
 
         ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, textForManager, {
             message_thread_id: process.env.BOT_CHAT_TOPIC_ORDERS,

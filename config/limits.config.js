@@ -12,7 +12,7 @@ export default {
         max: 120,
     },
     params: {
-        min: 2,
+        min: 1,
         max: 120
     },
     deliveryPeriod:{
