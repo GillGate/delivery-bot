@@ -29,9 +29,11 @@ export function generateOrdersMenu(orders, currentPage, maxPerMessage = limitsCo
                 .row();
         }
 
-        ordersMenu.text("‹ Назад", "main_menu");
-
-        if (orders.length > maxPerMessage) {
+        if (orders.length < maxPerMessage) {
+            ordersMenu.text("‹ В главное меню", "main_menu");
+        }
+        else {
+            ordersMenu.text("‹ Назад", "main_menu");
             ordersMenu.text("Дальше ›", "orders__nav_next");
         }
     } else {

@@ -48,6 +48,7 @@ cart.callbackQuery(["cart__check", /cart__check_after_delete_/], async (ctx) => 
             }
         });
         ctx.session.cart = cart;
+        ctx.session.totalSum = await calculateTotalSum(cart);
     } else {
         ctx.answerCallbackQuery();
     }

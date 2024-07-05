@@ -17,5 +17,6 @@ export default {
         params: "",
         price: "",
     },
+    lastMsgId: 0,
     temp: {},
 }

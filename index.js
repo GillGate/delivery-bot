@@ -46,8 +46,10 @@ bot.api.setMyCommands([
 ]);
 
 bot.command("start", async (ctx) => await sendStartMessage(ctx, true));
-bot.command("admin", async (ctx) => await sendAdminMessage(ctx));
 bot.callbackQuery("main_menu", async (ctx) => await sendStartMessage(ctx));
+bot.command("admin", async (ctx) => await sendAdminMessage(ctx));
+bot.command("help", async (ctx) => await sendHelpMessage(ctx, true));
+bot.callbackQuery("help", async (ctx) => await sendHelpMessage(ctx));
 
 bot.callbackQuery("back", async (ctx) => {
     await ctx.session.routeHistory.pop(); // фальшивка ёбанная
@@ -60,9 +62,6 @@ bot.callbackQuery("back", async (ctx) => {
     });
     ctx.answerCallbackQuery();
 });
-
-bot.callbackQuery("help", async (ctx) => await sendHelpMessage(ctx));
-bot.command("help", async (ctx) => await sendHelpMessage(ctx, true));
 
 bot.catch(async (err) => {
     const ctx = err.ctx;

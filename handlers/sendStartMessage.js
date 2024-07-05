@@ -1,4 +1,4 @@
-import { getUserCart, getUserInfo } from "#bot/api/firebase.api.js";
+import { getUserCart } from "#bot/api/firebase.api.js";
 import sessionConfig from "#bot/config/session.config.js";
 import { getMainMenu } from "#bot/keyboards/general.js";
 import getUserData from "#bot/helpers/getUserData.js";
@@ -18,14 +18,26 @@ export default async function (ctx, replyMode = false) {
     if (ctx.session.cart.length === 0) {
         try {
             ctx.session.cart = await getUserCart(ctx.from.id);
-
-            // console.log("load cart", ctx.session.cart);
         } catch (e) {
             console.error(e);
         }
     }
 
     if (replyMode) {
+        let updatedCtx = await ctx.reply(helloText, {
+            reply_markup: getMainMenu(user.isNewbie),
+        });
+        ctx.session.lastMsgId = updatedCtx.message_id;
+    } else if (ctx.callbackQuery.message?.photo) {
+        let chatId = ctx.callbackQuery.message.chat.id;
+        let messageId = ctx.callbackQuery.message.message_id;
+
+        try {
+            ctx.api.deleteMessage(chatId, messageId);
+        } catch (error) {
+            console.log(error);
+        }
+
         await ctx.reply(helloText, {
             reply_markup: getMainMenu(user.isNewbie),
         });

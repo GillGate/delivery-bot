@@ -23,12 +23,8 @@ export default async function (ctx, replyMode = false) {
             msgText += `${getEmoji("phone")}  Контакт получателя: ${user.number}\n\n`;
         }
 
-        let totalSum = ctx.session.totalSum;
-
-        if (totalSum === 0) {
-            totalSum = await calculateTotalSum(cart);
-            ctx.session.totalSum = totalSum;
-        }
+        let totalSum = await calculateTotalSum(cart);
+        ctx.session.totalSum = totalSum;
 
         msgText += `Количество товаров в корзине: ${cart.length}\n`;
         msgText += `Стоимость всех товаров: ~${totalSum} ₽`;
