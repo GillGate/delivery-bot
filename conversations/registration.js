@@ -32,7 +32,6 @@ export async function registration(conversation, ctx) {
     console.log("CURRENT status temp", currentSession.temp);
 
     let chatId = ctx.update.callback_query.message.chat.id;
-
     await conversation.ctx.api.sendPhoto(chatId, regMedia.link, {
         caption: 'Введите ссылку на товар',
         show_caption_above_media: true,
