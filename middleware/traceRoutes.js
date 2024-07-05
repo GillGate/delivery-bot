@@ -4,7 +4,7 @@ export default async function (ctx, next) {
     let currentMsgId = ctx?.update?.message?.message_id ?? ctx?.callbackQuery?.message?.message_id;
     let lastMsgId = ctx.session.lastMsgId ?? 0;
 
-    if(currentMsgId < lastMsgId) {
+    if(currentMsgId < lastMsgId || lastMsgId === 0) {
         return await sendStartMessage(ctx, true);
     }
     else {

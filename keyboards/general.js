@@ -29,7 +29,8 @@ export const backKeyboard = new InlineKeyboard().text("‹ Назад", "back");
 
 export const helpMenu = new InlineKeyboard()
     .url("🌐 Скачать Poizon", "https://dewu.com")
-    .url("Как использовать Poizon", linksConfig.guide)
+    .row()
+    .url("ℹ️ Как использовать Poizon", linksConfig.guide)
     .row()
     .url("📚 О сроках доставки и ценообразовании", linksConfig.delivery_details)
     .row()
