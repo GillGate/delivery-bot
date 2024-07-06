@@ -201,7 +201,7 @@ export async function registration(conversation, ctx) {
             
             currentOrder.dbId = dbId.id;
             currentOrder.date = Date.now();
-            currentSession.cart.push(currentOrder);
+            await (currentSession.cart.push(currentOrder));
         } catch (e) {
             console.error(e);
         }
