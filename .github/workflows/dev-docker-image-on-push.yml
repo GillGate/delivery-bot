@@ -3,7 +3,7 @@ name: Build Test and Push DEVDocker Image
 on:
   push:
     branches:
-      - dev
+      - none
 jobs:
 
   build:
