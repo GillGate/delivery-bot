@@ -10,7 +10,7 @@ export default async function (ctx, next) {
     else {
         ctx.session.lastMsgId = currentMsgId;
 
-        if (ctx?.callbackQuery) {
+        if(ctx?.callbackQuery) {
             let cbQMessage = await ctx.callbackQuery.message;
     
             ctx.session.routeHistory.push({
