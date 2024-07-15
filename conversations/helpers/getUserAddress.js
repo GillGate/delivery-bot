@@ -36,7 +36,7 @@ export default async function (conversation, ctx) {
                             reply_markup: backMainMenu,
                         });
                     } else {
-                        ctx.reply("Укажите корректный адрес:", {
+                        ctx.reply("Укажите корректный адрес на русском:", {
                             reply_markup: backMainMenu,
                         });
                     }
