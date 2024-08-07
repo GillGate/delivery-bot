@@ -1,7 +1,6 @@
 import { InlineKeyboard } from "grammy";
 import limitsConfig from "#bot/config/limits.config.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
-import { translate } from "#bot/helpers/translate.js";
 
 export function getcartNoneMenu(isNewbie = true) {
     let cartNoneMenu = new InlineKeyboard();
