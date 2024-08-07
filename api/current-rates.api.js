@@ -77,7 +77,7 @@ async function firstRatesCheck() {
         ratesThreadMessage += `            RUB->USD: ${addRatesInfo.rub}\n`;
         ratesThreadMessage += `            EUR->USD: ${addRatesInfo.eur}`;
         await bot.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, ratesThreadMessage, {
-            message_thread_id: process.env.BOT_CHAT_TOPIC_RATES,
+            message_thread_id: process.env.BOT_CHAT_TOPIC_RATES, ы
         });
     } catch (error) {
         console.error(error);

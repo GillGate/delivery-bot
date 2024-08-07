@@ -9,7 +9,7 @@ import pricingConfig from "#bot/config/pricing.config.js";
 const spreadsheetId = process.env.BOT_SERVICE_ACCOUNT_SPREADSHEET_ID;
 const serviceAccountAuth = new JWT({
     email: process.env.BOT_SERVICE_ACCOUNT_EMAIL,
-    key: process.env.BOT_SERVICE_ACCOUNT_PRIVETE_KEY.split(String.raw`\n`).join("\n"),
+    key: process.env.BOT_SERVICE_ACCOUNT_PRIVATE_KEY.split(String.raw`\n`).join("\n"),
     scopes: [process.env.BOT_SERVICE_ACCOUNT_SCOPE],
 });
 
