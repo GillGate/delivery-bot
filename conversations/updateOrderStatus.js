@@ -69,10 +69,14 @@ export async function tableUpdateConversation(conversation, ctx) {
     const sheetValues = await statusCellsGetter(tableRowNumber)
 
     //обновляем стутус в БД
-    await updateOrderStatus(sheetValues.userId, sheetValues.orderId, sheetValues.status, sheetValues.sdekNumber)
-
     const notifRes = await statusNotificator(ctx, conversation, sheetValues.userId, sheetValues.orderUniqueId, sheetValues.status, sheetValues.sdekNumber)
     if (notifRes) {
+        try {
+            await updateOrderStatus(sheetValues.userId, sheetValues.orderId, sheetValues.status, sheetValues.sdekNumber)
+        } catch (error) {
+            await ctx.reply('Error in updateOrderStatus occured, operation failed, check logs')
+            console.log("updateOrderStatus error\n", error);
+        }
         await ctx.reply('JOB IS DONE')
     } else {
         await ctx.reply('Отправка отменена')
@@ -92,6 +96,12 @@ export async function dobropostUpdateConversation(conversation, ctx) {
 
     const notifRes = await statusNotificator(ctx, conversation, parsedInfo.userId, parsedInfo.uniqueId, parsedInfo.status)
     if (notifRes) {
+        try {
+            await updateOrderStatus(parsedInfo.userId, parsedInfo.orderDbId, parsedInfo.status);
+        } catch (error) {
+            await ctx.reply('Error in updateOrderStatus occured, operation failed, check logs')
+            console.log("updateOrderStatus error\n", error);
+        }
         await ctx.reply('JOB IS DONE')
     } else {
         await ctx.reply('Отправка отменена')

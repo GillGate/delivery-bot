@@ -43,4 +43,4 @@ export const adminMainMenu = new InlineKeyboard()
 
 export const notifApprove = new InlineKeyboard()
     .text('cancel', "notif_cancel")
-    .text('Approve', "notif_approve")
+    .text('approve', "notif_approve")

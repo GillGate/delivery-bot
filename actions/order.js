@@ -73,7 +73,7 @@ order.callbackQuery(/order__create/, async (ctx) => {
 
         let categoryDisclaimer = "<i>*Если вы выберете некорректную категорию, "
         categoryDisclaimer += "итоговая стоимость может измениться после обработки заказа менеджером</i>"
-        await ctx.editMessageText("Выберите категорию товара:\n" + categoryDisclaimer, {
+        await ctx.editMessageText("Выберите категорию* товара:\n\n" + categoryDisclaimer, {
             reply_markup: selectCategoryKeyboard,
             parse_mode: "HTML"
         });
