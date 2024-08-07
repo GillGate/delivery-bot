@@ -11,8 +11,7 @@ import {
     otherKeyboard,
     selectCategoryKeyboard,
 } from "#bot/keyboards/order.js";
-import { addUserOrder, cleanCart, getUserOrders, updateUserInfo } from "#bot/api/firebase.api.js";
-import { translate } from "#bot/helpers/translate.js";
+import { addUserOrder, cleanCart, updateUserInfo } from "#bot/api/firebase.api.js";
 import limitsConfig from "#bot/config/limits.config.js";
 import linksConfig from "#bot/config/links.config.js";
 import sessionConfig from "#bot/config/session.config.js";

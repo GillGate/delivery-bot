@@ -1,4 +1,3 @@
-import { bot } from "#bot/index.js";
 //It'll be necessary one time
 // async function getMoexRates() {
 //     fetch('https://iss.moex.com/iss/statistics/engines/currency/markets/selt/rates.json?iss.meta=off')

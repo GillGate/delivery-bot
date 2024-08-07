@@ -1,15 +1,12 @@
 import { Composer } from "grammy";
 import { hydrate } from "@grammyjs/hydrate";
-import { backKeyboard } from "#bot/keyboards/general.js";
-import { translate } from "#bot/helpers/translate.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 import {
-    cartActions,
     generateItemActions,
     generateItemDeleteConfirm,
     generateCartItemsMenu,
 } from "#bot/keyboards/cart.js";
-import { deleteCartItem, getUserCart } from "#bot/api/firebase.api.js";
+import { deleteCartItem } from "#bot/api/firebase.api.js";
 import limitsConfig from "#bot/config/limits.config.js";
 import getHtmlOrderLink from "#bot/helpers/getHtmlOrderLink.js";
 import { conversations, createConversation } from "@grammyjs/conversations";
