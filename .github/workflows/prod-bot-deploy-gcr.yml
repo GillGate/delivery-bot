@@ -44,7 +44,7 @@ jobs:
 
     - name: Create .env file
       run: |
-        curl -L -o ".env" "${{ secrets.BOT_ENV }}"
+        curl -L -o ".env" "${{ secrets.BOT_ENV_PROD }}"
 
   #  - name: Add Token
   #    run: |
