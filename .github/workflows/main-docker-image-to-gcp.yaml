@@ -3,7 +3,7 @@ name: Build Test and Push Mutli Platform Docker Image
 on:
   push:
     branches:
-      - dev
+      - main
        
 jobs:
   build:
@@ -99,7 +99,7 @@ jobs:
    
     - name: Push Docker Image
       run: |
-        docker build --platform linux/amd64 -t ${{ secrets.DOCKER_REGISTRY_TAG }}:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev --push .
+        docker build --platform linux/amd64 -t ${{ secrets.DOCKER_REGISTRY_TAG }}:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.prod --push .
 
     
     - name: Logout from Docker
