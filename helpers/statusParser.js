@@ -10,10 +10,8 @@ function extractMatch(text, regex) {
 export async function dobropostStatusParser(message, ctx) {
      //TODO: заменить везде упоминания DOBROPOST
      const dobropostOrderId = extractMatch(message, infoRegExps.orderId)
-
-     const userDbId = dobropostOrderId.split('|')[0]
+     const userDbId = Number(dobropostOrderId.split('|')[0])
      const orderDbId = dobropostOrderId.split('|')[1]
-
      console.log(userDbId, orderDbId);
 
      let status

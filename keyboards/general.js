@@ -40,3 +40,7 @@ export const adminMainMenu = new InlineKeyboard()
     .text("Обновить по таблице", "orders_in_process")
     .row()
     .text("Обновление Dobropost", "dobropost_status_update");
+
+export const notifApprove = new InlineKeyboard()
+    .text('cancel', "notif_cancel")
+    .text('Approve', "notif_approve")
