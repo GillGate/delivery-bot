@@ -9,7 +9,7 @@ import pricingConfig from "#bot/config/pricing.config.js";
 const spreadsheetId = process.env.BOT_SERVICE_ACCOUNT_SPREADSHEET_ID;
 const serviceAccountAuth = new JWT({
     email: process.env.BOT_SERVICE_ACCOUNT_EMAIL,
-    key: process.env.BOT_SERVICE_ACCOUNT_PRIVETE_KEY.split(String.raw`\n`).join("\n"),
+    key: process.env.BOT_SERVICE_ACCOUNT_PRIVATE_KEY.split(String.raw`\n`).join("\n"),
     scopes: [process.env.BOT_SERVICE_ACCOUNT_SCOPE],
 });
 
@@ -37,9 +37,8 @@ export async function sheetUpdater(dataObject) {
     const numberCell = sheet.getCellByA1(`A${rowCoutner}`);
     numberCell.value = ordersCounter;
 
-    // track Number (CDEK NOT ONLY)
-    const idCell = sheet.getCellByA1(`B${rowCoutner}`);
-    idCell.value = dataObject.id;
+    const orderIdCell = sheet.getCellByA1(`B${rowCoutner}`);
+    orderIdCell.value = dataObject.id;
 
     // Статус заказа
     const statusCell = sheet.getCellByA1(`C${rowCoutner}`);
@@ -204,40 +203,33 @@ export async function infoForSheetsHandler(orderId, status, dbrpstCommonInfoObj)
     await doc.loadInfo(); // loads document properties and worksheets
     const sheet = doc.sheetsByIndex[0]; //choose working sheet
 
-    await sheet.loadCells(`K3:K500`) //1000 - произовльное большое значение
+    await sheet.loadCells(`K3:K500`) //500 - произовльное большое значение
     let rowCounter = 3
-    let checkCell = sheet.getCellByA1(`K${rowCounter}`)
+    let checkCell = await sheet.getCellByA1(`K${rowCounter}`)
     console.log('checkcellvalue', checkCell.value);
 
     while (checkCell.value !== orderId) {
         rowCounter += 1
-        checkCell = sheet.getCellByA1(`K${rowCounter}`);
+        checkCell = await sheet.getCellByA1(`K${rowCounter}`);
         console.log("CHECKING sheet cells");
     } //checking till it'll find the necessary
+    await sheet.loadCells(`B${rowCounter}:P${rowCounter}`)
 
-    //Загружаем и обновляем ячейку статуса
-    await sheet.loadCells(`C${rowCounter}`)
-
-    let statusCell = sheet.getCellByA1(`C${rowCounter}`)
+    let orderUniqueId = await sheet.getCellByA1(`B${rowCounter}`).value
+    let statusCell = await sheet.getCellByA1(`C${rowCounter}`)
     statusCell.value = status
 
-    let orderUniqueId
     //При наличии, обновляем параметр веса и стоимости доставки
     if (dbrpstCommonInfoObj.factWeight || dbrpstCommonInfoObj.factDeliveryPrice || dbrpstCommonInfoObj.dbrpstTracker) {
-        await sheet.loadCells(`C${rowCounter}:P${rowCounter}`)
-        orderUniqueId = sheet.getCellByA1(`B${rowCounter}`)
-
-        let weightCell = sheet.getCellByA1(`N${rowCounter}`)
+        let weightCell = await sheet.getCellByA1(`N${rowCounter}`)
         weightCell.value = dbrpstCommonInfoObj.factWeight
 
-        let deliveryPriceCell = sheet.getCellByA1(`P${rowCounter}`)
+        let deliveryPriceCell = await sheet.getCellByA1(`P${rowCounter}`)
         deliveryPriceCell.value = dbrpstCommonInfoObj.factDeliveryPrice
 
-        let dbrpstTrackerCell = sheet.getCellByA1(`E${rowCounter}`)
+        let dbrpstTrackerCell = await sheet.getCellByA1(`E${rowCounter}`)
         dbrpstTrackerCell.value = dbrpstCommonInfoObj.dbrpstTracker
     }
-
-
 
     await sheet.saveUpdatedCells();
 

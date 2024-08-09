@@ -10,10 +10,8 @@ function extractMatch(text, regex) {
 export async function dobropostStatusParser(message, ctx) {
      //TODO: заменить везде упоминания DOBROPOST
      const dobropostOrderId = extractMatch(message, infoRegExps.orderId)
-
-     const userDbId = dobropostOrderId.split('|')[0]
+     const userDbId = Number(dobropostOrderId.split('|')[0])
      const orderDbId = dobropostOrderId.split('|')[1]
-
      console.log(userDbId, orderDbId);
 
      let status
@@ -44,13 +42,6 @@ export async function dobropostStatusParser(message, ctx) {
           }
 
           try {
-               await updateOrderStatus(userDbId, orderDbId, status);
-          } catch (error) {
-               await ctx.reply('Error in updateOrderStatus occured, operation failed, check logs')
-               console.log("updateOrderStatus error\n", error);
-          }
-
-          try {
                uniqueId = await infoForSheetsHandler(orderDbId, status, dbrpstCommonInfoObj);
           } catch (error) {
                await ctx.reply('Error in infoForSheetsHandler occured, operation failed, check logs')
@@ -65,7 +56,8 @@ export async function dobropostStatusParser(message, ctx) {
      return {
           userId: userDbId,
           status: status,
-          uniqueId: uniqueId
+          uniqueId: uniqueId,
+          orderDbId: orderDbId
      }
 
      //TODO: обработчик изображений

@@ -1,7 +1,5 @@
 import { Composer } from "grammy";
 import { hydrate } from "@grammyjs/hydrate";
-import { getUserOrders } from "#bot/api/firebase.api.js";
-import limitsConfig from "#bot/config/limits.config.js";
 import calculateTotalSum from "#bot/helpers/calculateTotalSum.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 import getHtmlOrderLink from "#bot/helpers/getHtmlOrderLink.js";

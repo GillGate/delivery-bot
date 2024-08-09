@@ -11,8 +11,7 @@ import {
     otherKeyboard,
     selectCategoryKeyboard,
 } from "#bot/keyboards/order.js";
-import { addUserOrder, cleanCart, getUserOrders, updateUserInfo } from "#bot/api/firebase.api.js";
-import { translate } from "#bot/helpers/translate.js";
+import { addUserOrder, cleanCart, updateUserInfo } from "#bot/api/firebase.api.js";
 import limitsConfig from "#bot/config/limits.config.js";
 import linksConfig from "#bot/config/links.config.js";
 import sessionConfig from "#bot/config/session.config.js";
@@ -72,8 +71,11 @@ order.callbackQuery(/order__create/, async (ctx) => {
             ctx.session.order = structuredClone(sessionConfig.order);
         }
 
-        await ctx.editMessageText("Выберите категорию товара:", {
+        let categoryDisclaimer = "<i>*Если вы выберете некорректную категорию, "
+        categoryDisclaimer += "итоговая стоимость может измениться после обработки заказа менеджером</i>"
+        await ctx.editMessageText("Выберите категорию* товара:\n\n" + categoryDisclaimer, {
             reply_markup: selectCategoryKeyboard,
+            parse_mode: "HTML"
         });
         ctx.answerCallbackQuery();
     }
@@ -192,7 +194,6 @@ order.callbackQuery("order__confirm", async (ctx) => {
         sdekTrackNum: null,
         status: "processing",
     };
-    
     const { id: orderDbId } = await addUserOrder(ctx.from.id, order);
 
     let sheetDataObj = {
@@ -210,7 +211,7 @@ order.callbackQuery("order__confirm", async (ctx) => {
 
     await sheetUpdater(sheetDataObj);
     let res = await cleanCart(ctx.from.id);
-    if(res) {
+    if (res) {
         ctx.session.cart = [];
     }
     ctx.session.temp.order = order;

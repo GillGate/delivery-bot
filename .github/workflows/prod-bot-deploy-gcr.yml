@@ -3,7 +3,9 @@ name: Build Test and Push Mutli Platform Docker Image
 on:
   push:
     branches:
-      - none
+      - main
+  workflow_dispatch:
+       
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -42,7 +44,7 @@ jobs:
 
     - name: Create .env file
       run: |
-        curl -L -o ".env" "${{ secrets.BOT_ENV }}"
+        curl -L -o ".env" "${{ secrets.BOT_ENV_PROD }}"
 
   #  - name: Add Token
   #    run: |
@@ -98,11 +100,10 @@ jobs:
    
     - name: Push Docker Image
       run: |
-        docker build --platform linux/amd64 -t ${{ secrets.DOCKER_REGISTRY_TAG }}:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.dev --push .
+        docker build --platform linux/amd64 -t ${{ secrets.DOCKER_REGISTRY_TAG }}:${{ env.BUILD_DATE }}.${{ env.BUILD_NUMBER }}.prod --push .
 
     
     - name: Logout from Docker
       run: docker logout
   
-
       

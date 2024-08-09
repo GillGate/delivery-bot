@@ -1,7 +1,6 @@
 import "dotenv/config"
 
 import { adminMainMenu } from "#bot/keyboards/general.js";
-import sendStartMessage from "#bot/handlers/sendStartMessage.js";
 import { hydrate } from "@grammyjs/hydrate";
 import { conversations, createConversation } from "@grammyjs/conversations";
 import { order } from "#bot/actions/order.js";

@@ -4,7 +4,7 @@ import limitsConfig from "#bot/config/limits.config.js";
 
 export default async function (conversation, ctx) {
     const { address: addressLimits } = limitsConfig;
-    const addressRegex = /^[А-я0-9./,\s]+$/gi;
+    const addressRegex = /^[А-я0-9./,-\s]+$/gi;
 
     return await conversation.waitUntil(
         async (ctx) => {
@@ -36,7 +36,7 @@ export default async function (conversation, ctx) {
                             reply_markup: backMainMenu,
                         });
                     } else {
-                        ctx.reply("Укажите корректный адрес:", {
+                        ctx.reply("Укажите корректный адрес на русском:", {
                             reply_markup: backMainMenu,
                         });
                     }

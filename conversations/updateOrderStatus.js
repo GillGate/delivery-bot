@@ -1,18 +1,19 @@
 import { updateOrderStatus } from "#bot/api/firebase.api.js"
 import { statusCellsGetter } from "#bot/api/google-sheet.api.js"
+import sendAdminMessage from "#bot/handlers/sendAdminMessage.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 import { dobropostStatusParser } from "#bot/helpers/statusParser.js";
-import { backMainMenu } from "#bot/keyboards/general.js";
+import { backMainMenu, notifApprove } from "#bot/keyboards/general.js";
 import { Api } from "grammy";
 
 const admin = new Api(`${process.env.BOT_API_TOKEN}`)
 
-function statusNotificator(userId, orderUniqueId, status, sdekNumber = null) {
+async function statusNotificator(ctx, conversation, userId, orderUniqueId, status, sdekNumber = null) {
     let messageText
 
     switch (status) {
         case "paid":
-            messageText = `${getEmoji(status)} Ваш заказ <b>${orderUniqueId}</b> оплачен. В ближайшее время он будет выкуплен и отправлен на наш склад в Китае\n`
+            messageText = `${getEmoji(status)} Ваш заказ <b>#${orderUniqueId}</b> оплачен. В ближайшее время он будет выкуплен и отправлен на наш склад в Китае\n`
             messageText += `До момента получения мы будем сообщать вам о всех этапах доставки`
             break;
         case "sent_to_china_stock":
@@ -37,14 +38,22 @@ function statusNotificator(userId, orderUniqueId, status, sdekNumber = null) {
             messageText = `${getEmoji(status)} Ваш заказ <b>#${orderUniqueId}</b> передан в службу доставки CDEK.\nТрек-номер: <code>${sdekNumber}</code>`
             break;
         case "done":
-            messageText = `${getEmoji(status)} Заказ <b>#${orderUniqueId}</b> доставлен. Оставьте отзыв`
+            messageText = `${getEmoji(status)} Заказ <b>#${orderUniqueId}</b> доставлен.`
             break;
     }
-
-    admin.sendMessage(userId, messageText, {
-        parse_mode: "HTML",
-        reply_markup: backMainMenu
+    await ctx.reply("Пользователь получит следующее сообщение:\n\n" + messageText, {
+        reply_markup: notifApprove,
+        parse_mode: "HTML"
     })
+    const answerWaiter = await conversation.waitForCallbackQuery(/approve|cancel/)
+    const adminAnswer = answerWaiter.match[0]
+    if (adminAnswer === 'approve') {
+        await admin.sendMessage(userId, messageText, {
+            parse_mode: "HTML",
+            reply_markup: backMainMenu
+        })
+        return true
+    } else { return false }
 }
 
 export async function tableUpdateConversation(conversation, ctx) {
@@ -60,11 +69,20 @@ export async function tableUpdateConversation(conversation, ctx) {
     const sheetValues = await statusCellsGetter(tableRowNumber)
 
     //обновляем стутус в БД
-    await updateOrderStatus(sheetValues.userId, sheetValues.orderId, sheetValues.status, sheetValues.sdekNumber)
-
-    await statusNotificator(sheetValues.userId, sheetValues.orderUniqueId, sheetValues.status, sheetValues.sdekNumber)
-    //Сообщаем о том что работа выполнена
-    await ctx.reply('JOB IS DONE')
+    const notifRes = await statusNotificator(ctx, conversation, sheetValues.userId, sheetValues.orderUniqueId, sheetValues.status, sheetValues.sdekNumber)
+    if (notifRes) {
+        try {
+            await updateOrderStatus(sheetValues.userId, sheetValues.orderId, sheetValues.status, sheetValues.sdekNumber)
+        } catch (error) {
+            await ctx.reply('Error in updateOrderStatus occured, operation failed, check logs')
+            console.log("updateOrderStatus error\n", error);
+        }
+        await ctx.reply('JOB IS DONE')
+    } else {
+        await ctx.reply('Отправка отменена')
+    }
+    sendAdminMessage(ctx)
+    return
 }
 
 export async function dobropostUpdateConversation(conversation, ctx) {
@@ -76,7 +94,18 @@ export async function dobropostUpdateConversation(conversation, ctx) {
     //Обрабатываем dobropostUpdate 
     const parsedInfo = await dobropostStatusParser(dobropostUpdate, ctx)
 
-    await statusNotificator(parsedInfo.userId, parsedInfo.uniqueId, parsedInfo.status)
-    //Сообщаем о том что работа выполнена
-    await ctx.reply('JOB IS DONE')
+    const notifRes = await statusNotificator(ctx, conversation, parsedInfo.userId, parsedInfo.uniqueId, parsedInfo.status)
+    if (notifRes) {
+        try {
+            await updateOrderStatus(parsedInfo.userId, parsedInfo.orderDbId, parsedInfo.status);
+        } catch (error) {
+            await ctx.reply('Error in updateOrderStatus occured, operation failed, check logs')
+            console.log("updateOrderStatus error\n", error);
+        }
+        await ctx.reply('JOB IS DONE')
+    } else {
+        await ctx.reply('Отправка отменена')
+    }
+    sendAdminMessage(ctx)
+    return
 }

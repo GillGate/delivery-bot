@@ -3,9 +3,6 @@ import pricingConfig from "#bot/config/pricing.config.js";
 import { firstRatesCheck, rates } from "./current-rates.api.js";
 
 const { convertationFee, wmFee } = pricingConfig;
-
-
-
 //TODO Найти аналог freecurrencyapi - в месяц 5000 запросов или сделать так, чтобы запросы были редкими(напр. раз в час совершается запрос)
 export async function convertThroughUSD(amount, fromCurr, toCurr) {
     //Определяем стоимость fromCurr к USD -> USD к toCurr с учётом amount
