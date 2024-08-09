@@ -74,10 +74,7 @@ web_modules/
 
 # dotenv environment variable files
 .env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
+.env.*
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -130,4 +127,4 @@ package-lock.json
 
 *.txt
 e.js
-serviceAccount.firestore.json
+firestore.*.json
