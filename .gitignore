@@ -127,4 +127,4 @@ package-lock.json
 
 *.txt
 e.js
-serviceAccount.firestore.json
+firestore.*.json

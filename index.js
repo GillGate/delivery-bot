@@ -1,12 +1,9 @@
 import "dotenv/config";
 import { Bot, GrammyError, HttpError, session } from "grammy";
-import { adapter } from "@grammyjs/storage-firestore";
 import { hydrate } from "@grammyjs/hydrate";
 import { order } from "#bot/actions/order.js";
 import { cart } from "#bot/actions/cart.js";
 import { orders } from "#bot/actions/orders.js";
-import { helpMenu } from "#bot/keyboards/general.js";
-import { db } from "#bot/api/firebase.api.js";
 import sessionConfig from "#bot/config/session.config.js";
 import traceRoutes from "#bot/middleware/traceRoutes.js";
 import sendStartMessage from "#bot/handlers/sendStartMessage.js";
@@ -17,7 +14,6 @@ export const bot = new Bot(process.env.BOT_API_TOKEN);
 bot.use(
     session({
         initial: () => structuredClone(sessionConfig),
-        // storage: adapter(db.collection("sessions")),
     })
 );
 bot.use(hydrate());

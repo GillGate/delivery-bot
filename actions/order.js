@@ -199,17 +199,23 @@ order.callbackQuery("order__confirm", async (ctx) => {
     let sheetDataObj = {
         id: orderIdGeneration,
         date: Date.now(),
-        user: ctx.session.user.fio,
+        user: user.fio,
         userId: from.id,
         orderId: orderDbId,
-        username: order.user.username,
+        username: user.username,
         number: order.user.number,
-        destination: ctx.session.user.address,
+        destination: user.address,
         cart: cart,
         declaredTotalPrice: ctx.session.totalSum,
     };
 
-    await sheetUpdater(sheetDataObj);
+    try {
+        await sheetUpdater(sheetDataObj);
+    }
+    catch(e) {
+        console.log(e);
+    }
+
     let res = await cleanCart(ctx.from.id);
     if (res) {
         ctx.session.cart = [];
