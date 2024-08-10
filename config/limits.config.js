@@ -1,7 +1,7 @@
 export default {
     price: {
-        min: 5,
-        max: 20000
+        min: 1,
+        max: 5000
     },
     fio: {
         min: 4,

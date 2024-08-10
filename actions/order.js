@@ -194,30 +194,45 @@ order.callbackQuery("order__confirm", async (ctx) => {
         sdekTrackNum: null,
         status: "processing",
     };
-
     const { id: orderDbId } = await addUserOrder(ctx.from.id, order);
 
     let sheetDataObj = {
         id: orderIdGeneration,
         date: Date.now(),
-        user: ctx.session.user.fio,
+        user: user.fio,
         userId: from.id,
         orderId: orderDbId,
-        username: order.user.username,
+        username: user.username,
         number: order.user.number,
-        destination: ctx.session.user.address,
+        destination: user.address,
         cart: cart,
         declaredTotalPrice: ctx.session.totalSum,
     };
 
-    await sheetUpdater(sheetDataObj);
+    try {
+        await sheetUpdater(sheetDataObj);
+    }
+    catch(e) {
+        console.log(e);
+    }
+
     let res = await cleanCart(ctx.from.id);
     if (res) {
         ctx.session.cart = [];
     }
     ctx.session.temp.order = order;
 
-    await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, ctx.session.temp.makeOrderText, {
+    let textForManager = ctx.session.temp.makeOrderText;
+    textForManager += `\n`;
+
+    if(user?.username) {
+        textForManager += `Профиль: <b>${from.id}</b> | @${from.username}`;
+    }
+    else {
+        textForManager += `Профиль: <b>${from.id}</b>`;
+    }
+
+    ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, textForManager, {
         message_thread_id: process.env.BOT_CHAT_TOPIC_ORDERS,
         parse_mode: "HTML",
     });

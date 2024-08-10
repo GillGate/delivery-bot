@@ -35,7 +35,7 @@ cart.callbackQuery(["cart__check", /cart__check_after_delete_/], async (ctx) => 
 
     let deletedItemId = ctx.callbackQuery.data.split("after_delete_")[1] ?? "";
     if (deletedItemId !== "") {
-        cart = cart.filter((item) => {
+        cart = cart.filter(item => {
             if (item.dbId === deletedItemId) {
                 deleteCartItem(ctx.from.id, deletedItemId);
                 ctx.answerCallbackQuery(`Товар ${getEmoji(item.subType)} был удалён`);

@@ -132,6 +132,8 @@ export async function registration(conversation, ctx) {
 
     let htmlOrderLink = getHtmlOrderLink(currentOrder);
 
+    let textForLogs = `Клиент <b>${ctx.from.id}</b> | @${ctx.from?.username ?? ''} добавил товар в корзину\n\n`;
+
     let totalText = `Итоговая цена: ${currentOrder.price} ₽ \n`;
     if (currentOrder.dutySum !== 0) {
         console.log(currentOrder.dutySum);
@@ -145,11 +147,11 @@ export async function registration(conversation, ctx) {
     totalText += `- Ссылка: ${htmlOrderLink}\n`;
     totalText += `- Стоимость: ${currentOrder.priceCNY} ￥ \n\n`;
     
-    totalText += `${getEmoji("time")} Срок доставки: от `;
-    totalText += `${deliveryPeriod.min} до ${deliveryPeriod.max} дней + время доставки Poizon\n`;
     totalText += `${getEmoji("fio")}  ФИО получателя: ${currentUser.fio}\n`;
     totalText += `${getEmoji("address")}  Адрес доставки: ${currentUser.address}\n`;
     totalText += `${getEmoji("phone")}  Номер получателя: ${currentUser.number}\n`;
+    totalText += `${getEmoji("time")} Срок доставки: от `;
+    totalText += `${deliveryPeriod.min} до ${deliveryPeriod.max} дней + время доставки Poizon\n`;
     // изменить можно в корзине
 
     if (currentSession.temp?.keepNumber) {
@@ -178,11 +180,6 @@ export async function registration(conversation, ctx) {
         let { from } = ctx;
         console.log(totalText, currentUser);
 
-        ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, totalText, {
-            message_thread_id: process.env.BOT_CHAT_TOPIC_LOGS,
-            parse_mode: "HTML",
-        });
-
         try {
             if (JSON.stringify(ctx.session.user) !== JSON.stringify(currentUser)) {
                 await setUserInfo(from.id, {
@@ -206,25 +203,19 @@ export async function registration(conversation, ctx) {
             console.error(e);
         }
 
-        let textForManager = `${totalText}\n`;
-        if(from?.username) {
-            textForManager += `Contact: @${from.username}`;
-        }
-        else {
-            textForManager += `Contact: Не указан`;
-        }
-
-        ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, textForManager, {
-            message_thread_id: process.env.BOT_CHAT_TOPIC_ORDERS,
-            parse_mode: "HTML",
-        });
-
         conversation.ctx.answerCallbackQuery(`Товар ${getEmoji(currentOrder.subType)} добавлен в корзину`);
 
         conversation.ctx.editMessageText(`Товар ${htmlOrderLink} был добавлен в корзину`, {
             reply_markup: regFinalMenu,
             parse_mode: "HTML",
         });
-        currentSession.temp = {}
+
+        textForLogs += totalText;
+        ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, textForLogs, {
+            message_thread_id: process.env.BOT_CHAT_TOPIC_LOGS,
+            parse_mode: "HTML",
+        });
+
+        currentSession.temp = {};
     }
 }
