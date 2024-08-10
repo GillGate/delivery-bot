@@ -222,7 +222,17 @@ order.callbackQuery("order__confirm", async (ctx) => {
     }
     ctx.session.temp.order = order;
 
-    await ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, ctx.session.temp.makeOrderText, {
+    let textForManager = ctx.session.temp.makeOrderText;
+    textForManager += `\n`;
+
+    if(user?.username) {
+        textForManager += `Профиль: <b>${from.id}</b> | @${from.username}`;
+    }
+    else {
+        textForManager += `Профиль: <b>${from.id}</b>`;
+    }
+
+    ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, textForManager, {
         message_thread_id: process.env.BOT_CHAT_TOPIC_ORDERS,
         parse_mode: "HTML",
     });
