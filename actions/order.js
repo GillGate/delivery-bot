@@ -71,11 +71,11 @@ order.callbackQuery(/order__create/, async (ctx) => {
             ctx.session.order = structuredClone(sessionConfig.order);
         }
 
-        let categoryDisclaimer = "<i>*Если вы выберете некорректную категорию, "
-        categoryDisclaimer += "итоговая стоимость может измениться после обработки заказа менеджером</i>"
+        let categoryDisclaimer = "<i>*Если вы выберете некорректную категорию, ";
+        categoryDisclaimer += "итоговая стоимость может измениться после обработки заказа менеджером</i>";
         await ctx.editMessageText("Выберите категорию* товара:\n\n" + categoryDisclaimer, {
             reply_markup: selectCategoryKeyboard,
-            parse_mode: "HTML"
+            parse_mode: "HTML",
         });
         ctx.answerCallbackQuery();
     }
@@ -94,21 +94,20 @@ order.callbackQuery(/order__select_/, async (ctx) => {
 order.callbackQuery("order__pick_disclaimer", async (ctx) => {
     let otherDisclaimer = "⚠️Важно⚠️\n\nПри выборе категории 'Другое' ";
     otherDisclaimer += "стоимость доставки не входит в итоговую сумму заказа и \n";
-    otherDisclaimer += "рассчитывается отдельно менеджером"
+    otherDisclaimer += "рассчитывается отдельно менеджером";
 
     await ctx.editMessageText(otherDisclaimer, {
-        reply_markup: otherKeyboard
+        reply_markup: otherKeyboard,
     });
 });
 
 order.callbackQuery(/order__pick_/, async (ctx) => {
     ctx.session.order.subType = ctx.callbackQuery.data.split("__pick_")[1];
     ctx.answerCallbackQuery();
-    let chatId = ctx.update.callback_query.message.chat.id
-    let messageId = ctx.update.callback_query.message.message_id
+    let chatId = ctx.update.callback_query.message.chat.id;
+    let messageId = ctx.update.callback_query.message.message_id;
     try {
-        ctx.api.deleteMessage(chatId, messageId)
-
+        ctx.api.deleteMessage(chatId, messageId);
     } catch (error) {
         console.log(error);
     }
@@ -154,7 +153,6 @@ order.callbackQuery("order__place", async (ctx) => {
     totalSum = await calculateTotalSum(cart);
     makeOrderText += `Итого к оплате*: ${totalSum} ₽\n`;
 
-
     if (totalDutySum === 0) {
         makeOrderText += `*<i> - с учётом доставки</i>\n\n`;
     } else {
@@ -180,11 +178,11 @@ order.callbackQuery("order__confirm", async (ctx) => {
     let { from } = ctx;
 
     //TODO: улучшить алгоритм создания id
-    const cartUniqueId = cart[0].dbId.split('').slice(-2).join('')
+    const cartUniqueId = cart[0].dbId.split("").slice(-2).join("");
     const fromIdStr = from.id.toString();
-    const userUniqueId = fromIdStr.split('').slice(-3).join('')
+    const userUniqueId = fromIdStr.split("").slice(-3).join("");
 
-    const orderIdGeneration = `ch${userUniqueId}${cartUniqueId}`
+    const orderIdGeneration = `ch${userUniqueId}${cartUniqueId}`;
 
     const order = {
         items: cart,
@@ -211,8 +209,7 @@ order.callbackQuery("order__confirm", async (ctx) => {
 
     try {
         await sheetUpdater(sheetDataObj);
-    }
-    catch(e) {
+    } catch (e) {
         console.log(e);
     }
 
@@ -225,17 +222,22 @@ order.callbackQuery("order__confirm", async (ctx) => {
     let textForManager = ctx.session.temp.makeOrderText;
     textForManager += `\n`;
 
-    if(user?.username) {
+    if (user?.username) {
         textForManager += `Профиль: <b>${from.id}</b> | @${from.username}`;
-    }
-    else {
+    } else {
         textForManager += `Профиль: <b>${from.id}</b>`;
     }
 
-    ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, textForManager, {
+    ctx.api.sendMessage(process.env.BOT_MAIN_CHAT_ID, textForManager, {
         message_thread_id: process.env.BOT_CHAT_TOPIC_ORDERS,
         parse_mode: "HTML",
     });
+
+    if (!process.env.BOT_IS_DEV) {
+        ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, textForManager, {
+            parse_mode: "HTML",
+        });
+    }
 
     ctx.editMessageText("✍️ Заказ сформирован, ожидайте ответа нашего менеджера", {
         reply_markup: backMainMenu,

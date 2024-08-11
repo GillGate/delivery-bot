@@ -52,7 +52,7 @@ jobs:
 
     - name: Create service account json file
       run: |
-        curl -o serviceAccount.firestore.json "${{ secrets.BOT_FIREBASE_SERVICE_ACCOUNT }}"
+        curl -L -o firestore.prod.serviceAccount.json "${{ secrets.BOT_FIREBASE_SERVICE_ACCOUNT }}"
 
         
  #   - name: Build Multi Platform Container 

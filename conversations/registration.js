@@ -211,7 +211,7 @@ export async function registration(conversation, ctx) {
         });
 
         textForLogs += totalText;
-        ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, textForLogs, {
+        ctx.api.sendMessage(process.env.BOT_MAIN_CHAT_ID, textForLogs, {
             message_thread_id: process.env.BOT_CHAT_TOPIC_LOGS,
             parse_mode: "HTML",
         });

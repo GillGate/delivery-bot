@@ -17,19 +17,18 @@ import { bot } from "#bot/index.js";
 //         });
 // }
 
-
 async function getCurrentRates() {
     try {
         //Запрашиваем данные
-        const responseOne = await fetch(process.env.BOT_LINK_FREECURRENCY_API).catch(error => {
+        const responseOne = await fetch(process.env.BOT_LINK_FREECURRENCY_API).catch((error) => {
             console.log("Error in FREECURRENCY_API: ", error);
             return 0;
-        });;
-        const responseTwo = await fetch(process.env.BOT_LINK_OPEN_API).catch(error => {
+        });
+        const responseTwo = await fetch(process.env.BOT_LINK_OPEN_API).catch((error) => {
             console.log("Error in OPEN_API: ", error);
             return 0;
-        });;
-        const responseThree = await fetch(process.env.BOT_LINK_CURRENCYBEACON_API).catch(error => {
+        });
+        const responseThree = await fetch(process.env.BOT_LINK_CURRENCYBEACON_API).catch((error) => {
             console.log("Error in CURRENCYBEACON_API: ", error);
             return 0;
         });
@@ -37,16 +36,18 @@ async function getCurrentRates() {
         //Деструктуризация полученных данных
         const { data: rateOne } = await responseOne.json();
         const { rates: rateTwo } = await responseTwo.json();
-        const { response: { rates: rateThree } } = await responseThree.json();
+        const {
+            response: { rates: rateThree },
+        } = await responseThree.json();
 
         // console.log("current rate usd to cny in rub FREECURRENCY_API ~", rateOne["RUB"].toFixed(3));
         // console.log("current rate usd to cny in rub OPEN_API ~", rateTwo["RUB"].toFixed(3));
         // console.log("current rate usd to cny in rub CURRENCYBEACON_API ~", rateThree["RUB"].toFixed(3));
 
-        console.log('CurrentRates', {
-            dataOne: rateOne['RUB'],
-            dataTwo: rateTwo['RUB'],
-            dataThree: rateThree['RUB'],
+        console.log("CurrentRates", {
+            dataOne: rateOne["RUB"],
+            dataTwo: rateTwo["RUB"],
+            dataThree: rateThree["RUB"],
         });
 
         return {
@@ -77,8 +78,8 @@ async function firstRatesCheck() {
         ratesThreadMessage += `            RUB->USD: ${addRatesInfo.rub}\n`;
         ratesThreadMessage += `            EUR->USD: ${addRatesInfo.eur}`;
 
-        bot.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, ratesThreadMessage, {
-            message_thread_id: process.env.BOT_CHAT_TOPIC_RATES
+        bot.api.sendMessage(process.env.BOT_MAIN_CHAT_ID, ratesThreadMessage, {
+            message_thread_id: process.env.BOT_CHAT_TOPIC_RATES,
         });
     } catch (error) {
         console.error(error);

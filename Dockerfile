@@ -8,9 +8,9 @@ RUN npm install
 
 COPY . .
 
-COPY serviceAccount.firestore.json /app/serviceAccount.firestore.json
+COPY firestore.prod.serviceAccount.json /app/firestore.prod.serviceAccount.json
 
-ENV GOOGLE_APPLICATION_CREDENTIALS="/app/serviceAccount.firestore.json"
+ENV GOOGLE_APPLICATION_CREDENTIALS="/app/firestore.prod.serviceAccount.json"
 
 EXPOSE 3000
 
