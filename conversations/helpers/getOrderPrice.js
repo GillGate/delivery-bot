@@ -52,7 +52,7 @@ export default async function (conversation, ctx) {
             otherwise: (ctx) =>
                 unlessActions(ctx, () => {
                     // TODO: particular error msg
-                    ctx.reply("Укажите корректную сумму в юань, например: 3600", {
+                    ctx.reply("Укажите корректную сумму в юань, например 360", {
                         reply_markup: backMainMenu,
                     });
                 }),
