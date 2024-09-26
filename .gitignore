@@ -19,4 +19,5 @@ package-lock.json
 
 *.txt
 e.js
+test.js
 firestore.*.json
