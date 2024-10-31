@@ -15,7 +15,7 @@ export default {
 
     // #Delivery pricing
     rubPerKg3: 167,
-    rubDBEperKg: 719,
+    rubDBEperKg: 789,
     koefVolumWeight: 190,
     m3ToSm3: 1000000,
     rubDeliveryMoscowSDEK: 300, //Стоимость доставки склад Москва -> СДЕК. Make it dynamic!!!
