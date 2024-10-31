@@ -6,10 +6,10 @@ import { calculateDelivery } from "#bot/helpers/calculateDelivery.js";
 import dutySumCalc from "#bot/helpers/dutySumCalc.js";
 
 export default async function (conversation, ctx) {
+    const { price: priceLimits } = limitsConfig;
     return await conversation.waitUntil(
         async (ctx) => {
             let price = parseFloat(ctx.message?.text);
-            const { price: priceLimits } = limitsConfig;
 
             const profitPercent = +process.env.BOT_PROFIT_PERCENT;
             const profitPermanent = +process.env.BOT_PROFIT_PERMANENT;
@@ -51,8 +51,11 @@ export default async function (conversation, ctx) {
         {
             otherwise: (ctx) =>
                 unlessActions(ctx, () => {
+                    let text = 'Укажите корректную сумму в юань, например: 360.\n'
+                    text += `Минимальная стоимость товара: ${priceLimits.min}₽\n`
+                    text += `Максимальная стоимость товара: ${priceLimits.max}₽`
                     // TODO: particular error msg
-                    ctx.reply("Укажите корректную сумму в юань, например: 3600", {
+                    ctx.reply(text, {
                         reply_markup: backMainMenu,
                     });
                 }),
