@@ -23,7 +23,7 @@ export default async function (orders = []) {
             // profitPermanent в рублях с каждого заказа, уже не по божески!
 
             rubPrice += currentProfit;
-            rubPrice += dutySumCalc(order.priceCNY);
+            rubPrice += await dutySumCalc(order.priceCNY);
 
             const deliveryPrice = calculateDelivery(order.subType).complete;
             let totalPrice = Math.ceil(rubPrice + deliveryPrice);

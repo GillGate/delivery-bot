@@ -10,7 +10,7 @@ export default async function (ctx, replyMode = false) {
     ctx.session.temp = {};
 
     let helloText = `Привет 🚸\n\n`;
-    helloText += `Я Kul2Bot и я могу помочь тебе сделать заказ оригинальных вещей с Poizon, а также подсказать, что именно заказать, исходя из модных тенденций о которых пишет наш журнал.\n\n`;
+    helloText += `Я Kul2Bot и я могу помочь тебе сделать заказ оригинальных вещей с Poizon, а также подсказать, что именно заказать, исходя из модных тенденций о которых пишет наш <a href="https://t.me/kul2yrnik">журнал</a>.\n\n`;
     helloText += `Что тебя интересует? 🫡`;
 
     let user = await getUserData(ctx);
@@ -26,6 +26,10 @@ export default async function (ctx, replyMode = false) {
     if (replyMode) {
         let updatedCtx = await ctx.reply(helloText, {
             reply_markup: getMainMenu(user.isNewbie),
+            parse_mode: "HTML",
+            link_preview_options: {
+                is_disabled: true,
+            },
         });
         ctx.session.lastMsgId = updatedCtx.message_id;
     } else if (ctx.callbackQuery.message?.photo) {
@@ -40,6 +44,10 @@ export default async function (ctx, replyMode = false) {
 
         await ctx.reply(helloText, {
             reply_markup: getMainMenu(user.isNewbie),
+            parse_mode: "HTML",
+            link_preview_options: {
+                is_disabled: true,
+            },
         });
     } else if (ctx.update.callback_query.message?.photo) {
         let chatId = ctx.update.callback_query.message.chat.id;
@@ -51,10 +59,18 @@ export default async function (ctx, replyMode = false) {
         }
         await ctx.reply(helloText, {
             reply_markup: getMainMenu(user.isNewbie),
+            parse_mode: "HTML",
+            link_preview_options: {
+                is_disabled: true,
+            },
         });
     } else {
         await ctx.editMessageText(helloText, {
             reply_markup: getMainMenu(user.isNewbie),
+            parse_mode: "HTML",
+            link_preview_options: {
+                is_disabled: true,
+            },
         });
     }
 

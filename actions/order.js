@@ -233,7 +233,7 @@ order.callbackQuery("order__confirm", async (ctx) => {
         parse_mode: "HTML",
     });
 
-    if (!process.env.BOT_IS_DEV) {
+    if (process.env.BOT_IS_DEV === 'false') {
         ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, textForManager, {
             parse_mode: "HTML",
         });
