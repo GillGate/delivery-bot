@@ -6,6 +6,7 @@
   "scripts": {
     "start": "nodemon index.js",
     "start:remote": "node index.js",
+    "prettier:fix": "npx prettier . --write",
     "d": "docker build -t delivery-bot:0.1 ."
   },
   "keywords": [],
@@ -26,5 +27,8 @@
     "#bot/*": {
       "default": "./*"
     }
+  },
+  "devDependencies": {
+    "prettier": "3.5.3"
   }
 }

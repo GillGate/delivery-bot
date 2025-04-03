@@ -6,8 +6,7 @@ export default async function (ctx, next) {
 
     if (currentMsgId < lastMsgId || lastMsgId === 0) {
         return await sendStartMessage(ctx, true);
-    }
-    else {
+    } else {
         ctx.session.lastMsgId = currentMsgId;
 
         if (ctx?.callbackQuery) {

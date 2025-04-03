@@ -15,9 +15,9 @@ export default async function (conversation, ctx) {
             }
 
             let address = ctx.message?.text;
-            
+
             if (address?.length >= addressLimits.min && address?.length <= addressLimits.max) {
-                if(addressRegex.test(address)) {
+                if (addressRegex.test(address)) {
                     conversation.ctx.session.user.address = address;
                     return true;
                 }
@@ -41,6 +41,6 @@ export default async function (conversation, ctx) {
                         });
                     }
                 }),
-        }
+        },
     );
 }

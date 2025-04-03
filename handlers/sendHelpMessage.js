@@ -5,12 +5,11 @@ export default async function (ctx, replyMode = false) {
     helpText += "и основными принципами нашей работы рекомендуем последовательно ознакомиться ";
     helpText += "с каждым из трёх пунктов, представленных ниже.";
 
-    if(replyMode) {
+    if (replyMode) {
         await ctx.reply(helpText, {
             reply_markup: helpMenu,
         });
-    }
-    else {
+    } else {
         await ctx.editMessageText(helpText, {
             reply_markup: helpMenu,
         });

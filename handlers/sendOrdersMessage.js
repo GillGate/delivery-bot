@@ -29,8 +29,7 @@ export default async function (ctx, replyMode = false) {
         await ctx.reply(msgText, {
             reply_markup: ordersKeyboard,
         });
-    }
-    else {
+    } else {
         await ctx.editMessageText(msgText, {
             reply_markup: ordersKeyboard,
         });

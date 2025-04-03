@@ -11,7 +11,7 @@ export function getcartNoneMenu(isNewbie = true) {
         cartNoneMenu.text("📦  Заказать вещи", "order__create");
     }
 
-    cartNoneMenu.row()
+    cartNoneMenu.row();
     cartNoneMenu.text("‹ В главное меню", "main_menu");
 
     return cartNoneMenu;
@@ -56,10 +56,7 @@ export function generateCartItemsMenu(cart, currentPage, maxPerMessage = limitsC
 
         for (let i = 0; i < range; i++) {
             cartItemsMenu
-                .text(
-                    `${getEmoji(cart[i].subType)}  ${cart[i].name}`,
-                    `cart__check_${cart[i].dbId}`
-                )
+                .text(`${getEmoji(cart[i].subType)}  ${cart[i].name}`, `cart__check_${cart[i].dbId}`)
                 .row();
         }
 
@@ -74,10 +71,7 @@ export function generateCartItemsMenu(cart, currentPage, maxPerMessage = limitsC
         for (let i = range - maxPerMessage; i <= range; i++) {
             if (cart[i]?.dbId && !isItemsEnd) {
                 cartItemsMenu
-                    .text(
-                        `${getEmoji(cart[i].subType)}  ${cart[i].name}`,
-                        `cart__check_${cart[i].dbId}`
-                    )
+                    .text(`${getEmoji(cart[i].subType)}  ${cart[i].name}`, `cart__check_${cart[i].dbId}`)
                     .row();
             } else {
                 isItemsEnd = true;

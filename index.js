@@ -14,13 +14,19 @@ export const bot = new Bot(process.env.BOT_API_TOKEN);
 bot.use(
     session({
         initial: () => structuredClone(sessionConfig),
-    })
+    }),
 );
 bot.use(hydrate());
 bot.use(traceRoutes);
 bot.use(order);
 bot.use(cart);
 bot.use(orders);
+// функция-трансформер
+bot.api.config.use((prev, method, payload) => {
+    let _payload = payload;
+    if (_payload != undefined) _payload.parse_mode = "HTML";
+    return prev(method, _payload);
+});
 
 bot.api.setMyCommands([
     {

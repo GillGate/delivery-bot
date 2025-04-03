@@ -35,7 +35,7 @@ cart.callbackQuery(["cart__check", /cart__check_after_delete_/], async (ctx) => 
 
     let deletedItemId = ctx.callbackQuery.data.split("after_delete_")[1] ?? "";
     if (deletedItemId !== "") {
-        cart = cart.filter(item => {
+        cart = cart.filter((item) => {
             if (item.dbId === deletedItemId) {
                 deleteCartItem(ctx.from.id, deletedItemId);
                 ctx.answerCallbackQuery(`Товар ${getEmoji(item.subType)} был удалён`);
@@ -51,9 +51,8 @@ cart.callbackQuery(["cart__check", /cart__check_after_delete_/], async (ctx) => 
     }
 
     if (cart.length === 0) {
-        await sendStartMessage(ctx, true)
-    }
-    else {
+        await sendStartMessage(ctx, true);
+    } else {
         let msgText = "Ваш список товаров:";
         ctx.session.currentPage = 1;
         maxPages = Math.ceil(cart.length / limitsConfig.maxOrdersPerMessage);
@@ -72,7 +71,7 @@ cart.callbackQuery(["cart__check", /cart__check_after_delete_/], async (ctx) => 
 cart.callbackQuery(/cart__check_/, async (ctx) => {
     //service logs to understand the problem with cart
     console.log("CARTRIGHTNOW", ctx.session.cart);
-    console.log('CARTLOGHERE\n', ctx.callbackQuery.data.split("__check_"));
+    console.log("CARTLOGHERE\n", ctx.callbackQuery.data.split("__check_"));
     let currentItemId = ctx.callbackQuery.data.split("__check_")[1];
     const cartItem = ctx.session.cart.filter((item) => item.dbId === currentItemId)[0];
 

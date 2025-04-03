@@ -2,7 +2,7 @@ import { backMainMenu } from "#bot/keyboards/general.js";
 import unlessActions from "#bot/conversations/helpers/unlessActions.js";
 import { translate } from "#bot/helpers/translate.js";
 
-export default async function(conversation, ctx) {
+export default async function (conversation, ctx) {
     return await conversation.waitUntil(
         async (ctx) => {
             let orderInfo = ctx.message?.text;
@@ -23,10 +23,9 @@ export default async function(conversation, ctx) {
 
                 let orderName = orderInfoArray.slice(indexLink + 1, indexLink + 4).join(" ");
                 orderName = orderName.replace(/\W/g, " ").trim().replace(/\s+/g, " ");
-                if(orderName === "") {
+                if (orderName === "") {
                     ctx.session.order.name = translate(ctx.session.order.subType);
-                } 
-                else {
+                } else {
                     ctx.session.order.name = orderName;
                 }
 
@@ -43,6 +42,6 @@ export default async function(conversation, ctx) {
                         reply_markup: backMainMenu,
                     });
                 }),
-        }
+        },
     );
 }

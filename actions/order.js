@@ -19,7 +19,7 @@ import { getEmoji } from "#bot/helpers/getEmoji.js";
 import getHtmlOrderLink from "#bot/helpers/getHtmlOrderLink.js";
 import { backToCart } from "#bot/keyboards/cart.js";
 import calculateTotalSum from "#bot/helpers/calculateTotalSum.js";
-import { sheetUpdater } from "#bot/api/google-sheet.api.js";
+import { sheetUpdater } from "#bot/api/googleSheet/google-sheet.api.js";
 
 export const order = new Composer();
 
@@ -52,7 +52,7 @@ order.callbackQuery(/order__create/, async (ctx) => {
             "Корзина переполнена, вам следует оформить заказ или удалить что-то лишнее из товаров ",
             {
                 reply_markup: backToCart,
-            }
+            },
         );
         ctx.answerCallbackQuery();
     } else {
@@ -233,7 +233,7 @@ order.callbackQuery("order__confirm", async (ctx) => {
         parse_mode: "HTML",
     });
 
-    if (process.env.BOT_IS_DEV === 'false') {
+    if (process.env.BOT_IS_DEV === "false") {
         ctx.api.sendMessage(process.env.BOT_ORDERS_CHAT_ID, textForManager, {
             parse_mode: "HTML",
         });

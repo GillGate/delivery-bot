@@ -28,12 +28,12 @@ export default async function (conversation, ctx) {
             otherwise: (ctx) =>
                 unlessActions(ctx, () => {
                     let paramsText = "Укажите корректные параметры товара, например:\n";
-                    paramsText += "<b>Размер 42</b> или <b>Цвет чёрный</b>"
+                    paramsText += "<b>Размер 42</b> или <b>Цвет чёрный</b>";
                     ctx.reply(paramsText, {
                         reply_markup: regParamsMenu,
                         parse_mode: "HTML",
                     });
                 }),
-        }
+        },
     );
 }

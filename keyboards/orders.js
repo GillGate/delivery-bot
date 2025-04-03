@@ -20,19 +20,17 @@ export function generateOrdersMenu(orders, currentPage, maxPerMessage = limitsCo
         }
 
         for (let i = 0; i < range; i++) {
-            let num = i;
             ordersMenu
                 .text(
                     `#${orders[i].orderId} • Товаров: ${orders[i].items.length} • ${getEmoji(orders[i].status)}`,
-                    `orders__check_${orders[i].dbId}`
+                    `orders__check_${orders[i].dbId}`,
                 )
                 .row();
         }
 
         if (orders.length < maxPerMessage) {
             ordersMenu.text("‹ В главное меню", "main_menu");
-        }
-        else {
+        } else {
             ordersMenu.text("‹ Назад", "main_menu");
             ordersMenu.text("Дальше ›", "orders__nav_next");
         }
@@ -45,7 +43,7 @@ export function generateOrdersMenu(orders, currentPage, maxPerMessage = limitsCo
                 ordersMenu
                     .text(
                         `#${++num} Товаров: ${orders[i].items.length} • ${getEmoji(orders[i].status)}`,
-                        `orders__check_${orders[i].dbId}`
+                        `orders__check_${orders[i].dbId}`,
                     )
                     .row();
             } else {

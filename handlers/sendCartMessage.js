@@ -40,8 +40,7 @@ export default async function (ctx, replyMode = false) {
             reply_markup: cartKeyboard,
             parse_mode: "HTML",
         });
-    }
-    else {
+    } else {
         await ctx.editMessageText(msgText, {
             reply_markup: cartKeyboard,
             parse_mode: "HTML",

@@ -1,0 +1,12 @@
+.github/
+node_modules/
+
+.env
+.gitattributes
+.gitignore
+.prettierrc
+Dockerfile
+firestore.dev.serviceAccount.json
+package-lock.json
+package.json
+README

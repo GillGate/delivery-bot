@@ -1,7 +1,7 @@
 export default {
     price: {
         min: 1,
-        max: 5000
+        max: 5000,
     },
     fio: {
         min: 4,
@@ -13,12 +13,13 @@ export default {
     },
     params: {
         min: 1,
-        max: 120
+        max: 120,
     },
-    deliveryPeriod:{
+    deliveryPeriod: {
         min: 17,
         max: 23,
     },
     cartMaxLength: 15,
     maxOrdersPerMessage: 5,
+    maxFileIdsLength: 6,
 };

@@ -41,6 +41,6 @@ export default async function (conversation, ctx) {
                         });
                     }
                 }),
-        }
+        },
     );
 }

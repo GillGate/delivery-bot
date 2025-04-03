@@ -5,21 +5,24 @@ import { backToCart } from "#bot/keyboards/cart.js";
 import { getEmoji } from "#bot/helpers/getEmoji.js";
 
 export async function changeUserNumber(conversation, ctx) {
-     let currentSession = conversation.ctx.session;
-     let currentUser = currentSession.user;
+    let currentSession = conversation.ctx.session;
+    let currentUser = currentSession.user;
 
-     conversation.ctx.editMessageText("Укажите новый номер телефона, который будет передан в службу поддержки:", {
-          reply_markup: backKeyboard,
-     });
+    conversation.ctx.editMessageText(
+        "Укажите новый номер телефона, который будет передан в службу поддержки:",
+        {
+            reply_markup: backKeyboard,
+        },
+    );
 
-     let res = await getUserNumber(conversation, ctx);
+    let res = await getUserNumber(conversation, ctx);
 
-     let totalText = `Ваш номер изменён на:\n`;
-     totalText += `${getEmoji("phone")}  ${currentUser.number}`;
+    let totalText = `Ваш номер изменён на:\n`;
+    totalText += `${getEmoji("phone")}  ${currentUser.number}`;
 
-     ctx.reply(totalText, {
-          reply_markup: backToCart,
-     });
+    ctx.reply(totalText, {
+        reply_markup: backToCart,
+    });
 
-     return await updateUserInfo(ctx.from.id, currentUser);
+    return await updateUserInfo(ctx.from.id, currentUser);
 }

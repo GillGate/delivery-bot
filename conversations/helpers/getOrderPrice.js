@@ -33,7 +33,7 @@ export default async function (conversation, ctx) {
                     "delivery price",
                     currentDeliveryPrice.complete,
                     "POSHLINA",
-                    dutySum
+                    dutySum,
                 );
 
                 let totalPrice = rubPrice + currentProfit + currentDeliveryPrice.complete + dutySum;
@@ -51,14 +51,14 @@ export default async function (conversation, ctx) {
         {
             otherwise: (ctx) =>
                 unlessActions(ctx, () => {
-                    let text = 'Укажите корректную сумму в юань, например: 360.\n'
-                    text += `Минимальная стоимость товара: ${priceLimits.min}₽\n`
-                    text += `Максимальная стоимость товара: ${priceLimits.max}₽`
+                    let text = "Укажите корректную сумму в юань, например: 360.\n";
+                    text += `Минимальная стоимость товара: ${priceLimits.min}₽\n`;
+                    text += `Максимальная стоимость товара: ${priceLimits.max}₽`;
                     // TODO: particular error msg
                     ctx.reply(text, {
                         reply_markup: backMainMenu,
                     });
                 }),
-        }
+        },
     );
 }

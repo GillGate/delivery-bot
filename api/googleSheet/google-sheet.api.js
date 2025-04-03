@@ -13,23 +13,22 @@ const serviceAccountAuth = new JWT({
     scopes: [process.env.BOT_SERVICE_ACCOUNT_SCOPE],
 });
 
-
 export async function sheetUpdater(dataObject) {
     const doc = new GoogleSpreadsheet(spreadsheetId, serviceAccountAuth); //Authorization
     await doc.loadInfo(); // loads document properties and worksheets
     const sheet = doc.sheetsByIndex[0]; //choose working sheet
 
     let rowCoutner = 3; //null row
-    await sheet.loadCells(`A${rowCoutner}:A500`) //500 - произовльное большое значение
+    await sheet.loadCells(`A${rowCoutner}:A500`); //500 - произовльное большое значение
     let checkCell = sheet.getCellByA1(`A${rowCoutner}`); //check row one by one
 
     while (checkCell.value !== null) {
-        rowCoutner += 1
+        rowCoutner += 1;
         checkCell = sheet.getCellByA1(`A${rowCoutner}`);
         console.log("CHECKING");
     } //checking till it'll find an empty one
 
-    let ordersCounter = rowCoutner - 2; //orders quantity
+    const ordersCounter = rowCoutner - 2; //orders quantity
 
     await sheet.loadCells(`A${rowCoutner}:AE${rowCoutner}`); //load the necessary row
 
@@ -42,13 +41,13 @@ export async function sheetUpdater(dataObject) {
 
     // Статус заказа
     const statusCell = sheet.getCellByA1(`C${rowCoutner}`);
-    statusCell.value = 'processing';
+    statusCell.value = "processing";
 
     // Дата заказа
     const dateCell = sheet.getCellByA1(`F${rowCoutner}`);
-    let dateNow = new Date(dataObject.date);
-    let timestamp = dateNow.getTime();
-    let formattedDate = new Date(timestamp).toLocaleString("en-GB", {
+    const dateNow = new Date(dataObject.date);
+    const timestamp = dateNow.getTime();
+    const formattedDate = new Date(timestamp).toLocaleString("en-GB", {
         year: "numeric",
         month: "numeric",
         day: "numeric",
@@ -80,27 +79,26 @@ export async function sheetUpdater(dataObject) {
     // Корзина
     const cartCell = sheet.getCellByA1(`L${rowCoutner}`);
     let cartText = "";
-    dataObject.cart.forEach((cartItem, index) => {
-        cartText += `№${++index}. ${cartItem.name} - ${cartItem.link}\n`;
-    });
+    let index = 0;
+    for (const { name, link } of dataObject.cart) {
+        cartText += `№${++index}. ${name} - ${link}\n`;
+    }
     cartCell.value = cartText;
 
     // Общий вес корзины
     const weightCell = sheet.getCellByA1(`M${rowCoutner}`);
     let cartWeight = 0;
-    dataObject.cart.forEach((cartItem) => {
-        let itemType = cartItem.subType;
-        cartWeight += specsConfig[itemType].factWeight;
-    });
+    for (const { subType } of dataObject.cart) {
+        cartWeight += specsConfig[subType].factWeight;
+    }
     weightCell.value = `${cartWeight.toFixed(2)}kg`;
 
     // Стоимость доставки из Китая в МСК
     const chinaMoscowCell = sheet.getCellByA1(`O${rowCoutner}`);
     let chinaMoscowSum = 0;
-    dataObject.cart.forEach((cartItem) => {
-        let itemCost = cartItem.chinaMoscowPrice;
-        chinaMoscowSum += itemCost;
-    });
+    for (const { chinaMoscowPrice } of dataObject.cart) {
+        chinaMoscowSum += chinaMoscowPrice;
+    }
     chinaMoscowCell.value = Math.ceil(chinaMoscowSum);
 
     // Стоимость доставки из пункта сдек в пункт сдек
@@ -109,61 +107,55 @@ export async function sheetUpdater(dataObject) {
 
     // Объявленная стоимость товара + наших услуг
     const totalPriceCell = sheet.getCellByA1(`S${rowCoutner}`);
-    let totalPrice = dataObject.declaredTotalPrice || dataObject.cart[0].price;
+    const totalPrice = dataObject.declaredTotalPrice || dataObject.cart[0].price;
     totalPriceCell.value = totalPrice;
 
     // Стоимость корзины в переводе на CNY
     const cnyPriceCell = sheet.getCellByA1(`T${rowCoutner}`);
     let cnyPriceSum = 0;
-    dataObject.cart.forEach((cartItem) => {
-        let itemTCost = cartItem.priceCNY;
-        cnyPriceSum += itemTCost;
-    });
+    for (const { priceCNY } of dataObject.cart) {
+        cnyPriceSum += priceCNY;
+    }
     cnyPriceCell.value = cnyPriceSum;
 
     // Стоимость корзины после конвертации в рублях
     const rubPriceCell = sheet.getCellByA1(`U${rowCoutner}`);
     let rubPriceSum = 0;
-    dataObject.cart.forEach((cartItem) => {
-        let itemTCost = cartItem.priceRUB;
-        rubPriceSum += itemTCost;
-    });
+    for (const { priceRUB } of dataObject.cart) {
+        rubPriceSum += priceRUB;
+    }
     rubPriceCell.value = Number(rubPriceSum);
 
     // Сумма погрешности конвертации
     const feeErrorCell = sheet.getCellByA1(`V${rowCoutner}`);
     let feeErrorSum = 0;
-    dataObject.cart.forEach((cartItem) => {
-        let itemTCost = cartItem.conversionFee;
-        feeErrorSum += itemTCost;
-    });
+    for (const { conversionFee } of dataObject.cart) {
+        feeErrorSum += conversionFee;
+    }
     feeErrorCell.value = Number(Math.ceil(feeErrorSum));
 
     // Комиссия сервиса WM
     const wmFeeCell = sheet.getCellByA1(`X${rowCoutner}`);
     let wmFeeSum = 0;
-    dataObject.cart.forEach((cartItem) => {
-        let itemTCost = cartItem.wmFee;
-        wmFeeSum += itemTCost;
-    });
+    for (const { wmFee } of dataObject.cart) {
+        wmFeeSum += wmFee;
+    }
     wmFeeCell.value = Number(Math.ceil(wmFeeSum));
 
     // Общая сумма пошлины
     const dutyFeeCell = sheet.getCellByA1(`Z${rowCoutner}`);
     let dutyFeeSum = 0;
-    dataObject.cart.forEach((cartItem) => {
-        let itemTCost = cartItem.dutySum;
-        dutyFeeSum += itemTCost;
-    });
+    for (const { dutySum } of dataObject.cart) {
+        dutyFeeSum += dutySum;
+    }
     dutyFeeCell.value = Number(dutyFeeSum);
 
     // Наша прибыль
     const ourProfitCell = sheet.getCellByA1(`AD${rowCoutner}`);
     let ourProfitSum = 0;
-    dataObject.cart.forEach((cartItem) => {
-        let itemTCost = cartItem.currentProfit;
-        ourProfitSum += itemTCost;
-    });
+    for (const { currentProfit } of dataObject.cart) {
+        ourProfitSum += currentProfit;
+    }
     ourProfitCell.value = Number(ourProfitSum);
 
     // Стоимость наших услуг без учёта нашей комиссии
@@ -179,59 +171,65 @@ export async function statusCellsGetter(rowNumber) {
     await doc.loadInfo(); // loads document properties and worksheets
     const sheet = doc.sheetsByIndex[0]; //choose working sheet
 
-    await sheet.loadCells(`A${rowNumber}:K${rowNumber}`) //1000 - произовльное большое значение
+    await sheet.loadCells(`A${rowNumber}:K${rowNumber}`); //1000 - произовльное большое значение
 
-    const orderUniqueId = sheet.getCellByA1(`B${rowNumber}`).value
-    const statusValue = sheet.getCellByA1(`C${rowNumber}`).value
-    const sdekTrackNum = sheet.getCellByA1(`D${rowNumber}`).value
-    const userDbIdValue = sheet.getCellByA1(`J${rowNumber}`).value
-    const orderDbIdValue = sheet.getCellByA1(`K${rowNumber}`).value
+    const orderUniqueId = sheet.getCellByA1(`B${rowNumber}`).value;
+    const statusValue = sheet.getCellByA1(`C${rowNumber}`).value;
+    const sdekTrackNum = sheet.getCellByA1(`D${rowNumber}`).value;
+    const userDbIdValue = sheet.getCellByA1(`J${rowNumber}`).value;
+    const orderDbIdValue = sheet.getCellByA1(`K${rowNumber}`).value;
 
     const forDbValues = {
         orderUniqueId: orderUniqueId,
         status: statusValue,
         sdekNumber: sdekTrackNum,
         userId: userDbIdValue,
-        orderId: orderDbIdValue
-    }
+        orderId: orderDbIdValue,
+    };
 
-    return forDbValues
+    return forDbValues;
 }
 
-export async function infoForSheetsHandler(orderId, status, dbrpstCommonInfoObj) {
+export async function infoForSheetsHandler({
+    orderId,
+    status,
+    factWeight,
+    factDeliveryPrice,
+    dbrpstTracker,
+}) {
     const doc = new GoogleSpreadsheet(spreadsheetId, serviceAccountAuth); //Authorization
     await doc.loadInfo(); // loads document properties and worksheets
     const sheet = doc.sheetsByIndex[0]; //choose working sheet
 
-    await sheet.loadCells(`K3:K500`) //500 - произовльное большое значение
-    let rowCounter = 3
-    let checkCell = await sheet.getCellByA1(`K${rowCounter}`)
-    console.log('checkcellvalue', checkCell.value);
+    await sheet.loadCells("K3:K500"); //500 - произовльное большое значение
+    let rowCounter = 3;
+    let checkCell = await sheet.getCellByA1(`K${rowCounter}`);
+
+    console.log(orderId);
 
     while (checkCell.value !== orderId) {
-        rowCounter += 1
+        rowCounter += 1;
         checkCell = await sheet.getCellByA1(`K${rowCounter}`);
-        console.log("CHECKING sheet cells");
     } //checking till it'll find the necessary
-    await sheet.loadCells(`B${rowCounter}:P${rowCounter}`)
+    await sheet.loadCells(`B${rowCounter}:P${rowCounter}`);
 
-    let orderUniqueId = await sheet.getCellByA1(`B${rowCounter}`).value
-    let statusCell = await sheet.getCellByA1(`C${rowCounter}`)
-    statusCell.value = status
+    const orderUniqueId = await sheet.getCellByA1(`B${rowCounter}`).value;
+    const statusCell = await sheet.getCellByA1(`C${rowCounter}`);
+    statusCell.value = status;
 
     //При наличии, обновляем параметр веса и стоимости доставки
-    if (dbrpstCommonInfoObj.factWeight || dbrpstCommonInfoObj.factDeliveryPrice || dbrpstCommonInfoObj.dbrpstTracker) {
-        let weightCell = await sheet.getCellByA1(`N${rowCounter}`)
-        weightCell.value = dbrpstCommonInfoObj.factWeight
+    if (factWeight || factDeliveryPrice || dbrpstTracker) {
+        const weightCell = await sheet.getCellByA1(`N${rowCounter}`);
+        weightCell.value = factWeight;
 
-        let deliveryPriceCell = await sheet.getCellByA1(`P${rowCounter}`)
-        deliveryPriceCell.value = dbrpstCommonInfoObj.factDeliveryPrice
+        const deliveryPriceCell = await sheet.getCellByA1(`P${rowCounter}`);
+        deliveryPriceCell.value = factDeliveryPrice;
 
-        let dbrpstTrackerCell = await sheet.getCellByA1(`E${rowCounter}`)
-        dbrpstTrackerCell.value = dbrpstCommonInfoObj.dbrpstTracker
+        const dbrpstTrackerCell = await sheet.getCellByA1(`E${rowCounter}`);
+        dbrpstTrackerCell.value = dbrpstTracker;
     }
 
     await sheet.saveUpdatedCells();
 
-    return orderUniqueId
+    return orderUniqueId;
 }

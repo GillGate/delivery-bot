@@ -53,7 +53,7 @@ export default async function (ctx, replyMode = false) {
         let chatId = ctx.update.callback_query.message.chat.id;
         let messageId = ctx.update.callback_query.message.message_id;
         try {
-            await ctx.api.deleteMessage(chatId, messageId)
+            await ctx.api.deleteMessage(chatId, messageId);
         } catch (error) {
             console.log(error);
         }

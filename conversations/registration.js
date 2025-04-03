@@ -33,10 +33,10 @@ export async function registration(conversation, ctx) {
 
     let chatId = ctx.update.callback_query.message.chat.id;
     await conversation.ctx.api.sendPhoto(chatId, regMedia.link, {
-        caption: 'Введите ссылку на товар',
+        caption: "Введите ссылку на товар",
         show_caption_above_media: true,
         reply_markup: backMainMenu,
-    })
+    });
 
     await getOrderLink(conversation, ctx);
 
@@ -53,14 +53,14 @@ export async function registration(conversation, ctx) {
     let costText = "Укажите стоимость товара в юань:\n\n";
     costText +=
         "❗️ Финальная стоимость товара на POIZON будет доступна после того, как вы укажите размер товара в приложении";
-    let costTextEntities = [{ "offset": 37, "length": 105, "type": "italic" }]
+    let costTextEntities = [{ offset: 37, length: 105, type: "italic" }];
 
     await conversation.ctx.api.sendPhoto(chatId, regMedia.price, {
         caption: costText,
         show_caption_above_media: true,
         reply_markup: backMainMenu,
-        caption_entities: costTextEntities
-    })
+        caption_entities: costTextEntities,
+    });
 
     await getOrderPrice(conversation, ctx);
 
@@ -116,7 +116,7 @@ export async function registration(conversation, ctx) {
                 });
             }
         } else {
-            let numberText = "Укажите номер телефона получателя посылки\n"
+            let numberText = "Укажите номер телефона получателя посылки\n";
             numberText += "Данный номер телефона будет передан службе доставки";
 
             ctx.reply(numberText, {
@@ -125,14 +125,13 @@ export async function registration(conversation, ctx) {
             });
         }
 
-
         await getUserNumber(conversation, ctx);
         currentUser = currentSession.user;
     }
 
     let htmlOrderLink = getHtmlOrderLink(currentOrder);
 
-    let textForLogs = `Клиент <b>${ctx.from.id}</b> | @${ctx.from?.username ?? ''} добавил товар в корзину\n\n`;
+    let textForLogs = `Клиент <b>${ctx.from.id}</b> | @${ctx.from?.username ?? ""} добавил товар в корзину\n\n`;
 
     let totalText = `Итоговая цена: ${currentOrder.price} ₽ \n`;
     if (currentOrder.dutySum !== 0) {
@@ -146,7 +145,7 @@ export async function registration(conversation, ctx) {
     totalText += `- Доп. параметры: ${currentOrder.params}\n`;
     totalText += `- Ссылка: ${htmlOrderLink}\n`;
     totalText += `- Стоимость: ${currentOrder.priceCNY} ￥ \n\n`;
-    
+
     totalText += `${getEmoji("fio")}  ФИО получателя: ${currentUser.fio}\n`;
     totalText += `${getEmoji("address")}  Адрес доставки: ${currentUser.address}\n`;
     totalText += `${getEmoji("phone")}  Номер получателя: ${currentUser.number}\n`;
@@ -186,7 +185,7 @@ export async function registration(conversation, ctx) {
                     fio: currentUser.fio,
                     address: currentUser.address,
                     isNewbie: currentUser.isNewbie,
-                    username: from?.username ?? '',
+                    username: from?.username ?? "",
                     number: currentUser.number,
                 });
 
@@ -195,10 +194,10 @@ export async function registration(conversation, ctx) {
 
             let dbId = await addToCart(from.id, currentOrder);
             await (currentOrder.fromId = from.id);
-            
+
             currentOrder.dbId = dbId.id;
             currentOrder.date = Date.now();
-            await (currentSession.cart.push(currentOrder));
+            await currentSession.cart.push(currentOrder);
         } catch (e) {
             console.error(e);
         }

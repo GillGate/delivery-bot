@@ -1,8 +1,15 @@
 import specsConfig from "#bot/config/specs.config.js";
 import pricingConfig from "#bot/config/pricing.config.js";
 
-const { rubPerKg3, rubDBEperKg, koefVolumWeight, m3ToSm3, rubDeliverySDEK, rubDeliveryMoscowSDEK, photosPrice } =
-    pricingConfig;
+const {
+    rubPerKg3,
+    rubDBEperKg,
+    koefVolumWeight,
+    m3ToSm3,
+    rubDeliverySDEK,
+    rubDeliveryMoscowSDEK,
+    photosPrice,
+} = pricingConfig;
 
 function getVolumWeight(type) {
     let { sizes } = type;
@@ -18,7 +25,8 @@ export function calculateDelivery(type) {
     let dobropostSum =
         currentType.factWeight * rubDBEperKg +
         (volumWeight - currentType.factWeight) * koefVolumWeight +
-        rubDeliveryMoscowSDEK + photosPrice;
+        rubDeliveryMoscowSDEK +
+        photosPrice;
 
     // Считаем общую стоимость доставки
     let expensesWithSDEK = dobropostSum + rubDeliverySDEK;

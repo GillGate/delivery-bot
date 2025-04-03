@@ -2,81 +2,105 @@ import { Firestore } from "@google-cloud/firestore";
 
 export const db = new Firestore({
     projectId: process.env.BOT_FIREBASE_PROJECT_ID,
-    keyFilename: `${process.env.BOT_FIREBASE_SERVICE_ACCOUNT}`
+    keyFilename: `${process.env.BOT_FIREBASE_SERVICE_ACCOUNT}`,
 });
 
-export async function setUserInfo(userId, info) {
+const mapSnapshotData = (snapshot) =>
+{
+    const data = [];
+    snapshot.forEach((doc) =>
+    {
+        data.push({
+            dbId: doc.id,
+            ...doc.data(),
+        });
+    });
+    return data;
+};
+
+export async function setUserInfo(userId, info)
+{
     return await db.collection("users").doc(`${userId}`).set(info);
 }
 
-export async function getUserInfo(userId) {
+export async function getUserInfo(userId)
+{
     return await db.collection("users").doc(`${userId}`).get();
 }
 
-export async function updateUserInfo(userId, info) {
+export async function updateUserInfo(userId, info)
+{
     return await db.collection("users").doc(`${userId}`).update(info);
 }
 
-export async function addToCart(userId, order) {
+export async function addToCart(userId, order)
+{
     return await db.collection("users").doc(`${userId}`).collection("cart").add(order);
 }
 
-export async function deleteCartItem(userId, itemId) {
+export async function deleteCartItem(userId, itemId)
+{
     return await db.collection("users").doc(`${userId}`).collection("cart").doc(`${itemId}`).delete();
 }
 
-export async function cleanCart(userId) {
+export async function cleanCart(userId)
+{
     const cartCollection = db.collection("users").doc(`${userId}`).collection("cart");
     let snapshotOrders = await cartCollection.get();
 
-    snapshotOrders.forEach(async (doc) => {
+    snapshotOrders.forEach(async (doc) =>
+    {
         await cartCollection.doc(`${doc.id}`).delete();
     });
 
     return true;
 }
 
-export async function getUserCart(userId) {
-    let cart = [];
+export async function getUserCart(userId)
+{
     let snapshotOrders = await db.collection("users").doc(`${userId}`).collection("cart").get();
-
-    snapshotOrders.forEach((doc) => {
-        cart.push({
-            dbId: doc.id,
-            ...doc.data(),
-        });
-    });
-
-    return cart;
+    return mapSnapshotData(snapshotOrders);
 }
 
-export async function addUserOrder(userId, order) {
+export async function addUserOrder(userId, order)
+{
     return await db.collection("users").doc(`${userId}`).collection("orders").add(order);
 }
 
-export async function getUserOrders(userId) {
-    let orders = [];
+export async function getUserOrders(userId)
+{
     let snapshotOrders = await db.collection("users").doc(`${userId}`).collection("orders").get();
-
-    snapshotOrders.forEach((doc) => {
-        orders.push({
-            dbId: doc.id,
-            ...doc.data(),
-        });
-    });
-
-    return orders;
+    return mapSnapshotData(snapshotOrders);
 }
 
-export async function updateOrderStatus(userId, orderId, status, sdekNumber = null) {
-    console.log('USERID', userId, 'orderID', orderId);
-    if (!sdekNumber) {
-        await db.collection("users").doc(`${userId}`).collection("orders").doc(`${orderId}`).update({ status: `${status}` });
-    } else {
-        await db.collection("users").doc(`${userId}`).collection("orders").doc(`${orderId}`).update({
-            status: `${status}`,
-            sdekTrackNum: `${sdekNumber}`
-        });
-    }
+export async function getOrder(userId, orderId)
+{
+    // FIXME: change getCollection to getOrder
+    const orders = await getUserOrders(userId);
+    console.log(orderId);
+    return orders.find((order) => order.dbId == orderId);
+}
 
+export async function updateOrderStatus(userId, orderId, status, sdekTrackNum = null)
+{
+    if (sdekTrackNum)
+    {
+        await db
+            .collection("users")
+            .doc(`${userId}`)
+            .collection("orders")
+            .doc(`${orderId}`)
+            .update({
+                status,
+                sdekTrackNum,
+            })
+    } else
+    {
+        await db
+            .collection("users")
+            .doc(`${userId}`)
+            .collection("orders")
+            .doc(`${orderId}`)
+            .update({ status });
+    }
 }

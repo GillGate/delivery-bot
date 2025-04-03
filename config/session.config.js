@@ -3,7 +3,7 @@ export default {
         fio: "",
         address: "",
         number: "",
-        isNewbie: true
+        isNewbie: true,
     },
     cart: [],
     orders: [],
@@ -19,4 +19,4 @@ export default {
     },
     lastMsgId: 0,
     temp: {},
-}
+};

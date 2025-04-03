@@ -9,24 +9,24 @@ export async function calculate(conversation, ctx) {
     let chatId = ctx.callbackQuery.message.chat.id;
 
     await conversation.ctx.api.sendPhoto(chatId, regMedia.link, {
-        caption: 'Введите ссылку на товар',
+        caption: "Введите ссылку на товар",
         show_caption_above_media: true,
         reply_markup: backMainMenu,
-    })
+    });
 
     await getOrderLink(conversation, ctx);
 
     let costText = "Укажите стоимость товара в юань:\n\n";
     costText +=
         "❗️ Финальная стоимость товара на POIZON будет доступна после того, как вы укажите размер товара в приложении";
-    let costTextEntities = [{ "offset": 37, "length": 105, "type": "italic" }]
+    let costTextEntities = [{ offset: 37, length: 105, type: "italic" }];
 
     await conversation.ctx.api.sendPhoto(chatId, regMedia.price, {
         caption: costText,
         show_caption_above_media: true,
         reply_markup: backMainMenu,
-        caption_entities: costTextEntities
-    })
+        caption_entities: costTextEntities,
+    });
 
     await getOrderPrice(conversation, ctx);
 
@@ -39,7 +39,7 @@ export async function calculate(conversation, ctx) {
     totalText += `- Цена товара: ${currentCalc.priceCNY} ￥ \n`;
     totalText += `- Ссылка на товар: ${htmlOrderLink}\n\n`;
 
-    totalText += `<b>*</b><i>В стоимость включены стоимости товара, доставки и сервисный сбор</i>`
+    totalText += `<b>*</b><i>В стоимость включены стоимости товара, доставки и сервисный сбор</i>`;
 
     ctx.reply(totalText, {
         reply_markup: backMainMenu,

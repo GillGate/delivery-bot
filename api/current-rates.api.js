@@ -1,77 +1,86 @@
+import "dotenv/config";
 import { bot } from "#bot/index.js";
-//It'll be necessary one time
-// async function getMoexRates() {
-//     fetch('https://iss.moex.com/iss/statistics/engines/currency/markets/selt/rates.json?iss.meta=off')
-//         .then((response) => {
-//             if (!response.ok) {
-//                 throw new Error('HTTP error, status = ' + response.status);
-//             }
-//             return response.json();
-//         })
-//         .then((json) => {
-//             // Текущий курс доллара ЦБРФ
-//             console.log(json.cbrf.data[0][json.cbrf.columns.indexOf('CBRF_USD_LAST')]);
-//         })
-//         .catch((error) => {
-//             console.error(error);
-//         });
-// }
 
-async function getCurrentRates() {
-    try {
-        //Запрашиваем данные
-        const responseOne = await fetch(process.env.BOT_LINK_FREECURRENCY_API).catch((error) => {
-            console.log("Error in FREECURRENCY_API: ", error);
-            return 0;
-        });
-        const responseTwo = await fetch(process.env.BOT_LINK_OPEN_API).catch((error) => {
-            console.log("Error in OPEN_API: ", error);
-            return 0;
-        });
-        const responseThree = await fetch(process.env.BOT_LINK_CURRENCYBEACON_API).catch((error) => {
-            console.log("Error in CURRENCYBEACON_API: ", error);
-            return 0;
+const isDevMode = process.env.BOT_IS_DEV === "true";
+// const isDevMode = false;
+
+async function getCurrentRates()
+{
+    if (isDevMode)
+    {
+        return getMockRates();
+    }
+
+    try
+    {
+        const responses = await Promise.all([
+            fetch(process.env.BOT_LINK_FREECURRENCY_API),
+            fetch(process.env.BOT_LINK_OPEN_API),
+            fetch(process.env.BOT_LINK_CURRENCYBEACON_API)
+        ]);
+
+        // Process all responses after they've been received
+        const [dataOne, dataTwo, dataThree] = await Promise.all(responses.map(parseResponse));
+
+        console.log("Current Rates", {
+            dataOne: dataOne?.["RUB"] || "Unavailable",
+            dataTwo: dataTwo?.["RUB"] || "Unavailable",
+            dataThree: dataThree?.["RUB"] || "Unavailable",
         });
 
-        //Деструктуризация полученных данных
-        const { data: rateOne } = await responseOne.json();
-        const { rates: rateTwo } = await responseTwo.json();
-        const {
-            response: { rates: rateThree },
-        } = await responseThree.json();
+        return { dataOne, dataTwo, dataThree };
+    } catch (error)
+    {
+        console.error("Error fetching rates: ", error);
+        throw new Error("Failed to fetch currency rates.");
+    }
+}
 
-        // console.log("current rate usd to cny in rub FREECURRENCY_API ~", rateOne["RUB"].toFixed(3));
-        // console.log("current rate usd to cny in rub OPEN_API ~", rateTwo["RUB"].toFixed(3));
-        // console.log("current rate usd to cny in rub CURRENCYBEACON_API ~", rateThree["RUB"].toFixed(3));
+function getMockRates()
+{
+    const mockData = {
+        CNY: 100.0,
+        RUB: 100.0,
+        EUR: 100.0,
+    };
+    return {
+        dataOne: { ...mockData },
+        dataTwo: { ...mockData },
+        dataThree: { ...mockData },
+    };
+}
 
-        console.log("CurrentRates", {
-            dataOne: rateOne["RUB"],
-            dataTwo: rateTwo["RUB"],
-            dataThree: rateThree["RUB"],
-        });
-
-        return {
-            dataOne: rateOne,
-            dataTwo: rateTwo,
-            dataThree: rateThree,
-        };
-    } catch (error) {
-        console.log(error);
+async function parseResponse(response)
+{
+    if (!response.ok)
+    {
+        console.warn(`Error in API response: ${response.status} ${response.statusText}`);
+        return null;
+    }
+    try
+    {
+        const data = await response.json();
+        return data.data || data.rates || (data.response && data.response.rates) || {};
+    } catch (error)
+    {
+        console.error("Error parsing response:", error);
+        return null;
     }
 }
 
 let rates;
 
-async function firstRatesCheck() {
-    try {
-        let addRatesInfo;
+async function firstRatesCheck()
+{
+    try
+    {
         rates = await getCurrentRates();
 
-        await (addRatesInfo = {
-            cny: rates.dataOne.CNY.toFixed(3),
-            rub: rates.dataOne.RUB.toFixed(3),
-            eur: rates.dataOne.EUR.toFixed(3),
-        });
+        const addRatesInfo = {
+            cny: rates.dataOne?.CNY.toFixed(3) || "Unavailable",
+            rub: rates.dataOne?.RUB.toFixed(3) || "Unavailable",
+            eur: rates.dataOne?.EUR.toFixed(3) || "Unavailable",
+        };
 
         let ratesThreadMessage = "Дела обстоят следующим образом:\n";
         ratesThreadMessage += `            CNY->USD: ${addRatesInfo.cny}\n`;
@@ -81,16 +90,22 @@ async function firstRatesCheck() {
         bot.api.sendMessage(process.env.BOT_MAIN_CHAT_ID, ratesThreadMessage, {
             message_thread_id: process.env.BOT_CHAT_TOPIC_RATES,
         });
-    } catch (error) {
+    } catch (error)
+    {
         console.error(error);
     }
 }
 
-async function intervalRatesCheck() {
+async function intervalRatesCheck()
+{
     firstRatesCheck();
-    setInterval(async () => {
-        firstRatesCheck();
-    }, 1000 * 60 * 60);
+    setInterval(
+        async () =>
+        {
+            firstRatesCheck();
+        },
+        1000 * 60 * 60,
+    );
 }
 intervalRatesCheck();
 

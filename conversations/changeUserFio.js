@@ -7,7 +7,7 @@ import { backKeyboard } from "#bot/keyboards/general.js";
 export async function changeUserFio(conversation, ctx) {
     let currentSession = conversation.ctx.session;
     let currentUser = currentSession.user;
-    
+
     conversation.ctx.editMessageText("Введите новое ФИО, которое мы укажем при оформлении заказа:", {
         reply_markup: backKeyboard,
     });

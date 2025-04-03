@@ -109,10 +109,10 @@ export default {
     },
     headgear: {
         factWeight: 0.3,
-        sizes: [23, 17, 13]
+        sizes: [23, 17, 13],
     },
     other: {
         factWeight: 0,
-        sizes: [0, 0, 0]
+        sizes: [0, 0, 0],
     },
 };

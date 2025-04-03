@@ -34,8 +34,7 @@ export const selectCategoryKeyboard = new InlineKeyboard()
     .row()
     .text("‹ В главное меню", "main_menu");
 
-export const otherKeyboard = new InlineKeyboard()
-    .text("Далее", "order__pick_other")
+export const otherKeyboard = new InlineKeyboard().text("Далее", "order__pick_other");
 
 export function getSubTypeKeyboard(type) {
     let subTypeKeyboard = new InlineKeyboard();
